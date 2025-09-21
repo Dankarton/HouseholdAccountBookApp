@@ -1,0 +1,184 @@
+package com.example.householdaccountbook.fragments;
+
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import com.example.householdaccountbook.MyDbManager;
+import com.example.householdaccountbook.MyOpenHelper;
+import com.example.householdaccountbook.MyStdlib;
+import com.example.householdaccountbook.R;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import myclasses.Expenses;
+import myclasses.PaymentMethod;
+
+public class ExpensesInputFragment extends Fragment {
+    TextView dateTextView;
+    Calendar currentDate;
+    Spinner categorySpinner;
+    Spinner paymentMethodSpinner;
+    EditText memoEditText;
+    EditText amountEditText;
+    Button addButton;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+        super.onViewCreated(view, savedInstanceState);
+        dateTextView = view.findViewById(R.id.exp_date_text);
+        categorySpinner = view.findViewById(R.id.expenses_category_spinner);
+        paymentMethodSpinner = view.findViewById(R.id.payment_method_spinner);
+        memoEditText = view.findViewById(R.id.exp_memo_edit_text);
+        amountEditText = view.findViewById(R.id.exp_amount_edit_text);
+        addButton = view.findViewById(R.id.expenses_add_button);
+        String[] categoryArray = {"食費", "日用品", "通信費", "通販", "グッズ", "サブスク"};
+        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(
+                view.getContext(),
+                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                categoryArray
+        );
+        categorySpinner.setAdapter(categoryAdapter);
+        // 支払方法をスピナーに登録する
+        ArrayList<PaymentMethod> paymentMethods = MyDbManager.getAllPaymentMethodData();
+        String[] pmStrings = new String[paymentMethods.size()];
+        for (int i = 0; i < pmStrings.length; i++) {
+            pmStrings[i] = paymentMethods.get(i).getName();
+        }
+        ArrayAdapter<String> paymentMethodAdapter = new ArrayAdapter<>(
+                view.getContext(),
+                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                pmStrings
+        );
+        paymentMethodSpinner.setAdapter(paymentMethodAdapter);
+
+        currentDate = Calendar.getInstance();
+        setDateUpButtonEvent(view);
+        setDateDownButtonEvent(view);
+        setAddButtonEvent(view);
+        setMemoEditTextEvent();
+        setAmountEditText();
+        updateDateTextView();
+        addButton.setEnabled(false);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_expenses_input, container, false);
+    }
+
+    private void setDateUpButtonEvent(View view){
+        ImageButton dateUpButton = view.findViewById(R.id.exp_date_up_button);
+        dateUpButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                currentDate.add(Calendar.DAY_OF_MONTH, 1);
+                updateDateTextView();
+                changeToTrueAddButtonEnabled();
+            }
+        });
+    }
+    private void setDateDownButtonEvent(View view){
+        ImageButton dateUpButton = view.findViewById(R.id.exp_date_down_button);
+        dateUpButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                currentDate.add(Calendar.DAY_OF_MONTH, -1);
+                updateDateTextView();
+                changeToTrueAddButtonEnabled();
+            }
+        });
+    }
+
+    private void setAddButtonEvent(View view){
+        addButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                String inpAmountText = amountEditText.getText().toString();
+                // 金額が数字に変換出来ない時
+                if (!MyStdlib.canConvertToInteger(inpAmountText)){ return; }
+                int amount = Integer.parseInt(inpAmountText);
+                int year = currentDate.get(Calendar.YEAR);
+                int month = currentDate.get(Calendar.MONTH) + 1;
+                int day = currentDate.get(Calendar.DAY_OF_MONTH);
+                String memo = memoEditText.getText().toString();
+                String category = (String)categorySpinner.getSelectedItem();
+                // TODO テスト中．今はListのインデックスを入れてるけど，ちゃんとIDを入れるようにして
+                int paymentMethodId = paymentMethodSpinner.getSelectedItemPosition();
+
+                MyDbManager.setRecordToDataBase(
+                        MyOpenHelper.EXPENSES_TABLE_NAME,
+                        Expenses.convertContentValues(year, month, day, amount, memo, category, paymentMethodId)
+                );
+                addButton.setEnabled(false);
+            }
+        });
+    }
+    private void setMemoEditTextEvent() {
+        memoEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                changeToTrueAddButtonEnabled();
+            }
+        });
+    }
+    private void setAmountEditText() {
+        amountEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                changeToTrueAddButtonEnabled();
+            }
+        });
+    }
+    private void updateDateTextView(){
+        dateTextView.setText(MyStdlib.convertCalendarToString(currentDate));
+    }
+    private void changeToTrueAddButtonEnabled() {
+        Log.d("MyTestLog", "" + amountEditText.getText().toString().isEmpty());
+        if (amountEditText.getText().toString().isEmpty()){
+            addButton.setEnabled(false);
+            return;
+        }
+        if (!MyStdlib.canConvertToInteger(amountEditText.getText().toString())){
+            addButton.setEnabled(false);
+            return;
+        }
+        addButton.setEnabled(true);
+    }
+}

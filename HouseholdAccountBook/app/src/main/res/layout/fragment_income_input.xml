@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.IncomeInputFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/inc_static_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/date_in_japanese"
+            android:textSize="22sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/inc_date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="年月日()"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@+id/inc_static_text"
+            app:layout_constraintEnd_toStartOf="@+id/inc_date_up_button"
+            app:layout_constraintStart_toEndOf="@+id/inc_date_down_button"
+            app:layout_constraintTop_toTopOf="@+id/inc_static_text" />
+
+        <ImageButton
+            android:id="@+id/inc_date_down_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@null"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/chevron_left_24px"
+            app:layout_constraintBottom_toBottomOf="@+id/inc_static_text"
+            app:layout_constraintStart_toEndOf="@+id/inc_static_text"
+            app:layout_constraintTop_toTopOf="@+id/inc_static_text" />
+
+        <ImageButton
+            android:id="@+id/inc_date_up_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="16dp"
+            android:background="@null"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/chevron_right_24px"
+            app:layout_constraintBottom_toBottomOf="@+id/inc_static_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/inc_static_text" />
+
+        <TextView
+            android:id="@+id/inc_static_text2"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginStart="16dp"
+            android:text="@string/memo_in_japanese"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@+id/inc_memo_edit_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/inc_memo_edit_text" />
+
+        <EditText
+            android:id="@+id/inc_memo_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:inputType="text"
+            android:text="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/inc_static_text2"
+            app:layout_constraintTop_toBottomOf="@+id/inc_static_text" />
+
+        <TextView
+            android:id="@+id/inc_static_text3"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginStart="16dp"
+            android:text="@string/income_in_japanese"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@+id/inc_amount_edit_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/inc_amount_edit_text" />
+
+        <EditText
+            android:id="@+id/inc_amount_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            app:layout_constraintEnd_toStartOf="@+id/inc_static_text4"
+            app:layout_constraintStart_toEndOf="@+id/inc_static_text3"
+            app:layout_constraintTop_toBottomOf="@+id/inc_memo_edit_text" />
+
+        <TextView
+            android:id="@+id/inc_static_text4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@string/yen_in_japanese"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@+id/inc_amount_edit_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/inc_amount_edit_text" />
+
+        <Spinner
+            android:id="@+id/income_category_spinner"
+            android:layout_width="200dp"
+            android:layout_height="38dp"
+            app:layout_constraintStart_toEndOf="@+id/inc_static_text3"
+            app:layout_constraintTop_toBottomOf="@+id/inc_amount_edit_text" />
+
+        <Button
+            android:id="@+id/income_add_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:text="@string/save_in_japanese"
+            android:backgroundTint="@drawable/button_state_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/income_category_spinner" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

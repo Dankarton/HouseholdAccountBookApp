@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">HouseholdAccountBook</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="input">input</string>
+    <string name="data">data</string>
+    <string name="calendar">calendar</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="settings">settings</string>
+    <string name="date_in_japanese">日付</string>
+    <string name="memo_in_japanese">メモ</string>
+    <string name="expenses_in_japanese">支出</string>
+    <string name="yen_in_japanese">円</string>
+    <string name="income_in_japanese">収入</string>
+    <string name="save_in_japanese">保存</string>
+</resources>
