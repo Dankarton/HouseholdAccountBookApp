@@ -236,7 +236,9 @@ public class MyDbManager {
                 new String[] {
                         MyOpenHelper.ID,
                         MyOpenHelper.COLUMN_NAME,
+                        MyOpenHelper.COLUMN_CLOSING_RULE_CODE,
                         MyOpenHelper.COLUMN_CLOSING_DAY,
+                        MyOpenHelper.COLUMN_PAYMENT_RULE_CODE,
                         MyOpenHelper.COLUMN_PAYMENT_DAY,
                         MyOpenHelper.COLUMN_IS_DEFAULT
                 },
@@ -250,7 +252,13 @@ public class MyDbManager {
         ArrayList<PaymentMethod> paymentMethodList = new ArrayList<PaymentMethod>();
         for (int i = 0; i < cursor.getCount(); i++) {
             PaymentMethod tmp = new PaymentMethod(
-                    cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4)
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getInt(2),
+                    cursor.getInt(3),
+                    cursor.getInt(4),
+                    cursor.getInt(5),
+                    cursor.getInt(6)
             );
             paymentMethodList.add(tmp);
             cursor.moveToNext();

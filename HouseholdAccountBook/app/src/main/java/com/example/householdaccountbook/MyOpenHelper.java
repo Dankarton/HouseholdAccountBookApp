@@ -32,7 +32,8 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PAYMENT_DAY = "payment_day";
 
     public static final String COLUMN_CLOSING_DAY = "closing_day";
-
+    public static final String COLUMN_CLOSING_RULE_CODE = "closing_rule_code";
+    public static final String COLUMN_PAYMENT_RULE_CODE = "payment_rule_code";
     public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id"; // 支払方法のID (支出の方のカラムが持つ情報)
 
     private static final String EXPENSES_SQL_CREATE_ENTRIES =
@@ -61,7 +62,9 @@ public class MyOpenHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + PAYMENT_METHOD_TABLE_NAME + " (" +
                     ID + " INTEGER PRIMARY KEY," +
                     COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                    COLUMN_CLOSING_RULE_CODE + " INTEGER," +
                     COLUMN_CLOSING_DAY + " INTEGER," +
+                    COLUMN_PAYMENT_RULE_CODE + " INTEGER," +
                     COLUMN_PAYMENT_DAY + " INTEGER," +
                     COLUMN_IS_DEFAULT + " INTEGER NOT NULL DEFAULT 0)";
     private static final String INCOME_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + INCOME_TABLE_NAME;

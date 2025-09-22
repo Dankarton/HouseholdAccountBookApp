@@ -7,6 +7,12 @@ public interface BalanceOfPayments {
 
     public Calendar getDate();
 
+    public int getYear();
+
+    public int getMonth();
+
+    public int getDay();
+
     public int getAmount();
 
     public String getMemo();

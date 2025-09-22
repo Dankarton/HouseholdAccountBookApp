@@ -29,6 +29,16 @@ public class BOP implements BalanceOfPayments {
         return this.date;
     }
 
+    public int getYear() {
+        return this.date.get(Calendar.YEAR);
+    }
+    public int getMonth() {
+        return this.date.get(Calendar.MONTH) + 1;
+    }
+    public int getDay() {
+        return this.date.get(Calendar.DATE);
+    }
+
     public int getAmount() {
         return amount;
     }
