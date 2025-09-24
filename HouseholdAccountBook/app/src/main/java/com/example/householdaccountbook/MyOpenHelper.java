@@ -70,7 +70,7 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     private static final String INCOME_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + INCOME_TABLE_NAME;
     private static final String EXPENSES_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + EXPENSES_TABLE_NAME;
     private static final String PAYMENT_METHOD_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + PAYMENT_METHOD_TABLE_NAME;
-    MyOpenHelper(Context context){
+    public MyOpenHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
     @Override

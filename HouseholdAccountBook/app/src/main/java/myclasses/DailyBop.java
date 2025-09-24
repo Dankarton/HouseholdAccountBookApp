@@ -6,6 +6,7 @@ import java.util.List;
 /// 一日の収支
 ///
 public class DailyBop {
+    // TODO 支出は支払日と購入日の二種類に分けて
     private int _amount;
     private final List<Income> _incomeList;
     private final List<Expenses> _expensesList;

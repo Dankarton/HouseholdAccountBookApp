@@ -33,6 +33,7 @@ public class ExpensesInputFragment extends Fragment {
     Calendar currentDate;
     Spinner categorySpinner;
     Spinner paymentMethodSpinner;
+    PaymentMethod[] paymentMethodArray;
     EditText memoEditText;
     EditText amountEditText;
     Button addButton;
@@ -60,8 +61,10 @@ public class ExpensesInputFragment extends Fragment {
         // 支払方法をスピナーに登録する
         ArrayList<PaymentMethod> paymentMethods = MyDbManager.getAllPaymentMethodData();
         String[] pmStrings = new String[paymentMethods.size()];
+        paymentMethodArray = new PaymentMethod[paymentMethods.size()];
         for (int i = 0; i < pmStrings.length; i++) {
             pmStrings[i] = paymentMethods.get(i).getName();
+            paymentMethodArray[i] = paymentMethods.get(i);
         }
         ArrayAdapter<String> paymentMethodAdapter = new ArrayAdapter<>(
                 view.getContext(),
@@ -124,11 +127,22 @@ public class ExpensesInputFragment extends Fragment {
                 String memo = memoEditText.getText().toString();
                 String category = (String)categorySpinner.getSelectedItem();
                 // TODO テスト中．今はListのインデックスを入れてるけど，ちゃんとIDを入れるようにして
-                int paymentMethodId = paymentMethodSpinner.getSelectedItemPosition();
-
+                PaymentMethod paymentMethod = paymentMethodArray[paymentMethodSpinner.getSelectedItemPosition()];
+                Calendar paymentDate = paymentMethod.getPaymentDate(MyStdlib.convertToCalendar(year, month, day));
                 MyDbManager.setRecordToDataBase(
                         MyOpenHelper.EXPENSES_TABLE_NAME,
-                        Expenses.convertContentValues(year, month, day, amount, memo, category, paymentMethodId)
+                        Expenses.convertContentValues(
+                                year,
+                                month,
+                                day,
+                                amount,
+                                memo,
+                                category,
+                                paymentMethod.getId(),
+                                paymentDate.get(Calendar.YEAR),
+                                paymentDate.get(Calendar.MONTH),
+                                paymentDate.get(Calendar.DATE)
+                                )
                 );
                 addButton.setEnabled(false);
             }

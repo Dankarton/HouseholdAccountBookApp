@@ -11,6 +11,7 @@ import com.example.householdaccountbook.customviews.DailyRecordCustomView;
 
 import java.util.List;
 
+import myclasses.DailyBop;
 import myclasses.Income;
 
 public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -19,6 +20,8 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View view = inflater.inflate(R.layout.custom_view_daily_record, parent, false);
+        return new DailyViewHolder(view);
     }
 
     @Override
@@ -39,7 +42,7 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             this.dailyView = (DailyRecordCustomView) itemView;
         }
 
-        public void bind(Income item) {
+        public void setData(DailyBop dailyBop) {
 
         }
     }
