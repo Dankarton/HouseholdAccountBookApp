@@ -14,6 +14,28 @@ import myclasses.PaymentMethod;
 
 public class MyDbManager {
     private static MyOpenHelper helper;
+    private static final String[] incomeColumns = {
+            MyOpenHelper.ID,
+            MyOpenHelper.COLUMN_YEAR,
+            MyOpenHelper.COLUMN_MONTH,
+            MyOpenHelper.COLUMN_DAY,
+            MyOpenHelper.COLUMN_AMOUNT,
+            MyOpenHelper.COLUMN_MEMO,
+            MyOpenHelper.COLUMN_CATEGORY
+    };
+    private static final String[] expensesColumns = {
+            MyOpenHelper.ID,
+            MyOpenHelper.COLUMN_YEAR,
+            MyOpenHelper.COLUMN_MONTH,
+            MyOpenHelper.COLUMN_DAY,
+            MyOpenHelper.COLUMN_AMOUNT,
+            MyOpenHelper.COLUMN_MEMO,
+            MyOpenHelper.COLUMN_CATEGORY,
+            MyOpenHelper.COLUMN_PAYMENT_METHOD_ID,
+            MyOpenHelper.COLUMN_PAYMENT_YEAR,
+            MyOpenHelper.COLUMN_PAYMENT_MONTH,
+            MyOpenHelper.COLUMN_PAYMENT_DAY
+    };
 
     public static void setOpenHelper(Context context) {
 
@@ -95,21 +117,39 @@ public class MyDbManager {
         String orderBy = MyOpenHelper.COLUMN_YEAR + " ASC, " + MyOpenHelper.COLUMN_MONTH + " ASC, " + MyOpenHelper.COLUMN_DAY;
         Cursor cursor = db.query(
                 MyOpenHelper.EXPENSES_TABLE_NAME,
-                new String[] {
-                        MyOpenHelper.ID,
-                        MyOpenHelper.COLUMN_YEAR,
-                        MyOpenHelper.COLUMN_MONTH,
-                        MyOpenHelper.COLUMN_DAY,
-                        MyOpenHelper.COLUMN_AMOUNT,
-                        MyOpenHelper.COLUMN_MEMO,
-                        MyOpenHelper.COLUMN_CATEGORY,
-                        MyOpenHelper.COLUMN_PAYMENT_METHOD_ID,
-                        MyOpenHelper.COLUMN_PAYMENT_YEAR,
-                        MyOpenHelper.COLUMN_PAYMENT_MONTH,
-                        MyOpenHelper.COLUMN_PAYMENT_DAY
-                },
+                expensesColumns,
                 selection,
                 selectionArgs,
+                null,
+                null,
+                orderBy
+        );
+        ArrayList<Expenses> expensesList = toExpensesListBy(cursor);
+        cursor.close();
+        return expensesList;
+    }
+
+    public static ArrayList<Expenses> getExpensesByPurchaseOrPaymentDate(Integer year, Integer month, Integer day) {
+        SQLiteDatabase db =helper.getReadableDatabase();
+        String purchaseSelection = buildWhereClauseByDate(
+                year, month, day,
+                MyOpenHelper.COLUMN_YEAR,
+                MyOpenHelper.COLUMN_MONTH,
+                MyOpenHelper.COLUMN_DAY
+                );
+        String paymentSelection = buildWhereClauseByDate(
+          year, month, day,
+          MyOpenHelper.COLUMN_PAYMENT_YEAR,
+          MyOpenHelper.COLUMN_PAYMENT_MONTH,
+          MyOpenHelper.COLUMN_PAYMENT_DAY
+        );
+        String selection = "(" + purchaseSelection + ") OR (" + paymentSelection + ")";
+        String orderBy = MyOpenHelper.COLUMN_YEAR + " ASC, " + MyOpenHelper.COLUMN_MONTH + " ASC, " + MyOpenHelper.COLUMN_DAY;
+        Cursor cursor = db.query(
+                MyOpenHelper.EXPENSES_TABLE_NAME,
+                expensesColumns,
+                selection,
+                null,
                 null,
                 null,
                 orderBy
@@ -153,19 +193,7 @@ public class MyDbManager {
         String orderBy = MyOpenHelper.COLUMN_PAYMENT_YEAR + " ASC, " + MyOpenHelper.COLUMN_PAYMENT_MONTH + " ASC, " + MyOpenHelper.COLUMN_PAYMENT_DAY;
         Cursor cursor = db.query(
                 MyOpenHelper.EXPENSES_TABLE_NAME,
-                new String[] {
-                        MyOpenHelper.ID,
-                        MyOpenHelper.COLUMN_YEAR,
-                        MyOpenHelper.COLUMN_MONTH,
-                        MyOpenHelper.COLUMN_DAY,
-                        MyOpenHelper.COLUMN_AMOUNT,
-                        MyOpenHelper.COLUMN_MEMO,
-                        MyOpenHelper.COLUMN_CATEGORY,
-                        MyOpenHelper.COLUMN_PAYMENT_METHOD_ID,
-                        MyOpenHelper.COLUMN_PAYMENT_YEAR,
-                        MyOpenHelper.COLUMN_PAYMENT_MONTH,
-                        MyOpenHelper.COLUMN_PAYMENT_DAY
-                },
+                expensesColumns,
                 selection,
                 selectionArgs,
                 null,
@@ -183,19 +211,7 @@ public class MyDbManager {
         String orderBy = "year ASC, month ASC, day ASC";
         Cursor cursor = db.query(
                 MyOpenHelper.EXPENSES_TABLE_NAME,
-                new String[] {
-                        MyOpenHelper.ID,
-                        MyOpenHelper.COLUMN_YEAR,
-                        MyOpenHelper.COLUMN_MONTH,
-                        MyOpenHelper.COLUMN_DAY,
-                        MyOpenHelper.COLUMN_AMOUNT,
-                        MyOpenHelper.COLUMN_MEMO,
-                        MyOpenHelper.COLUMN_CATEGORY,
-                        MyOpenHelper.COLUMN_PAYMENT_METHOD_ID,
-                        MyOpenHelper.COLUMN_PAYMENT_YEAR,
-                        MyOpenHelper.COLUMN_PAYMENT_MONTH,
-                        MyOpenHelper.COLUMN_PAYMENT_DAY
-                },
+                expensesColumns,
                 null,
                 null,
                 null,
@@ -232,6 +248,29 @@ public class MyDbManager {
         }
         cursor.close();
         return incomeList;
+    }
+
+    public static ArrayList<Income> getIncomeDataByDate(Integer year, Integer month, Integer day) {
+        SQLiteDatabase db =helper.getReadableDatabase();
+        String selection = buildWhereClauseByDate(
+                year, month, day,
+                MyOpenHelper.COLUMN_YEAR,
+                MyOpenHelper.COLUMN_MONTH,
+                MyOpenHelper.COLUMN_DAY
+        );
+        String orderBy = MyOpenHelper.COLUMN_YEAR + " ASC, " + MyOpenHelper.COLUMN_MONTH + " ASC, " + MyOpenHelper.COLUMN_DAY;
+        Cursor cursor = db.query(
+                MyOpenHelper.INCOME_TABLE_NAME,
+                incomeColumns,
+                selection,
+                null,
+                null,
+                null,
+                orderBy
+        );
+        ArrayList<Income> incomesList = toIncomeListBy(cursor);
+        cursor.close();
+        return incomesList;
     }
 
     public static ArrayList<PaymentMethod> getAllPaymentMethodData() {
@@ -271,6 +310,23 @@ public class MyDbManager {
         cursor.close();
         return paymentMethodList;
     }
+
+    private static ArrayList<Income> toIncomeListBy(Cursor cursor) {
+        ArrayList<Income> incomeList = new ArrayList<>();
+        cursor.moveToFirst();
+        for (int i = 0; i < cursor.getCount(); i++) {
+            Income tmp = new Income(
+                    cursor.getInt(0),
+                    MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
+                    cursor.getInt(4),
+                    cursor.getString(5),
+                    cursor.getString(6)
+            );
+            cursor.moveToNext();
+            incomeList.add(tmp);
+        }
+        return incomeList;
+    }
     /**
      * CursorをExpensesリストに変換する関数
      * @param cursor Cursor
@@ -294,6 +350,26 @@ public class MyDbManager {
             expensesList.add(tmp);
         }
         return expensesList;
+    }
+
+    private static String buildWhereClauseByDate(Integer year, Integer month, Integer day, String yearColumn, String monthColumn, String dayColumn) {
+        ArrayList<String> selectionParts = new ArrayList<>();
+
+        if (year != null) {
+            selectionParts.add(yearColumn + " = " + year);
+        }
+        if (month != null) {
+            selectionParts.add(monthColumn + " = " + month);
+        }
+        if (day != null) {
+            selectionParts.add(dayColumn + " = " + day);
+        }
+        // 検索項目をいい感じに変換してSQLiteで検索できるようにする
+        String selection = null;
+        if (!selectionParts.isEmpty()) {
+            selection = String.join(" AND ", selectionParts);
+        }
+        return selection;
     }
 
     /**

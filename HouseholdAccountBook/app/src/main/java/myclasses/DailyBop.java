@@ -7,32 +7,44 @@ import java.util.List;
 ///
 public class DailyBop {
     // TODO 支出は支払日と購入日の二種類に分けて
-    private int _amount;
+    private int _purchaseAmount;    // 収入+購入金額
+    private int _paymentAmount;     // 収入+支払金額
     private final List<Income> _incomeList;
-    private final List<Expenses> _expensesList;
+    private final List<Expenses> _purchaseList;
+    private final List<Expenses> _paymentList;
 
-    public DailyBop(List<Income> incomeList, List<Expenses> expensesList) {
+    public DailyBop(List<Income> incomeList, List<Expenses> purchaseList, List<Expenses> paymentList) {
         this._incomeList = incomeList;
-        this._expensesList = expensesList;
+        this._purchaseList = purchaseList;
+        this._paymentList = paymentList;
 
-        this._amount = 0;
+        this._purchaseAmount = 0;
+        this._paymentAmount = 0;
         for (int i = 0; i < this._incomeList.size(); i++) {
-            this._amount += Math.abs(this._incomeList.get(i).getAmount());
+            this._purchaseAmount += Math.abs(this._incomeList.get(i).getAmount());
+            this._paymentAmount += Math.abs(this._incomeList.get(i).getAmount());
         }
-        for (int i = 0; i < this._expensesList.size(); i++) {
-            this._amount -= Math.abs(this._expensesList.get(i).getAmount());
+        for (int i = 0; i < this._purchaseList.size(); i++) {
+            this._purchaseAmount -= Math.abs(this._purchaseList.get(i).getAmount());
+        }
+        for (int i = 0; i < this._paymentList.size(); i++) {
+            this._paymentAmount -= Math.abs(this._paymentList.get(i).getAmount());
         }
     }
 
-    public int getAmount() {
-        return this._amount;
+    public int getPurchaseAmount() {
+        return this._purchaseAmount;
     }
+
+    public int getPaymentAmount() { return this._paymentAmount; }
 
     public List<Income> getIncomeList() {
         return this._incomeList;
     }
 
-    public List<Expenses> getExpensesList() {
-        return this._expensesList;
+    public List<Expenses> getPurchaseList() {
+        return this._purchaseList;
     }
+
+    public List<Expenses> getPaymentList() { return this._paymentList; }
 }

@@ -117,6 +117,11 @@ public class IncomeInputFragment extends Fragment {
             }
         });
     }
+
+    /**
+     * 日付を＋1するボタンが押された時のイベントハンドラ関数
+     * @param view View
+     */
     private void setDateDownButtonEvent(View view){
         ImageButton dateUpButton = view.findViewById(R.id.inc_date_down_button);
         dateUpButton.setOnClickListener(new View.OnClickListener(){
@@ -129,6 +134,9 @@ public class IncomeInputFragment extends Fragment {
         });
     }
 
+    /**
+     * 保存ボタンのイベントハンドラ関数
+     */
     private void setAddButtonEvent() {
         addButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -147,7 +155,14 @@ public class IncomeInputFragment extends Fragment {
         });
     }
     private void updateDateTextView(){
-        dateTextView.setText(MyStdlib.convertCalendarToString(currentDate));
+        dateTextView.setText(
+                MyStdlib.convertCalendarToString(
+                        currentDate.get(Calendar.YEAR),
+                        currentDate.get(Calendar.MONTH),
+                        currentDate.get(Calendar.DATE),
+                        currentDate.get(Calendar.DAY_OF_WEEK)
+                )
+        );
     }
     private void setMemoEditTextEvent() {
         memoEditText.addTextChangedListener(new TextWatcher() {
@@ -182,6 +197,10 @@ public class IncomeInputFragment extends Fragment {
         });
     }
 
+    /**
+     * 保存ボタンが押せる状態かどうか判断して変更する関数
+     * メモが未入力だったり，金額が未入力だったら押せないようにする．
+     */
     private void changeToTrueAddButtonEnabled() {
         if (amountEditText.getText().toString().isEmpty()) {
             addButton.setEnabled(false);

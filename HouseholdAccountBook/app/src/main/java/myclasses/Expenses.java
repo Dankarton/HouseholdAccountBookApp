@@ -3,16 +3,19 @@ package myclasses;
 import android.content.ContentValues;
 
 import com.example.householdaccountbook.MyOpenHelper;
+import com.example.householdaccountbook.MyStdlib;
 
 import java.util.Calendar;
 
 public class Expenses extends BOP {
     private final int paymentMethodId;
     private final Calendar paymentDate;
+    private final boolean isSameDay;
     public Expenses(int id, Calendar date, int amount, String memo, String category, int paymentMethodId, Calendar paymentDate) {
         super(id, date, amount, memo, category);
         this.paymentMethodId = paymentMethodId;
         this.paymentDate = paymentDate;
+        this.isSameDay = MyStdlib.isSameDay(this.getDate(), this.paymentDate);
     }
     public static ContentValues convertContentValues(int _year, int _month, int _day, int _amount, String _memo, String _category, int _paymentMethodId, int pYear, int pMonth, int pDay) {
         ContentValues values = new ContentValues();
@@ -27,6 +30,9 @@ public class Expenses extends BOP {
         values.put(MyOpenHelper.COLUMN_PAYMENT_MONTH, pMonth);
         values.put(MyOpenHelper.COLUMN_PAYMENT_DAY, pDay);
         return values;
+    }
+    public boolean isSameDay() {
+        return this.isSameDay;
     }
 
     public int getPaymentMethodId() {

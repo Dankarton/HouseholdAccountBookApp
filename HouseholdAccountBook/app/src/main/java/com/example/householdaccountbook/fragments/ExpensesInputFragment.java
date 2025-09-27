@@ -181,7 +181,14 @@ public class ExpensesInputFragment extends Fragment {
         });
     }
     private void updateDateTextView(){
-        dateTextView.setText(MyStdlib.convertCalendarToString(currentDate));
+        dateTextView.setText(
+                MyStdlib.convertCalendarToString(
+                        currentDate.get(Calendar.YEAR),
+                        currentDate.get(Calendar.MONTH),
+                        currentDate.get(Calendar.DATE),
+                        currentDate.get(Calendar.DAY_OF_WEEK)
+                )
+        );
     }
     private void changeToTrueAddButtonEnabled() {
         Log.d("MyTestLog", "" + amountEditText.getText().toString().isEmpty());
