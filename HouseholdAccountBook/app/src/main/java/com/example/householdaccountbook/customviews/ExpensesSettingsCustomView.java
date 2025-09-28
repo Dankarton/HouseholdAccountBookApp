@@ -69,9 +69,9 @@ public class ExpensesSettingsCustomView extends ConstraintLayout {
     public void setData(Expenses expenses){
         myExpenses = expenses;
         categoryTextView.setText(myExpenses.getCategory());
-//        String formattedDate = myExpenses.getYear() + "/" + myExpenses.getMonth() + "/" + myExpenses.getDay();
-//        dateTextView.setText(formattedDate);
-        dateTextView.setText(String.valueOf(myExpenses.getPaymentMethodId()));
+        String formattedDate = myExpenses.getYear() + "/" + myExpenses.getMonth() + "/" + myExpenses.getDay();
+        dateTextView.setText(formattedDate);
+//        dateTextView.setText(String.valueOf(myExpenses.getPaymentMethodId()));
         memoTextView.setText(myExpenses.getMemo());
         // 支出はマイナス記号を付けて視覚的に見やすくする
         String strAmount = "-" + myExpenses.getAmount();

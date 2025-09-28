@@ -1,5 +1,9 @@
 package myclasses;
 
+import android.os.Debug;
+import android.util.Log;
+
+import java.util.ArrayList;
 import java.util.List;
 
 ///
@@ -7,13 +11,19 @@ import java.util.List;
 ///
 public class DailyBop {
     // TODO 支出は支払日と購入日の二種類に分けて
+    private final int year;
+    private final int month;
+    private final int date;
     private int _purchaseAmount;    // 収入+購入金額
     private int _paymentAmount;     // 収入+支払金額
     private final List<Income> _incomeList;
     private final List<Expenses> _purchaseList;
     private final List<Expenses> _paymentList;
 
-    public DailyBop(List<Income> incomeList, List<Expenses> purchaseList, List<Expenses> paymentList) {
+    public DailyBop(int year, int month, int date, List<Income> incomeList, List<Expenses> purchaseList, List<Expenses> paymentList) {
+        this.year = year;
+        this.month = month;
+        this.date = date;
         this._incomeList = incomeList;
         this._purchaseList = purchaseList;
         this._paymentList = paymentList;
@@ -31,7 +41,9 @@ public class DailyBop {
             this._paymentAmount -= Math.abs(this._paymentList.get(i).getAmount());
         }
     }
-
+    public int getYear() { return this.year; }
+    public int getMonth() { return this.month; }
+    public int getDate() { return this.date; }
     public int getPurchaseAmount() {
         return this._purchaseAmount;
     }
@@ -47,4 +59,12 @@ public class DailyBop {
     }
 
     public List<Expenses> getPaymentList() { return this._paymentList; }
+
+    public List<BalanceOfPayments> getBopList() {
+        List<BalanceOfPayments> bopList = new ArrayList<>();
+        bopList.addAll(this._incomeList);
+        bopList.addAll(this._paymentList);
+        bopList.addAll(this._purchaseList);
+        return bopList;
+    }
 }

@@ -1,6 +1,8 @@
 package com.example.householdaccountbook.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +11,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.householdaccountbook.DailyRecordAdapter;
 import com.example.householdaccountbook.MyDbManager;
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
+import com.example.householdaccountbook.TransactionDateAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,8 +32,10 @@ public class TransactionDataListFragment extends Fragment {
     RecyclerView dailyRecordRecyclerView;
     TextView monthTextView;
     Calendar currentDate;
+    private TransactionDateAdapter transactionDateAdapter;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
     }
 
@@ -40,10 +47,19 @@ public class TransactionDataListFragment extends Fragment {
     }
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        Log.d("TransactionDataListFragment", "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
+        monthTextView = view.findViewById(R.id.month_text_view);
         dailyRecordRecyclerView = view.findViewById(R.id.transaction_list_recycler_view);
+        this.transactionDateAdapter = new TransactionDateAdapter();
+        this.transactionDateAdapter.setData(new ArrayList<>());
+        this.dailyRecordRecyclerView.setAdapter(this.transactionDateAdapter);
+        this.dailyRecordRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        setMonthUpButtonEvent(view);
+        setMonthDownButtonEvent(view);
         currentDate = Calendar.getInstance();
-
+        updateMonthTextView();
+        updateDailyData();
     }
     private void setMonthUpButtonEvent(View view) {
         ImageButton monthUpButton = view.findViewById(R.id.month_up_button);
@@ -51,8 +67,20 @@ public class TransactionDataListFragment extends Fragment {
             @Override
             public void onClick(View view) {
                   currentDate.add(Calendar.MONTH, 1);
+                  updateDailyData();
                   updateMonthTextView();
 
+            }
+        });
+    }
+    private void setMonthDownButtonEvent(View view) {
+        ImageButton monthDownButton = view.findViewById(R.id.month_down_button);
+        monthDownButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                currentDate.add(Calendar.MONTH, -1);
+                updateDailyData();
+                updateMonthTextView();
             }
         });
     }
@@ -66,16 +94,19 @@ public class TransactionDataListFragment extends Fragment {
                 )
         );
     }
+    @SuppressLint("NotifyDataSetChanged")
+    private void updateDailyData() {
+        transactionDateAdapter.setData(loadCurrentMonthDailyData(this.currentDate));
+        transactionDateAdapter.notifyDataSetChanged();
+    }
     private List<DailyBop> loadCurrentMonthDailyData(Calendar date) {
-        ArrayList<Income> incomeList = MyDbManager.getIncomeDataByDate(date.get(Calendar.YEAR), date.get(Calendar.MONTH), null);
-        ArrayList<Expenses> expensesList = MyDbManager.getExpensesByPurchaseOrPaymentDate(date.get(Calendar.YEAR), date.get(Calendar.MONTH), null);
-        ArrayList<Expenses> purchaseList = new ArrayList<>();
-        ArrayList<Expenses> paymentList = new ArrayList<>();
-        // TODO 購入日と支払日で支出のグループを分ける処理．たぶんExpensesクラスに現在の日付と購入日(もしくは支払日)が一致するかどうか判定するメソッドがあった方がいい．
-        for (int i = 0; i < expensesList.size(); i++) {
-            if (expensesList.get(i).isSameDay()) {
-
+        List<DailyBop> dailyBopList = new ArrayList<>();
+        for (int i = 1; i <= date.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
+            DailyBop dailyBop = MyDbManager.getDailyData(date.get(Calendar.YEAR), date.get(Calendar.MONTH), i);
+            if (dailyBop != null) {
+                dailyBopList.add(dailyBop);
             }
         }
+        return dailyBopList;
     }
 }

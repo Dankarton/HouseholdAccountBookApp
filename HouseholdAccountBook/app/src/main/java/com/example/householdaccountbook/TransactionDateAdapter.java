@@ -12,38 +12,39 @@ import com.example.householdaccountbook.customviews.DailyRecordCustomView;
 import java.util.List;
 
 import myclasses.DailyBop;
-import myclasses.Income;
 
 public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<Object> dailyList;
+    private List<DailyBop> dailyBopList;
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.custom_view_daily_record, parent, false);
-        return new DailyViewHolder(view);
+        return new TransactionViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
+        ((TransactionViewHolder) holder).bind(dailyBopList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return this.dailyBopList.size();
+    }
+    public void setData(List<DailyBop> dailyList) {
+        this.dailyBopList = dailyList;
     }
 
     //
-    static class DailyViewHolder extends RecyclerView.ViewHolder {
+    static class TransactionViewHolder extends RecyclerView.ViewHolder {
         private final DailyRecordCustomView dailyView;
-        public DailyViewHolder(@NonNull View itemView) {
+        public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.dailyView = (DailyRecordCustomView) itemView;
+            this.dailyView = new DailyRecordCustomView(itemView.getContext());
         }
-
-        public void setData(DailyBop dailyBop) {
-
+        public void bind(DailyBop dailyBop) {
+            this.dailyView.setData(dailyBop);
         }
     }
 }

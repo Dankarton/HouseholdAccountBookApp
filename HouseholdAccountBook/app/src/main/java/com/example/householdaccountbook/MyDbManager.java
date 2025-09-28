@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import myclasses.DailyBop;
 import myclasses.Expenses;
 import myclasses.Income;
 import myclasses.PaymentMethod;
@@ -271,6 +272,32 @@ public class MyDbManager {
         ArrayList<Income> incomesList = toIncomeListBy(cursor);
         cursor.close();
         return incomesList;
+    }
+    public static DailyBop getDailyData(int year, int month, int day) {
+        ArrayList<Expenses> expensesList = MyDbManager.getExpensesByPurchaseOrPaymentDate(year, month, day);
+        ArrayList<Income> incomeList = MyDbManager.getIncomeDataByDate(year, month, day);
+        // 収入も支出もない場合
+        if (expensesList.isEmpty() && incomeList.isEmpty()) {
+            return null;
+        }
+        ArrayList<Expenses> purchaseList = new ArrayList<>();
+        ArrayList<Expenses> paymentList = new ArrayList<>();
+        for (int i = 0; i < expensesList.size(); i++) {
+            Expenses exp = expensesList.get(i);
+            // 購入日と支払日が同じとき
+            if (exp.isSameDay()) {
+                paymentList.add(exp);
+            }
+            // 対象日が支払日の時
+            else if (MyStdlib.isSameDay(exp.getPaymentDate(), MyStdlib.convertToCalendar(year, month, day))) {
+                paymentList.add(exp);
+            }
+            // 購入日だけと支払日じゃない時
+            else {
+                purchaseList.add(exp);
+            }
+        }
+        return new DailyBop(year, month ,day, incomeList, purchaseList, paymentList);
     }
 
     public static ArrayList<PaymentMethod> getAllPaymentMethodData() {

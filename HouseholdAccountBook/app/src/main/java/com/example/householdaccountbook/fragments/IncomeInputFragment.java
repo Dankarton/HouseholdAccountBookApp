@@ -145,7 +145,7 @@ public class IncomeInputFragment extends Fragment {
                 if (!MyStdlib.canConvertToInteger(inpAmountText)) { return; }
                 int amount = Integer.parseInt(inpAmountText);
                 int year = currentDate.get(Calendar.YEAR);
-                int month = currentDate.get(Calendar.MONTH) + 1;
+                int month = currentDate.get(Calendar.MONTH);
                 int day = currentDate.get(Calendar.DAY_OF_MONTH);
                 String memo = memoEditText.getText().toString();
                 String category = (String) categorySpinner.getSelectedItem();

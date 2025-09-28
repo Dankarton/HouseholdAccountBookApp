@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
                 else if (item.getItemId() == R.id.navigation_calendar) {
-                    replaceFragment(new CalendarFragment());
+//                    replaceFragment(new CalendarFragment());
+                    replaceFragment(new TransactionDataListFragment());
                     return true;
                 }
                 else if (item.getItemId() == R.id.navigation_data) {
