@@ -42,9 +42,7 @@ public class DailyRecordCustomView extends ConstraintLayout {
         this.dailyRecordLinearLayout = layout.findViewById(R.id.daily_record_linear_layout);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     public void setData(DailyBop dailyBop) {
-        Log.d("DailyRecordCustomView", "setData");
         this.dailyBop = dailyBop;
         setDate();
         setAmount();

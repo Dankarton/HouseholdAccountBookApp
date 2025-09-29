@@ -35,7 +35,7 @@ public class InputMotherFragment extends Fragment {
         viewPager = view.findViewById(R.id.input_fragment_view_pager);
         viewPager.setAdapter(adapter);
         TabLayout tabLayout = view.findViewById(R.id.expenses_or_income_tab);
-        String[] tabTitleArray = {"収入", "支出"};
+        String[] tabTitleArray = {"支出", "収入"};
         new TabLayoutMediator(tabLayout, viewPager, ((tab, position) -> tab.setText(tabTitleArray[position]))).attach();
         viewPager.setUserInputEnabled(false);
     }

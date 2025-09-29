@@ -3,6 +3,7 @@
     <style name="Base.Theme.HouseholdAccountBook" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="bottomNavigationStyle"></item>
     </style>
 
     <style name="Theme.HouseholdAccountBook" parent="Base.Theme.HouseholdAccountBook" />

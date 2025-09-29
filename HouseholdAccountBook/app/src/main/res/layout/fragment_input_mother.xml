@@ -12,6 +12,7 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/expenses_or_income_tab"
+            style="@style/NavTabLayoutStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
