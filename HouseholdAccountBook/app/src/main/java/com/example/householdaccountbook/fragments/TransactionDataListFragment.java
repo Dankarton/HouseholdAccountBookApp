@@ -47,19 +47,23 @@ public class TransactionDataListFragment extends Fragment {
     }
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.d("TransactionDataListFragment", "onViewCreated");
+        Log.d("TransactionDataListFragment", "onViewCreated start");
         super.onViewCreated(view, savedInstanceState);
         monthTextView = view.findViewById(R.id.month_text_view);
         dailyRecordRecyclerView = view.findViewById(R.id.transaction_list_recycler_view);
         this.transactionDateAdapter = new TransactionDateAdapter();
         this.transactionDateAdapter.setData(new ArrayList<>());
+        this.transactionDateAdapter.notifyDataSetChanged();
         this.dailyRecordRecyclerView.setAdapter(this.transactionDateAdapter);
+        Log.d("TransactionDataListFragment", "Adapter set to inner RecyclerView: " + transactionDateAdapter);
         this.dailyRecordRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        Log.d("TransactionDataListFragment", "Setting adapter for RecyclerView id=" + dailyRecordRecyclerView.getId());
         setMonthUpButtonEvent(view);
         setMonthDownButtonEvent(view);
         currentDate = Calendar.getInstance();
         updateMonthTextView();
         updateDailyData();
+        Log.d("TransactionDataListFragment", "onViewCreated end");
     }
     private void setMonthUpButtonEvent(View view) {
         ImageButton monthUpButton = view.findViewById(R.id.month_up_button);

@@ -3,7 +3,9 @@ package com.example.householdaccountbook.customviews;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,10 +21,13 @@ import java.util.List;
 
 import myclasses.BalanceOfPayments;
 import myclasses.DailyBop;
+import myclasses.Expenses;
+import myclasses.Income;
 
 public class DailyRecordCustomView extends ConstraintLayout {
     private TextView dateTextView;
-    private RecyclerView dailyRecyclerView;
+    private TextView amountTextView;
+    private LinearLayout dailyRecordLinearLayout;
     private DailyRecordAdapter adapter;
     private DailyBop dailyBop;
 
@@ -32,12 +37,9 @@ public class DailyRecordCustomView extends ConstraintLayout {
     }
     public void init(Context context) {
         View layout = ConstraintLayout.inflate(context, R.layout.custom_view_daily_record, this);
-        dateTextView = layout.findViewById(R.id.date_title);
-        dailyRecyclerView = layout.findViewById(R.id.day_data_recyclerview);
-        this.adapter = new DailyRecordAdapter();
-        adapter.setData(new ArrayList<BalanceOfPayments>());
-        dailyRecyclerView.setAdapter(adapter);
-        dailyRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        this.dateTextView = layout.findViewById(R.id.date_title);
+        this.amountTextView = layout.findViewById(R.id.amount_text_view);
+        this.dailyRecordLinearLayout = layout.findViewById(R.id.daily_record_linear_layout);
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -45,11 +47,42 @@ public class DailyRecordCustomView extends ConstraintLayout {
         Log.d("DailyRecordCustomView", "setData");
         this.dailyBop = dailyBop;
         setDate();
-        adapter.setData(dailyBop.getBopList());
-        adapter.notifyDataSetChanged();
+        setAmount();
+        setDataToLinearLayout(this.dailyBop);
+    }
+    private void setDataToLinearLayout(DailyBop bopData) {
+        this.dailyRecordLinearLayout.removeAllViews();
+        List<BalanceOfPayments> dataList = bopData.getBopList();
+        for (int i = 0; i < dataList.size(); i++) {
+            BalanceOfPayments bop = dataList.get(i);
+            if (bop instanceof Income) {
+                IncomeSettingsCustomView incView = new IncomeSettingsCustomView(this.getContext());
+                incView.setData((Income) bop);
+                this.dailyRecordLinearLayout.addView(incView);
+            }
+            else if (bop instanceof Expenses) {
+                ExpensesSettingsCustomView expView = new ExpensesSettingsCustomView(this.getContext());
+                expView.setData((Expenses) bop);
+                this.dailyRecordLinearLayout.addView(expView);
+            }
+        }
     }
     private void setDate() {
         String formattedDate = String.valueOf(this.dailyBop.getDate()) + "日";
         this.dateTextView.setText(formattedDate);
+    }
+    private void setAmount() {
+        int paymentAmount = this.dailyBop.getPaymentAmount();
+        String formattedAmount = String.valueOf(paymentAmount);
+        this.amountTextView.setText(formattedAmount);
+        if (paymentAmount > 0) {
+            this.amountTextView.setTextColor(getContext().getColor(R.color.income_text_color));
+        }
+        else if(paymentAmount < 0) {
+            this.amountTextView.setTextColor(getContext().getColor(R.color.expenses_text_color));
+        }
+        else {
+            this.amountTextView.setTextColor(getContext().getColor(R.color.white));
+        }
     }
 }

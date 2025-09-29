@@ -1,8 +1,10 @@
 package com.example.householdaccountbook;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,13 +20,13 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.custom_view_daily_record, parent, false);
+        DailyRecordCustomView view = new DailyRecordCustomView(parent.getContext());
         return new TransactionViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Log.d("TransactionDateAdapter", "onBindViewHolder(), position = " + position);
         ((TransactionViewHolder) holder).bind(dailyBopList.get(position));
     }
 
@@ -32,16 +34,19 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public int getItemCount() {
         return this.dailyBopList.size();
     }
+
     public void setData(List<DailyBop> dailyList) {
+        Log.d("TransactionDateAdapter", "setData");
         this.dailyBopList = dailyList;
+
     }
 
     //
     static class TransactionViewHolder extends RecyclerView.ViewHolder {
         private final DailyRecordCustomView dailyView;
-        public TransactionViewHolder(@NonNull View itemView) {
+        public TransactionViewHolder(@NonNull DailyRecordCustomView itemView) {
             super(itemView);
-            this.dailyView = new DailyRecordCustomView(itemView.getContext());
+            this.dailyView = itemView;
         }
         public void bind(DailyBop dailyBop) {
             this.dailyView.setData(dailyBop);
