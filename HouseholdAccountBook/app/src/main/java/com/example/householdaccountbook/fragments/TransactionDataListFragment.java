@@ -92,7 +92,7 @@ public class TransactionDataListFragment extends Fragment {
         monthTextView.setText(
                 MyStdlib.convertCalendarToString(
                         currentDate.get(Calendar.YEAR),
-                        currentDate.get(Calendar.MONTH) + 1,
+                        currentDate.get(Calendar.MONTH),
                         null,
                         null
                 )

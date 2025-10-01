@@ -17,7 +17,7 @@ public class MyStdlib {
             formatedDate += String.valueOf(year) + "年";
         }
         if (month != null) {
-            formatedDate += String.valueOf(month) + "月";
+            formatedDate += String.valueOf(month + 1) + "月";
 
         }
         if (day != null) {

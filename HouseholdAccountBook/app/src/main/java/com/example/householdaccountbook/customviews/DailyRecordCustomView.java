@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ public class DailyRecordCustomView extends ConstraintLayout {
     private TextView dateTextView;
     private TextView amountTextView;
     private LinearLayout dailyRecordLinearLayout;
+    private ImageView listStateImageView;
     private DailyRecordAdapter adapter;
     private DailyBop dailyBop;
 
@@ -39,7 +41,13 @@ public class DailyRecordCustomView extends ConstraintLayout {
         View layout = ConstraintLayout.inflate(context, R.layout.custom_view_daily_record, this);
         this.dateTextView = layout.findViewById(R.id.date_title);
         this.amountTextView = layout.findViewById(R.id.amount_text_view);
+        this.listStateImageView = layout.findViewById(R.id.list_sate_view);
         this.dailyRecordLinearLayout = layout.findViewById(R.id.daily_record_linear_layout);
+
+        setListVisibilityButtonEvent(layout);
+        // リストを非表示
+        this.dailyRecordLinearLayout.setVisibility(View.GONE);
+        this.listStateImageView.setImageResource(R.drawable.arrow_drop_down_24px);
     }
 
     public void setData(DailyBop dailyBop) {
@@ -82,5 +90,20 @@ public class DailyRecordCustomView extends ConstraintLayout {
         else {
             this.amountTextView.setTextColor(getContext().getColor(R.color.white));
         }
+    }
+    private void setListVisibilityButtonEvent(View view) {
+        view.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                if (dailyRecordLinearLayout.getVisibility() == View.VISIBLE) {
+                    dailyRecordLinearLayout.setVisibility(View.GONE);
+                    listStateImageView.setImageResource(R.drawable.arrow_drop_down_24px);
+                }
+                else {
+                    dailyRecordLinearLayout.setVisibility(View.VISIBLE);
+                    listStateImageView.setImageResource(R.drawable.arrow_drop_up_24px);
+                }
+            }
+        });
     }
 }
