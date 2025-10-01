@@ -18,6 +18,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageButton
+        android:id="@+id/drop_down_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@null"
+        android:padding="2dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/arrow_drop_down_24px"
+        app:layout_constraintStart_toEndOf="@+id/date_title"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <TextView
         android:id="@+id/amount_text_view"
         android:layout_width="wrap_content"

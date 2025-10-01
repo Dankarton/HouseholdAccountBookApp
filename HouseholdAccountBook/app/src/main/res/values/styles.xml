@@ -7,8 +7,8 @@
         <item name="itemIconTint">@color/bottom_nav_item_color</item>
         <item name="itemTextColor">@color/bottom_nav_item_color</item>
         <!-- 選択時背景色 -->
-        <item name="itemBackground">@color/bottom_nav_item_background</item>
-
+<!--        <item name="itemBackground">@color/bottom_nav_item_background</item>-->
+        <item name="itemBackground">@drawable/bottom_nav_ripple</item>
         <item name="rippleColor">#333333</item>
     </style>
     <style name="NavTabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
