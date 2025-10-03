@@ -78,13 +78,15 @@ public class DailyRecordCustomView extends ConstraintLayout {
         this.dateTextView.setText(formattedDate);
     }
     private void setAmount() {
-        int paymentAmount = this.dailyBop.getPaymentAmount();
-        String formattedAmount = String.valueOf(paymentAmount);
+        int paymentAmount = Math.abs(this.dailyBop.getPaymentAmount());
+        int incomeAmount = this.dailyBop.getIncomeAmount();
+        int totalAmount = incomeAmount - paymentAmount;
+        String formattedAmount = String.valueOf(totalAmount);
         this.amountTextView.setText(formattedAmount);
-        if (paymentAmount > 0) {
+        if (totalAmount > 0) {
             this.amountTextView.setTextColor(getContext().getColor(R.color.income_text_color));
         }
-        else if(paymentAmount < 0) {
+        else if(totalAmount < 0) {
             this.amountTextView.setTextColor(getContext().getColor(R.color.expenses_text_color));
         }
         else {

@@ -56,21 +56,22 @@
         app:layout_constraintTop_toBottomOf="@+id/month_text_view">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:text="収入"
                 android:textSize="14sp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/income_amount_text"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="48950円"
@@ -85,21 +86,22 @@
             android:background="#CCCCCC" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:text="支出"
                 android:textSize="14sp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/purchase_amount_text"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="1950円"
@@ -113,21 +115,22 @@
             android:background="#CCCCCC" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:text="合計"
                 android:textSize="14sp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/total_amount_text"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="47000円"
@@ -141,8 +144,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:background="@color/item_background"
         android:orientation="horizontal"
         android:weightSum="2"
@@ -151,7 +154,7 @@
         app:layout_constraintTop_toBottomOf="@+id/bop_brief_linear_layout">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -165,6 +168,7 @@
                 android:textSize="14sp" />
 
             <TextView
+                android:id="@+id/payment_amount_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -179,7 +183,7 @@
             android:background="#CCCCCC" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -196,7 +200,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="47000円"
+                android:text="-円"
                 android:textSize="16sp" />
         </LinearLayout>
     </LinearLayout>

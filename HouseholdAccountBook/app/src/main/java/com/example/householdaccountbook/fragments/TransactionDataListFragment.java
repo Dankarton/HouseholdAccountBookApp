@@ -31,6 +31,10 @@ import myclasses.Income;
 public class TransactionDataListFragment extends Fragment {
     RecyclerView dailyRecordRecyclerView;
     TextView monthTextView;
+    TextView incomeAmountTextView;
+    TextView purchaseAmountTextView;
+    TextView totalAmountTextView;
+    TextView paymentAmountTextView;
     Calendar currentDate;
     private TransactionDateAdapter transactionDateAdapter;
     @Override
@@ -49,8 +53,12 @@ public class TransactionDataListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         Log.d("TransactionDataListFragment", "onViewCreated start");
         super.onViewCreated(view, savedInstanceState);
-        monthTextView = view.findViewById(R.id.month_text_view);
-        dailyRecordRecyclerView = view.findViewById(R.id.transaction_list_recycler_view);
+        this.monthTextView = view.findViewById(R.id.month_text_view);
+        this.dailyRecordRecyclerView = view.findViewById(R.id.transaction_list_recycler_view);
+        this.incomeAmountTextView = view.findViewById(R.id.income_amount_text);
+        this.purchaseAmountTextView = view.findViewById(R.id.purchase_amount_text);
+        this.totalAmountTextView = view.findViewById(R.id.total_amount_text);
+        this.paymentAmountTextView = view.findViewById(R.id.payment_amount_text);
         this.transactionDateAdapter = new TransactionDateAdapter();
         this.transactionDateAdapter.setData(new ArrayList<>());
         this.transactionDateAdapter.notifyDataSetChanged();
@@ -100,9 +108,26 @@ public class TransactionDataListFragment extends Fragment {
     }
     @SuppressLint("NotifyDataSetChanged")
     private void updateDailyData() {
-        transactionDateAdapter.setData(loadCurrentMonthDailyData(this.currentDate));
+        List<DailyBop> bopList = loadCurrentMonthDailyData(this.currentDate);
+        int incomeAmount = 0;
+        int purchaseAmount = 0;
+        int totalAmount = 0;
+        int paymentAmount = 0;
+        for (int i = 0; i < bopList.size(); i++) {
+            incomeAmount += bopList.get(i).getIncomeAmount();
+            purchaseAmount += Math.abs(bopList.get(i).getPurchaseAmount());
+            paymentAmount += Math.abs(bopList.get(i).getPaymentAmount());
+        }
+        totalAmount = incomeAmount - purchaseAmount;
+        this.incomeAmountTextView.setText(incomeAmount + "円");
+        this.purchaseAmountTextView.setText(purchaseAmount + "円");
+        this.totalAmountTextView.setText(totalAmount + "円");
+        this.paymentAmountTextView.setText(paymentAmount + "円");
+
+        transactionDateAdapter.setData(bopList);
         transactionDateAdapter.notifyDataSetChanged();
     }
+
     private List<DailyBop> loadCurrentMonthDailyData(Calendar date) {
         List<DailyBop> dailyBopList = new ArrayList<>();
         for (int i = 1; i <= date.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {

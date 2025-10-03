@@ -5,7 +5,32 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="?attr/actionBarSize">
+    android:paddingTop="?attr/actionBarSize"
+    android:background="#1A1A1A">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#1A1A1A"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+        <ImageView
+            android:id="@+id/toolbar_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/edit_24px"
+            android:layout_gravity="start|center_vertical"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="start"
+            android:paddingStart="8dp"
+            android:text="家計簿"
+            android:textSize="18sp"
+            android:layout_gravity="start"/>
+    </com.google.android.material.appbar.MaterialToolbar>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav_view"
@@ -26,7 +51,7 @@
         app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/top_tool_bar">
 
     </FrameLayout>
 
