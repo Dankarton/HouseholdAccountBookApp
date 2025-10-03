@@ -286,6 +286,7 @@ public class MyDbManager {
             Expenses exp = expensesList.get(i);
             // 購入日と支払日が同じとき
             if (exp.isSameDay()) {
+                purchaseList.add(exp);
                 paymentList.add(exp);
             }
             // 対象日が支払日の時

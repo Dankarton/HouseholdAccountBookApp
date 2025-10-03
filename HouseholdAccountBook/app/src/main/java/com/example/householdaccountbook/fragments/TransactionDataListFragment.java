@@ -123,7 +123,6 @@ public class TransactionDataListFragment extends Fragment {
         this.purchaseAmountTextView.setText(purchaseAmount + "円");
         this.totalAmountTextView.setText(totalAmount + "円");
         this.paymentAmountTextView.setText(paymentAmount + "円");
-
         transactionDateAdapter.setData(bopList);
         transactionDateAdapter.notifyDataSetChanged();
     }

@@ -38,42 +38,42 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
         linearLayout = view.findViewById(R.id.expenses_list_linearlayout);
-        ArrayList<Expenses> expensesList = MyDbManager.getAllExpensesData();
-        ArrayList<Income> incomeList = MyDbManager.getAllIncomeData();
-        int expPointer = 0;
-        int incPointer = 0;
-        for (int i = 0; i < expensesList.size() + incomeList.size(); i++){
-            if (incPointer >= incomeList.size()){
-                ExpensesSettingsCustomView expView = new ExpensesSettingsCustomView(view.getContext());
-                expView.setData(expensesList.get(expPointer));
-                linearLayout.addView(expView);
-                expPointer++;
-                continue;
-            }
-            if (expPointer >= expensesList.size()) {
-                IncomeSettingsCustomView incView = new IncomeSettingsCustomView(view.getContext());
-                incView.setData(incomeList.get(incPointer));
-                linearLayout.addView(incView);
-                incPointer++;
-                continue;
-            }
-            Income incTmp = incomeList.get(incPointer);
-            int incDateNum = incTmp.getYear() * 10000 + incTmp.getMonth() * 100 + incTmp.getDay();
-            Expenses expTmp = expensesList.get(expPointer);
-            int expDateNum = expTmp.getYear() * 10000 + expTmp.getMonth() * 100 + expTmp.getDay();
-            if (expDateNum < incDateNum){
-                ExpensesSettingsCustomView expView = new ExpensesSettingsCustomView(view.getContext());
-                expView.setData(expensesList.get(expPointer));
-                linearLayout.addView(expView);
-                expPointer++;
-            }
-            else {
-                IncomeSettingsCustomView incView = new IncomeSettingsCustomView(view.getContext());
-                incView.setData(incomeList.get(incPointer));
-                linearLayout.addView(incView);
-                incPointer++;
-            }
+//        ArrayList<Expenses> expensesList = MyDbManager.getAllExpensesData();
+//        ArrayList<Income> incomeList = MyDbManager.getAllIncomeData();
+//        int expPointer = 0;
+//        int incPointer = 0;
+//        for (int i = 0; i < expensesList.size() + incomeList.size(); i++){
+//            if (incPointer >= incomeList.size()){
+//                ExpensesSettingsCustomView expView = new ExpensesSettingsCustomView(view.getContext());
+//                expView.setData(expensesList.get(expPointer));
+//                linearLayout.addView(expView);
+//                expPointer++;
+//                continue;
+//            }
+//            if (expPointer >= expensesList.size()) {
+//                IncomeSettingsCustomView incView = new IncomeSettingsCustomView(view.getContext());
+//                incView.setData(incomeList.get(incPointer));
+//                linearLayout.addView(incView);
+//                incPointer++;
+//                continue;
+//            }
+//            Income incTmp = incomeList.get(incPointer);
+//            int incDateNum = incTmp.getYear() * 10000 + incTmp.getMonth() * 100 + incTmp.getDay();
+//            Expenses expTmp = expensesList.get(expPointer);
+//            int expDateNum = expTmp.getYear() * 10000 + expTmp.getMonth() * 100 + expTmp.getDay();
+//            if (expDateNum < incDateNum){
+//                ExpensesSettingsCustomView expView = new ExpensesSettingsCustomView(view.getContext());
+//                expView.setData(expensesList.get(expPointer));
+//                linearLayout.addView(expView);
+//                expPointer++;
+//            }
+//            else {
+//                IncomeSettingsCustomView incView = new IncomeSettingsCustomView(view.getContext());
+//                incView.setData(incomeList.get(incPointer));
+//                linearLayout.addView(incView);
+//                incPointer++;
+//            }
 
-        }
+//        }
     }
 }

@@ -24,6 +24,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+            <com.example.householdaccountbook.customviews.SettingMenuButtonView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:titleText="支出カテゴリ追加・編集"/>
+            <com.example.householdaccountbook.customviews.SettingMenuButtonView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:titleText="収入カテゴリ追加・編集"/>
+            <com.example.householdaccountbook.customviews.SettingMenuButtonView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:titleText="支払方法追加・編集"/>
             </LinearLayout>
         </ScrollView>
 

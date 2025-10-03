@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
                 else if (item.getItemId() == R.id.navigation_data) {
+                    replaceFragment(new ChartFragment());
 //                    dateTextView.setText("Data");
                     return true;
                 }
