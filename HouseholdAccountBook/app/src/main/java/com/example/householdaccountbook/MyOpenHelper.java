@@ -12,6 +12,10 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     public static final String EXPENSES_TABLE_NAME = "ExpensesDb";
     // 収入テーブル
     public static final String INCOME_TABLE_NAME = "IncomeDb";
+    // 支出カテゴリテーブル
+    public static final String EXPENSES_CATEGORY_TABLE_NAME = "ExpCategoryDb";
+    // 収入カテゴリテーブル
+    public static final String INCOME_CATEGORY_TABLE_NAME = "IncCategoryDb";
     // 支払方法テーブル
     public static final String PAYMENT_METHOD_TABLE_NAME = "PaymentMethodDb";
 
@@ -36,6 +40,8 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PAYMENT_RULE_CODE = "payment_rule_code";
     public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id"; // 支払方法のID (支出の方のカラムが持つ情報)
 
+    public static final String COLUMN_COLOR = "color_code_text";
+
     private static final String EXPENSES_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + EXPENSES_TABLE_NAME + " (" +
                     ID + " INTEGER PRIMARY KEY," +
@@ -58,6 +64,16 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     COLUMN_AMOUNT + " INTEGER," +
                     COLUMN_CATEGORY + " TEXT," +
                     COLUMN_MEMO + " TEXT)";
+    private static final String EXP_CATEGORY_SQL_CREATE_ENTRIES =
+            "CREATE TABLE " + EXPENSES_CATEGORY_TABLE_NAME + " (" +
+                    ID + " INTEGER PRIMARY KEY," +
+                    COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                    COLUMN_COLOR + " TEXT NOT NULL)";
+private static final String INC_CATEGORY_CREATE_ENTRIES =
+        "CREATE TABLE " + INCOME_CATEGORY_TABLE_NAME + " (" +
+                ID + " INTEGER PRIMARY KEY," +
+                COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                COLUMN_COLOR + " TEXT NOT NULL)";
     private static final String PAYMENT_METHOD_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + PAYMENT_METHOD_TABLE_NAME + " (" +
                     ID + " INTEGER PRIMARY KEY," +
@@ -77,6 +93,8 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(EXPENSES_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(INCOME_SQL_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL(EXP_CATEGORY_SQL_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL(INC_CATEGORY_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(PAYMENT_METHOD_SQL_CREATE_ENTRIES);
         // 支払いテーブルに
     }

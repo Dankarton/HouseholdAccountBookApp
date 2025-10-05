@@ -34,7 +34,7 @@ public class IncomeSettingsCustomView extends ConstraintLayout {
         categoryTextView = layout.findViewById(R.id.category_text_view);
         dateTextView = layout.findViewById(R.id.date_text_view);
         memoTextView = layout.findViewById(R.id.memo_text_view);
-        amountTextView = layout.findViewById(R.id.amount_text_view);
+        amountTextView = layout.findViewById(R.id.payment_amount_text_view);
         amountTextView.setTextColor(context.getColor(R.color.income_text_color));
         ImageButton deleteButton = layout.findViewById(R.id.imageButton);
         deleteButton.setOnClickListener(new View.OnClickListener(){

@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.fragments;
+package com.example.householdaccountbook.activitys;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -11,6 +11,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.householdaccountbook.MyDbManager;
 import com.example.householdaccountbook.R;
+import com.example.householdaccountbook.fragments.ChartFragment;
+import com.example.householdaccountbook.fragments.InputMotherFragment;
+import com.example.householdaccountbook.fragments.SettingsMenuFragment;
+import com.example.householdaccountbook.fragments.TransactionDataListFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -52,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
                 else if (item.getItemId() == R.id.navigation_settings) {
-                    replaceFragment(new SettingsFragment());
+                    replaceFragment(new SettingsMenuFragment());
 //                    dateTextView.setText("Settings");
                     return true;
                 }
@@ -64,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void replaceFragment(Fragment fragment){
+    public void replaceFragment(Fragment fragment){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_layout, fragment);
         transaction.commit();

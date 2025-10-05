@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.SettingsFragment">
+    tools:context=".fragments.SettingsMenuFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -25,14 +25,18 @@
                 app:layout_constraintTop_toTopOf="parent">
 
             <com.example.householdaccountbook.customviews.SettingMenuButtonView
+                android:id="@+id/expenses_category_edit_menu_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:titleText="支出カテゴリ追加・編集"/>
+                app:titleText="支出カテゴリ追加・編集"
+                />
             <com.example.householdaccountbook.customviews.SettingMenuButtonView
+                android:id="@+id/income_category_edit_menu_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:titleText="収入カテゴリ追加・編集"/>
             <com.example.householdaccountbook.customviews.SettingMenuButtonView
+                android:id="@+id/payment_method_edit_menu_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:titleText="支払方法追加・編集"/>

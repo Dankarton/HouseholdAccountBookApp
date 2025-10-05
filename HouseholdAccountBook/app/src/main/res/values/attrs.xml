@@ -2,6 +2,6 @@
 <resources>
     <declare-styleable name="SettingMenuButtonView">
         <attr name="titleText" format="string" />
-        <attr name="destination" format="string" />
+        <attr name="destinationFragment" format="string" />
     </declare-styleable>
 </resources>

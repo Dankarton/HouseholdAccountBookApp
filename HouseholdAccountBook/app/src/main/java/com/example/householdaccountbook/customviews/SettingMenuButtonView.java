@@ -1,7 +1,7 @@
 package com.example.householdaccountbook.customviews;
 
 import android.content.Context;
-import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -12,13 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.example.householdaccountbook.R;
+import com.example.householdaccountbook.activitys.MainActivity;
+import com.example.householdaccountbook.activitys.SettingActivity;
+import com.example.householdaccountbook.data.SettingMenuFragmentKind;
+import com.example.householdaccountbook.util.SettingMenuIntentKeys;
 
 public class SettingMenuButtonView extends ConstraintLayout {
     private TextView titleTextView;
-    private String destination;
+    private SettingMenuFragmentKind destination;
 
     public SettingMenuButtonView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -37,40 +40,23 @@ public class SettingMenuButtonView extends ConstraintLayout {
             if (title != null) {
                 titleTextView.setText(title);
             }
-            destination = ta.getString(R.styleable.SettingMenuButtonView_destination);
             ta.recycle();
         }
         // TODO setOnClickListenrを入れたら意味不明なエラーが出るようになった
-        setClickButtonEvent(view);
+        setClickButtonEvent(view, context);
     }
 
-    private void setClickButtonEvent(View view) {
+    private void setClickButtonEvent(View view, Context context) {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (destination == null) return;
-
-                // ContextがFragmentの親ActivityかFragmentActivityかを確認
-                FragmentActivity activity = null;
-                if (getContext() instanceof FragmentActivity) {
-                    activity = (FragmentActivity) getContext();
-                } else if (getContext() instanceof ContextWrapper) {
-                    Context baseContext = ((ContextWrapper) getContext()).getBaseContext();
-                    if (baseContext instanceof FragmentActivity) {
-                        activity = (FragmentActivity) baseContext;
-                    }
-                }
-
-                if (activity != null) {
+                if (destination != null && context instanceof MainActivity) {
                     try {
-                        Fragment fragment = (Fragment) Class.forName(destination).newInstance();
-                        activity.getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.frame_layout, fragment)
-                                .addToBackStack(null)
-                                .commit();
+                        Intent intent = new Intent(context, SettingActivity.class);
+                        intent.putExtra(SettingMenuIntentKeys.FRAGMENT_TYPE_KEY, destination);
+                        context.startActivity(intent);
                     } catch (Exception e) {
-//                    e.printStackTrace();
+//                        e.printStackTrace();
                     }
                 }
             }
@@ -82,8 +68,8 @@ public class SettingMenuButtonView extends ConstraintLayout {
         titleTextView.setText(text);
     }
 
-    public String getDestination() {
-        return destination;
+    public void setDestination(SettingMenuFragmentKind fragmentType) {
+        this.destination = fragmentType;
     }
     // クリック処理をここに書く
 
