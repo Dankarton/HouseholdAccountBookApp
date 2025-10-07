@@ -69,11 +69,11 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     ID + " INTEGER PRIMARY KEY," +
                     COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
                     COLUMN_COLOR + " TEXT NOT NULL)";
-private static final String INC_CATEGORY_CREATE_ENTRIES =
-        "CREATE TABLE " + INCOME_CATEGORY_TABLE_NAME + " (" +
-                ID + " INTEGER PRIMARY KEY," +
-                COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
-                COLUMN_COLOR + " TEXT NOT NULL)";
+    private static final String INC_CATEGORY_CREATE_ENTRIES =
+            "CREATE TABLE " + INCOME_CATEGORY_TABLE_NAME + " (" +
+                    ID + " INTEGER PRIMARY KEY," +
+                    COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                    COLUMN_COLOR + " TEXT NOT NULL)";
     private static final String PAYMENT_METHOD_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + PAYMENT_METHOD_TABLE_NAME + " (" +
                     ID + " INTEGER PRIMARY KEY," +
@@ -86,9 +86,11 @@ private static final String INC_CATEGORY_CREATE_ENTRIES =
     private static final String INCOME_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + INCOME_TABLE_NAME;
     private static final String EXPENSES_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + EXPENSES_TABLE_NAME;
     private static final String PAYMENT_METHOD_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + PAYMENT_METHOD_TABLE_NAME;
-    public MyOpenHelper(Context context){
+
+    public MyOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(EXPENSES_SQL_CREATE_ENTRIES);

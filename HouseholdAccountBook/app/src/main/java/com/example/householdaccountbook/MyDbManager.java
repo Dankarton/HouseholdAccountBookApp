@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import myclasses.BopCategory;
 import myclasses.DailyBop;
 import myclasses.Expenses;
 import myclasses.Income;
@@ -299,6 +300,41 @@ public class MyDbManager {
             }
         }
         return new DailyBop(year, month ,day, incomeList, purchaseList, paymentList);
+    }
+    public static ArrayList<BopCategory> getAllExpensesCategoryData() {
+        return getAllCategoryData(MyOpenHelper.EXPENSES_CATEGORY_TABLE_NAME);
+    }
+    public static ArrayList<BopCategory> getAllIncomeCategoryData() {
+        return getAllCategoryData(MyOpenHelper.INCOME_CATEGORY_TABLE_NAME);
+    }
+    public static ArrayList<BopCategory> getAllCategoryData(String tableName) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.query(
+                tableName,
+                new String[] {
+                        MyOpenHelper.ID,
+                        MyOpenHelper.COLUMN_NAME,
+                        MyOpenHelper.COLUMN_COLOR
+                },
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+        ArrayList<BopCategory> categoryList = new ArrayList<>();
+        for (int i = 0; i < cursor.getCount(); i++) {
+            BopCategory tmp = new BopCategory(
+                    cursor.getInt(1),
+                    cursor.getString(2),
+                    cursor.getInt(3)
+            );
+            categoryList.add(tmp);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return categoryList;
     }
 
     public static ArrayList<PaymentMethod> getAllPaymentMethodData() {

@@ -16,6 +16,9 @@ import com.example.householdaccountbook.fragments.IncomeCategoryEditFragment;
 import com.example.householdaccountbook.fragments.PaymentMethodEditFragment;
 import com.example.householdaccountbook.util.SettingMenuIntentKeys;
 
+/**
+ *
+ */
 public class SettingActivity extends AppCompatActivity {
 
     @Override
