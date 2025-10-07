@@ -51,7 +51,7 @@ public class TransactionDataListFragment extends Fragment {
     }
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.d("TransactionDataListFragment", "onViewCreated start");
+        long startTime = System.nanoTime();
         super.onViewCreated(view, savedInstanceState);
         this.monthTextView = view.findViewById(R.id.month_text_view);
         this.dailyRecordRecyclerView = view.findViewById(R.id.transaction_list_recycler_view);
@@ -63,16 +63,14 @@ public class TransactionDataListFragment extends Fragment {
         this.transactionDateAdapter.setData(new ArrayList<>());
         this.transactionDateAdapter.notifyDataSetChanged();
         this.dailyRecordRecyclerView.setAdapter(this.transactionDateAdapter);
-        Log.d("TransactionDataListFragment", "Adapter set to inner RecyclerView: " + transactionDateAdapter);
         this.dailyRecordRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        Log.d("TransactionDataListFragment", "Setting adapter for RecyclerView id=" + dailyRecordRecyclerView.getId());
         setMonthUpButtonEvent(view);
         setMonthDownButtonEvent(view);
         currentDate = Calendar.getInstance();
         updateMonthTextView();
         updateDailyData();
-        Log.d("TransactionDataListFragment", "onViewCreated end");
     }
+
     private void setMonthUpButtonEvent(View view) {
         ImageButton monthUpButton = view.findViewById(R.id.month_up_button);
         monthUpButton.setOnClickListener(new View.OnClickListener(){
@@ -108,6 +106,7 @@ public class TransactionDataListFragment extends Fragment {
     }
     @SuppressLint("NotifyDataSetChanged")
     private void updateDailyData() {
+        long startTime = System.nanoTime();
         List<DailyBop> bopList = loadCurrentMonthDailyData(this.currentDate);
         int incomeAmount = 0;
         int purchaseAmount = 0;
@@ -125,6 +124,8 @@ public class TransactionDataListFragment extends Fragment {
         this.paymentAmountTextView.setText(paymentAmount + "円");
         transactionDateAdapter.setData(bopList);
         transactionDateAdapter.notifyDataSetChanged();
+        long endTime = System.nanoTime();
+        Log.d("TransactionDataListFragment", "updateDailyData() [time:" + (endTime - startTime) / 1000000.0 + " ms]");
     }
 
     private List<DailyBop> loadCurrentMonthDailyData(Calendar date) {

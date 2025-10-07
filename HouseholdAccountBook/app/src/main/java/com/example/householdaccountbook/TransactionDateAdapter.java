@@ -26,7 +26,6 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Log.d("TransactionDateAdapter", "onBindViewHolder(), position = " + position);
         ((TransactionViewHolder) holder).bind(dailyBopList.get(position));
     }
 
@@ -36,7 +35,6 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public void setData(List<DailyBop> dailyList) {
-        Log.d("TransactionDateAdapter", "setData");
         this.dailyBopList = dailyList;
 
     }
