@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 
 public class ColorPaletteCustomView extends ConstraintLayout {
@@ -73,10 +74,12 @@ public class ColorPaletteCustomView extends ConstraintLayout {
             ((GradientDrawable) background).setColor(color);
 
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-            params.width = 0;
-            params.height = 90;
+            params.width = MyStdlib.dpToPx(getContext(), 48);
+            params.height = MyStdlib.dpToPx(getContext(), 48);
             params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
             btn.setLayoutParams(params);
+            // カラーコードをタグに埋め込む
+            btn.setTag(color);
 
             btn.setOnClickListener(new OnClickListener() {
                 @Override
@@ -103,9 +106,8 @@ public class ColorPaletteCustomView extends ConstraintLayout {
      */
     public int getSelectedColor() {
         if (selectedButton != null) {
-            // BackgroundColorを取得
-            // ※注意: ColorDrawableにキャストする必要があります
-            return ((android.graphics.drawable.ColorDrawable) selectedButton.getBackground()).getColor();
+            // Tagに埋め込まれたカラーコードを取得
+            return (int) selectedButton.getTag();
         }
         return -1;
     }

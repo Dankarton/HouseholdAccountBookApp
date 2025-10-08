@@ -11,11 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.activitys.MainActivity;
-import com.example.householdaccountbook.activitys.SettingActivity;
+import com.example.householdaccountbook.activities.MainActivity;
+import com.example.householdaccountbook.activities.SettingActivity;
 import com.example.householdaccountbook.data.SettingMenuFragmentKind;
 import com.example.householdaccountbook.util.SettingMenuIntentKeys;
 

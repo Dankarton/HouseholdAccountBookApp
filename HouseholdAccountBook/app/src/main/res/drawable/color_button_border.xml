@@ -4,7 +4,7 @@
     <item android:state_selected="true">
         <shape android:shape="rectangle">
             <solid android:color="@android:color/transparent"/> <!-- 背景は透明 -->
-            <stroke android:width="3dp" android:color="#FFFFFF"/> <!-- 緑の枠 -->
+            <stroke android:width="3dp" android:color="#FFFFFF"/> <!-- 白の枠 -->
             <corners android:radius="2dp"/>
         </shape>
     </item>

@@ -51,7 +51,6 @@ public class TransactionDataListFragment extends Fragment {
     }
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        long startTime = System.nanoTime();
         super.onViewCreated(view, savedInstanceState);
         this.monthTextView = view.findViewById(R.id.month_text_view);
         this.dailyRecordRecyclerView = view.findViewById(R.id.transaction_list_recycler_view);

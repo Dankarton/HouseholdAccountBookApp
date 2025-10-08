@@ -307,7 +307,7 @@ public class MyDbManager {
     public static ArrayList<BopCategory> getAllIncomeCategoryData() {
         return getAllCategoryData(MyOpenHelper.INCOME_CATEGORY_TABLE_NAME);
     }
-    public static ArrayList<BopCategory> getAllCategoryData(String tableName) {
+    private static ArrayList<BopCategory> getAllCategoryData(String tableName) {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(
                 tableName,

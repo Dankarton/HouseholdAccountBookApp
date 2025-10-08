@@ -79,4 +79,8 @@ public class MyStdlib {
             return false;
         }
     }
+    public static int dpToPx(Context context, float dp) {
+        float density = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * density + 0.5f);
+    }
 }

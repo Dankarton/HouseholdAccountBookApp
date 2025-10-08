@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.activitys;
+package com.example.householdaccountbook.activities;
 
 import android.os.Bundle;
 import android.view.MenuItem;

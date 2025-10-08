@@ -35,14 +35,20 @@ public class DailyRecordCustomView extends ConstraintLayout {
     }
 
     public void init(Context context) {
-        CustomViewDailyRecordBinding binding =
-                CustomViewDailyRecordBinding.inflate(LayoutInflater.from(context), this, true);
+//        CustomViewDailyRecordBinding binding =
+//                CustomViewDailyRecordBinding.inflate(LayoutInflater.from(context), this, true);
+//        this.dateTextView = binding.dateTitle;
+//        this.purchaseAmountTextView = binding.purchaseAmountTextView;
+//        this.paymentAmountTextView = binding.paymentAmountTextView;
+//        this.listStateImageView = binding.listSateView;
+//        this.dailyRecordLinearLayout = binding.dailyRecordLinearLayout;
+
         View layout = ConstraintLayout.inflate(context, R.layout.custom_view_daily_record, this);
-        this.dateTextView = binding.dateTitle;
-        this.purchaseAmountTextView = binding.purchaseAmountTextView;
-        this.paymentAmountTextView = binding.paymentAmountTextView;
-        this.listStateImageView = binding.listSateView;
-        this.dailyRecordLinearLayout = binding.dailyRecordLinearLayout;
+        this.dateTextView = layout.findViewById(R.id.date_title);
+        this.purchaseAmountTextView = layout.findViewById(R.id.purchase_amount_text_view);
+        this.paymentAmountTextView = layout.findViewById(R.id.payment_amount_text_view);
+        this.listStateImageView = layout.findViewById(R.id.list_sate_view);
+        this.dailyRecordLinearLayout = layout.findViewById(R.id.daily_record_linear_layout);
 
         setListVisibilityButtonEvent(layout);
         // リストを非表示
