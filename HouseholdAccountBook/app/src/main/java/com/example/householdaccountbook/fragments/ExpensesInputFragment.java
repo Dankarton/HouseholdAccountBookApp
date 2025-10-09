@@ -34,6 +34,10 @@ import myclasses.Expenses;
 import myclasses.PaymentMethod;
 
 public class ExpensesInputFragment extends Fragment {
+    public interface InputCompleteListener{
+        void onExpensesInputCompleted();
+    }
+    InputCompleteListener listener = null;
     TextView dateTextView;
     Calendar currentDate;
     Spinner categorySpinner;
@@ -164,6 +168,9 @@ public class ExpensesInputFragment extends Fragment {
                                 paymentDate.get(Calendar.DATE)
                                 )
                 );
+                if(null != listener) {
+                    listener.onExpensesInputCompleted();
+                }
                 addButton.setEnabled(false);
             }
         });
@@ -199,6 +206,9 @@ public class ExpensesInputFragment extends Fragment {
                 changeToTrueAddButtonEnabled();
             }
         });
+    }
+    public void attachListener(ExpensesInputFragment.InputCompleteListener listener) {
+        this.listener = listener;
     }
     private void updateDateTextView(){
         dateTextView.setText(

@@ -30,6 +30,9 @@ import java.util.Calendar;
 import myclasses.Income;
 
 public class IncomeInputFragment extends Fragment {
+    public interface InputCompleteListener {
+        void onIncomeInputCompleted(int amount, Calendar date, String memo, String category);
+    }
     TextView dateTextView;
     Calendar currentDate;
     Spinner categorySpinner;

@@ -15,7 +15,9 @@ import com.example.householdaccountbook.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-public class InputMotherFragment extends Fragment {
+import java.util.Calendar;
+
+public class InputMotherFragment extends Fragment implements IncomeInputFragment.InputCompleteListener {
     ViewPager2 viewPager;
 
     @Override
@@ -31,13 +33,19 @@ public class InputMotherFragment extends Fragment {
     }
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        InputFragmentPagerAdapter adapter = new InputFragmentPagerAdapter(this);
+        IncomeInputFragment incInpFragment = new IncomeInputFragment();
+        ExpensesInputFragment expInpFragment = new ExpensesInputFragment();
+        InputFragmentPagerAdapter adapter = new InputFragmentPagerAdapter(this, expInpFragment, incInpFragment);
         viewPager = view.findViewById(R.id.input_fragment_view_pager);
         viewPager.setAdapter(adapter);
         TabLayout tabLayout = view.findViewById(R.id.expenses_or_income_tab);
         String[] tabTitleArray = {"支出", "収入"};
         new TabLayoutMediator(tabLayout, viewPager, ((tab, position) -> tab.setText(tabTitleArray[position]))).attach();
         viewPager.setUserInputEnabled(false);
+    }
+    @Override
+    public void onIncomeInputCompleted(int amount, Calendar date, String memo, String category) {
+
     }
 }
 
