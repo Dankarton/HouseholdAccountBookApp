@@ -17,10 +17,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.Calendar;
 
-import myclasses.BalanceOfPayments;
-import myclasses.InputCompleteListener;
-
-public class InputMotherFragment extends Fragment implements InputCompleteListener {
+public class InputMotherFragment extends Fragment implements IncomeInputFragment.InputCompleteListener {
     ViewPager2 viewPager;
 
     @Override
@@ -47,7 +44,7 @@ public class InputMotherFragment extends Fragment implements InputCompleteListen
         viewPager.setUserInputEnabled(false);
     }
     @Override
-    public void onInputCompleted(BalanceOfPayments inputBop) {
+    public void onIncomeInputCompleted(int amount, Calendar date, String memo, String category) {
 
     }
 }

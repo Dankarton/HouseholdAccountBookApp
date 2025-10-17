@@ -57,6 +57,7 @@ public class CategoryItemView extends ConstraintLayout implements SelectableItem
     public void setSelectedState(boolean selected) {
         this.isSelected = selected;
         this.setSelected(selected);
+        Log.d("CategoryItemView", bopCategory.getName() + " clicked");
     }
     @Override
     public boolean isSelected() {
