@@ -22,7 +22,7 @@ public class InputFragmentPagerAdapter extends FragmentStateAdapter {
 //        if (this.fragmentPage1 == null || this.fragmentPage2 == null) {
 //
 //        }
-        if (position == 1){
+        if (position == 0){
             return this.fragmentPage1;
         }
         else{

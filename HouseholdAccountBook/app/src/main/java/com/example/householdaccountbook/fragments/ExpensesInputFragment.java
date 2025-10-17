@@ -31,12 +31,10 @@ import java.util.Calendar;
 
 import myclasses.BopCategory;
 import myclasses.Expenses;
+import myclasses.InputCompleteListener;
 import myclasses.PaymentMethod;
 
 public class ExpensesInputFragment extends Fragment {
-    public interface InputCompleteListener{
-        void onExpensesInputCompleted();
-    }
     InputCompleteListener listener = null;
     TextView dateTextView;
     Calendar currentDate;
@@ -169,7 +167,7 @@ public class ExpensesInputFragment extends Fragment {
                                 )
                 );
                 if(null != listener) {
-                    listener.onExpensesInputCompleted();
+                    listener.onInputCompleted(new Expenses(null, currentDate, amount, memo, category, paymentMethod.getId(), paymentDate));
                 }
                 addButton.setEnabled(false);
             }
@@ -207,7 +205,7 @@ public class ExpensesInputFragment extends Fragment {
             }
         });
     }
-    public void attachListener(ExpensesInputFragment.InputCompleteListener listener) {
+    public void attachListener(InputCompleteListener listener) {
         this.listener = listener;
     }
     private void updateDateTextView(){

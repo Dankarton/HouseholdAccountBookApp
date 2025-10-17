@@ -41,7 +41,6 @@ public class SettingMenuButtonView extends ConstraintLayout {
             }
             ta.recycle();
         }
-        // TODO setOnClickListenrを入れたら意味不明なエラーが出るようになった
         setClickButtonEvent(view, context);
     }
 

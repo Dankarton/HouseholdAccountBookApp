@@ -28,11 +28,10 @@ import com.example.householdaccountbook.R;
 import java.util.Calendar;
 
 import myclasses.Income;
+import myclasses.InputCompleteListener;
 
 public class IncomeInputFragment extends Fragment {
-    public interface InputCompleteListener {
-        void onIncomeInputCompleted(int amount, Calendar date, String memo, String category);
-    }
+    InputCompleteListener listener = null;
     TextView dateTextView;
     Calendar currentDate;
     Spinner categorySpinner;
@@ -56,27 +55,27 @@ public class IncomeInputFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
-        helper = new MyOpenHelper(view.getContext());
-        dateTextView = view.findViewById(R.id.inc_date_text);
-        categorySpinner = view.findViewById(R.id.income_category_spinner);
-        memoEditText = view.findViewById(R.id.inc_memo_edit_text);
-        amountEditText = view.findViewById(R.id.inc_amount_edit_text);
-        addButton = view.findViewById(R.id.income_add_button);
+        this.helper = new MyOpenHelper(view.getContext());
+        this.dateTextView = view.findViewById(R.id.inc_date_text);
+        this.categorySpinner = view.findViewById(R.id.income_category_spinner);
+        this.memoEditText = view.findViewById(R.id.inc_memo_edit_text);
+        this.amountEditText = view.findViewById(R.id.inc_amount_edit_text);
+        this.addButton = view.findViewById(R.id.income_add_button);
         String[] categoryArray = {"給料", "アルバイト", "おこづかい", "副業", "賞与"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 view.getContext(),
                 androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                 categoryArray
         );
-        categorySpinner.setAdapter(adapter);
-        currentDate = Calendar.getInstance();
+        this.categorySpinner.setAdapter(adapter);
+        this.currentDate = Calendar.getInstance();
         setDateUpButtonEvent(view);
         setDateDownButtonEvent(view);
         setMemoEditTextEvent();
         setAmountEditText();
         setAddButtonEvent();
         updateDateTextView();
-        addButton.setEnabled(false);
+        this.addButton.setEnabled(false);
     }
 
     private void checkList() {
@@ -141,7 +140,7 @@ public class IncomeInputFragment extends Fragment {
      * 保存ボタンのイベントハンドラ関数
      */
     private void setAddButtonEvent() {
-        addButton.setOnClickListener(new View.OnClickListener(){
+        this.addButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 String inpAmountText = amountEditText.getText().toString();
@@ -153,6 +152,9 @@ public class IncomeInputFragment extends Fragment {
                 String memo = memoEditText.getText().toString();
                 String category = (String) categorySpinner.getSelectedItem();
                 MyDbManager.setRecordToDataBase("IncomeDb", Income.convertContentValues(year, month, day, amount, memo, category));
+                if (listener != null) {
+                    listener.onInputCompleted(new Income(null, currentDate, amount, memo, category));
+                }
                 addButton.setEnabled(false);
             }
         });
@@ -199,7 +201,6 @@ public class IncomeInputFragment extends Fragment {
             }
         });
     }
-
     /**
      * 保存ボタンが押せる状態かどうか判断して変更する関数
      * メモが未入力だったり，金額が未入力だったら押せないようにする．
@@ -214,5 +215,8 @@ public class IncomeInputFragment extends Fragment {
             return;
         }
         addButton.setEnabled(true);
+    }
+    public void attachListener(InputCompleteListener listener) {
+        this.listener = listener;
     }
 }

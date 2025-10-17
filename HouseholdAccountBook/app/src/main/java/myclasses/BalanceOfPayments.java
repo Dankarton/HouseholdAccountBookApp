@@ -3,7 +3,7 @@ package myclasses;
 import java.util.Calendar;
 
 public interface BalanceOfPayments {
-    public int getId();
+    public Integer getId();
 
     public Calendar getDate();
 

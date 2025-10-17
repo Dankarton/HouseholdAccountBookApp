@@ -110,6 +110,7 @@ public class PaymentMethod {
     private final Integer closingDay;
     private final PaymentRule paymentRule;
     private final Integer paymentDay;
+    private int listIndex;    // リストで一覧表示したときに何番目に表示するかを表す変数
     private final boolean isDefault;
 
     /**
@@ -121,14 +122,15 @@ public class PaymentMethod {
      * @param paymentDay 支払日(0を入力すると，支払日=購入日になる)
      * @param isDefault デフォルトで用意されている支払方法かどうか
      */
-    public PaymentMethod(int id, String name, int closingRuleCode, Integer closingDay, int paymentRuleCode, Integer paymentDay, int isDefault) {
+    public PaymentMethod(int id, String name, int closingRuleCode, Integer closingDay, int paymentRuleCode, Integer paymentDay, int index, int isDefault) {
         this.id = id;
         this.name = name;
         this.closingRule = ClosingRule.fromCode(closingRuleCode);
         this.closingDay = closingDay;
         this.paymentRule = PaymentRule.fromCode(paymentRuleCode);
         this.paymentDay = paymentDay;
-        // SQLiteではboolean型は0/1で保存される．1はTrue，0はTrue
+        this.listIndex = index;
+        // SQLiteではboolean型は0/1で保存される．1はTrue，0はfalse
         this.isDefault = isDefault == 1;
     }
 
@@ -145,7 +147,7 @@ public class PaymentMethod {
      * @param _isDefault    デフォルトで用意されている支払方法かどうか
      * @return ContentValues
      */
-    public static ContentValues getContentValues(String _name, int _closingRuleCode, Integer _closingSettingNum, int _paymentRuleCode, Integer _paymentSettingNum, boolean _isDefault) {
+    public static ContentValues makeContentValues(String _name, int _closingRuleCode, Integer _closingSettingNum, int _paymentRuleCode, Integer _paymentSettingNum, int _index, boolean _isDefault) {
         ContentValues values = new ContentValues();
         // SQLiteはbool型に対応してないので0,1整数に変換
         int isDefaultInteger;
@@ -160,6 +162,25 @@ public class PaymentMethod {
         values.put(MyOpenHelper.COLUMN_CLOSING_DAY, _closingSettingNum);
         values.put(MyOpenHelper.COLUMN_PAYMENT_RULE_CODE, _paymentRuleCode);
         values.put(MyOpenHelper.COLUMN_PAYMENT_DAY, _paymentSettingNum);
+        values.put(MyOpenHelper.COLUMN_INDEX, _index);
+        values.put(MyOpenHelper.COLUMN_IS_DEFAULT, isDefaultInteger);
+        return values;
+    }
+    public ContentValues getContentValues() {
+        ContentValues values = new ContentValues();
+        int isDefaultInteger;
+        if (this.isDefault) {
+            isDefaultInteger = 1;
+        }
+        else {
+            isDefaultInteger = 0;
+        }
+        values.put(MyOpenHelper.COLUMN_NAME, this.name);
+        values.put(MyOpenHelper.COLUMN_CLOSING_RULE_CODE, this.closingRule.code);
+        values.put(MyOpenHelper.COLUMN_CLOSING_DAY, this.closingDay);
+        values.put(MyOpenHelper.COLUMN_PAYMENT_RULE_CODE, this.paymentRule.code);
+        values.put(MyOpenHelper.COLUMN_PAYMENT_DAY, this.paymentDay);
+        values.put(MyOpenHelper.COLUMN_INDEX, this.listIndex);
         values.put(MyOpenHelper.COLUMN_IS_DEFAULT, isDefaultInteger);
         return values;
     }
@@ -187,7 +208,12 @@ public class PaymentMethod {
     public int getPaymentDay() {
         return this.paymentDay;
     }
+    public int getIndex() { return this.listIndex; }
     public boolean isDefault() {
         return this.isDefault;
+    }
+
+    public void setIndex(int index) {
+        this.listIndex = index;
     }
 }
