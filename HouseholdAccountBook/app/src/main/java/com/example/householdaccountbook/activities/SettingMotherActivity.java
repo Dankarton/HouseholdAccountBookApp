@@ -19,7 +19,7 @@ import com.example.householdaccountbook.util.SettingMenuIntentKeys;
 /**
  *
  */
-public class SettingActivity extends AppCompatActivity {
+public class SettingMotherActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

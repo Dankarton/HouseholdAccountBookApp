@@ -84,9 +84,9 @@ public class ExpensesInputFragment extends Fragment {
         // テスト中
         ItemListCustomView<CategoryItemView> itemListCustomView = view.findViewById(R.id.category_list_custom_view);
         ArrayList<BopCategory> categoryList = new ArrayList<>();
-        categoryList.add(new BopCategory(1, "食費", Color.parseColor("#FF0000")));
-        categoryList.add(new BopCategory(2, "燃料", Color.parseColor("#00FF00")));
-        categoryList.add(new BopCategory(3, "サブスク", Color.parseColor("#0000FF")));
+//        categoryList.add(new BopCategory(1, "食費", Color.parseColor("#FF0000")));
+//        categoryList.add(new BopCategory(2, "燃料", Color.parseColor("#00FF00")));
+//        categoryList.add(new BopCategory(3, "サブスク", Color.parseColor("#0000FF")));
         ArrayList<CategoryItemView> itemViews = new ArrayList<>();
         for (int i = 0; i < categoryList.size(); i++) {
             CategoryItemView tmp = new CategoryItemView(view.getContext());

@@ -14,7 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.activities.MainActivity;
-import com.example.householdaccountbook.activities.SettingActivity;
+import com.example.householdaccountbook.activities.SettingMotherActivity;
 import com.example.householdaccountbook.data.SettingMenuFragmentKind;
 import com.example.householdaccountbook.util.SettingMenuIntentKeys;
 
@@ -50,7 +50,7 @@ public class SettingMenuButtonView extends ConstraintLayout {
             public void onClick(View view) {
                 if (destination != null && context instanceof MainActivity) {
                     try {
-                        Intent intent = new Intent(context, SettingActivity.class);
+                        Intent intent = new Intent(context, SettingMotherActivity.class);
                         intent.putExtra(SettingMenuIntentKeys.FRAGMENT_TYPE_KEY, destination);
                         context.startActivity(intent);
                     } catch (Exception e) {

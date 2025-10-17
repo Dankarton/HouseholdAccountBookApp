@@ -13,7 +13,12 @@
         android:theme="@style/Theme.HouseholdAccountBook"
         tools:targetApi="31">
         <activity
-            android:name=".activities.SettingActivity"
+            android:name=".activities.SettingSelectPaymentMethodActivity"
+            android:exported="false"
+            android:label="@string/title_activity_setting_select_payment_method"
+            android:theme="@style/Theme.HouseholdAccountBook" />
+        <activity
+            android:name=".activities.SettingMotherActivity"
             android:exported="false" />
         <activity
             android:name=".activities.MainActivity"

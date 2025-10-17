@@ -15,4 +15,6 @@
     <string name="yen_in_japanese">円</string>
     <string name="income_in_japanese">収入</string>
     <string name="save_in_japanese">保存</string>
+    <string name="title_activity_setting_select_payment_method">SettingSelectPaymentMethodActivity
+    </string>
 </resources>
