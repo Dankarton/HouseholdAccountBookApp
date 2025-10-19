@@ -19,35 +19,18 @@ import com.example.householdaccountbook.util.SettingMenuIntentKeys;
 /**
  *
  */
-public class SettingMotherActivity extends AppCompatActivity {
-
+public abstract class SettingMotherActivity extends AppCompatActivity {
+    protected abstract Fragment init();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_setting);
-
-        SettingMenuFragmentKind type = (SettingMenuFragmentKind) getIntent().getSerializableExtra(SettingMenuIntentKeys.FRAGMENT_TYPE_KEY);
-        Fragment fragment = null;
-        if (type != null) {
-            switch (type) {
-                case EXPENSES_CATEGORY_EDIT:
-                    fragment = new ExpensesCategoryEditFragment();
-                    break;
-                case INCOME_CATEGORY_EDIT:
-                    fragment = new IncomeCategoryEditFragment();
-                    break;
-                case PAYMENT_METHOD_EDIT:
-                    fragment = new PaymentMethodEditFragment();
-                    break;
-                default:
-                    break;
-            }
-        }
+        setBackButtonEvent(findViewById(R.id.back_button));
+        Fragment fragment = init();
         if (fragment != null) {
             replaceFragment(fragment);
         }
-        setBackButtonEvent(findViewById(R.id.back_button));
     }
     private void setBackButtonEvent(ImageButton button) {
         button.setOnClickListener(new View.OnClickListener() {
@@ -57,6 +40,7 @@ public class SettingMotherActivity extends AppCompatActivity {
             }
         });
     }
+
     private void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.setting_container, fragment);

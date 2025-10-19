@@ -14,4 +14,12 @@ public class EndOfMonthClosingRule implements ClosingStrategy {
         closingDate.set(Calendar.DATE, lastDay);
         return closingDate;
     }
+    @Override
+    public String getName() {
+        return "月末";
+    }
+    @Override
+    public boolean usesSettingNum() {
+        return true;
+    }
 }

@@ -14,4 +14,14 @@ public class EndOfMonthPaymentRule implements PaymentStrategy {
         paymentDate.set(Calendar.DATE, lastDay);
         return paymentDate;
     }
+
+    @Override
+    public String getName() {
+        return "締め日の翌月末に支払い";
+    }
+
+    @Override
+    public boolean usesSettingNum() {
+        return false;
+    }
 }

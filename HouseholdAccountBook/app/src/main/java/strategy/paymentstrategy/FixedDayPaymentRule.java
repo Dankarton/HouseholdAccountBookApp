@@ -18,4 +18,8 @@ public class FixedDayPaymentRule implements PaymentStrategy {
         paymentDate.set(Calendar.DATE, this.fixedDay);
         return paymentDate;
     }
+    @Override
+    public String getName() { return "締め日の翌月指定日に支払い"; }
+    @Override
+    public boolean usesSettingNum() { return true; }
 }

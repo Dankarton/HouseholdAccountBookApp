@@ -19,6 +19,10 @@ import com.example.householdaccountbook.data.SettingMenuFragmentKind;
 import com.example.householdaccountbook.util.SettingMenuIntentKeys;
 
 public class SettingMenuButtonView extends ConstraintLayout {
+    public interface OnClickListener {
+        void onClicked(SettingMenuFragmentKind type);
+    }
+    private OnClickListener listener = null;
     private TextView titleTextView;
     private SettingMenuFragmentKind destination;
 
@@ -41,22 +45,15 @@ public class SettingMenuButtonView extends ConstraintLayout {
             }
             ta.recycle();
         }
-        // TODO setOnClickListenrを入れたら意味不明なエラーが出るようになった
-        setClickButtonEvent(view, context);
+        setClickButtonEvent(view);
     }
 
-    private void setClickButtonEvent(View view, Context context) {
+    private void setClickButtonEvent(View view) {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (destination != null && context instanceof MainActivity) {
-                    try {
-                        Intent intent = new Intent(context, SettingMotherActivity.class);
-                        intent.putExtra(SettingMenuIntentKeys.FRAGMENT_TYPE_KEY, destination);
-                        context.startActivity(intent);
-                    } catch (Exception e) {
-//                        e.printStackTrace();
-                    }
+                if (listener != null) {
+                    listener.onClicked(destination);
                 }
             }
         });
@@ -66,7 +63,9 @@ public class SettingMenuButtonView extends ConstraintLayout {
     public void setTitleText(String text) {
         titleTextView.setText(text);
     }
-
+    public void setListener(OnClickListener listener) {
+        this.listener = listener;
+    }
     public void setDestination(SettingMenuFragmentKind fragmentType) {
         this.destination = fragmentType;
     }

@@ -40,10 +40,13 @@ public class MyDbManager {
     };
 
     public static void setOpenHelper(Context context) {
-
         helper = new MyOpenHelper(context);
     }
 
+    /**
+     * デフォルトの支払方法を確保する関数
+     * デフォルトの支払方法(通常支払い)が不具合でデータベースから削除されても自動で補完するためのもの
+     */
     public static void ensureDefaultPayments() {
         SQLiteDatabase db = helper.getWritableDatabase();
         Cursor cursor = db.query(
@@ -131,6 +134,13 @@ public class MyDbManager {
         return expensesList;
     }
 
+    /**
+     * 引数で指定した日付と購入日もしくは支払日が一致する支出データを取得
+     * @param year 年
+     * @param month 月
+     * @param day 日
+     * @return Expensesリスト
+     */
     public static ArrayList<Expenses> getExpensesByPurchaseOrPaymentDate(Integer year, Integer month, Integer day) {
         SQLiteDatabase db =helper.getReadableDatabase();
         String purchaseSelection = buildWhereClauseByDate(
@@ -314,7 +324,8 @@ public class MyDbManager {
                 new String[] {
                         MyOpenHelper.ID,
                         MyOpenHelper.COLUMN_NAME,
-                        MyOpenHelper.COLUMN_COLOR
+                        MyOpenHelper.COLUMN_COLOR,
+                        MyOpenHelper.COLUMN_IS_DELETED
                 },
                 null,
                 null,
@@ -328,7 +339,8 @@ public class MyDbManager {
             BopCategory tmp = new BopCategory(
                     cursor.getInt(1),
                     cursor.getString(2),
-                    cursor.getInt(3)
+                    cursor.getInt(3),
+                    cursor.getInt(4) == 1
             );
             categoryList.add(tmp);
             cursor.moveToNext();
@@ -337,6 +349,10 @@ public class MyDbManager {
         return categoryList;
     }
 
+    /**
+     * 支払方法のデータを全て取得
+     * @return ArrayList<PaymentMethod>
+     */
     public static ArrayList<PaymentMethod> getAllPaymentMethodData() {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(
@@ -366,7 +382,7 @@ public class MyDbManager {
                     cursor.getInt(3),
                     cursor.getInt(4),
                     cursor.getInt(5),
-                    cursor.getInt(6)
+                    cursor.getInt(6) == 1
             );
             paymentMethodList.add(tmp);
             cursor.moveToNext();

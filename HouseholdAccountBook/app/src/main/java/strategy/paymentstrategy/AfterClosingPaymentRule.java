@@ -7,6 +7,7 @@ import java.util.Calendar;
  */
 public class AfterClosingPaymentRule implements PaymentStrategy {
     private final int afterDayNum;
+
     public AfterClosingPaymentRule(int afterDayNum) {
         this.afterDayNum = afterDayNum;
     }
@@ -18,4 +19,8 @@ public class AfterClosingPaymentRule implements PaymentStrategy {
         paymentDate.add(Calendar.DATE, this.afterDayNum);
         return paymentDate;
     }
+    @Override
+    public String getName() { return "締め日の指定日後に支払い"; }
+    @Override
+    public boolean usesSettingNum() { return true; }
 }

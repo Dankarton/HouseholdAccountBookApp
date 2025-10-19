@@ -10,4 +10,12 @@ public class SameDayPaymentRule implements PaymentStrategy {
     public Calendar apply(Calendar closingDate) {
         return (Calendar) closingDate.clone();
     }
+    @Override
+    public String getName() {
+        return "ルール無し";
+    }
+    @Override
+    public boolean usesSettingNum() {
+        return false;
+    }
 }

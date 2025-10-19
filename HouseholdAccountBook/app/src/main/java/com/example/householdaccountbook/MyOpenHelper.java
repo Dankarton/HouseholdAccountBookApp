@@ -41,6 +41,7 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id"; // 支払方法のID (支出の方のカラムが持つ情報)
 
     public static final String COLUMN_COLOR = "color_code_text";
+    public static final String COLUMN_IS_DELETED = "is_deleted";
 
     private static final String EXPENSES_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + EXPENSES_TABLE_NAME + " (" +
@@ -68,12 +69,14 @@ public class MyOpenHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + EXPENSES_CATEGORY_TABLE_NAME + " (" +
                     ID + " INTEGER PRIMARY KEY," +
                     COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
-                    COLUMN_COLOR + " TEXT NOT NULL)";
+                    COLUMN_COLOR + " TEXT NOT NULL," +
+            COLUMN_IS_DELETED + "INTEGER NOT NULL DEFAULT 0)";
     private static final String INC_CATEGORY_CREATE_ENTRIES =
             "CREATE TABLE " + INCOME_CATEGORY_TABLE_NAME + " (" +
                     ID + " INTEGER PRIMARY KEY," +
                     COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
-                    COLUMN_COLOR + " TEXT NOT NULL)";
+                    COLUMN_COLOR + " TEXT NOT NULL," +
+                    COLUMN_IS_DELETED + "INTEGER NOT NULL DEFAULT 0)";
     private static final String PAYMENT_METHOD_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + PAYMENT_METHOD_TABLE_NAME + " (" +
                     ID + " INTEGER PRIMARY KEY," +

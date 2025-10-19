@@ -2,6 +2,8 @@ package myclasses;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
+
 import com.example.householdaccountbook.MyOpenHelper;
 
 import java.util.Calendar;
@@ -56,6 +58,11 @@ public class PaymentMethod {
             }
             return ClosingRule.None;
         }
+        @NonNull
+        @Override
+        public String toString() {
+            return getStrategy(null).getName();
+        }
 
         public abstract ClosingStrategy getStrategy(Integer settingNum);
     }
@@ -102,6 +109,11 @@ public class PaymentMethod {
             }
             return PaymentRule.SameDay;
         }
+        @NonNull
+        @Override
+        public String toString() {
+            return getStrategy(null).toString();
+        }
         public abstract PaymentStrategy getStrategy(Integer settingNum);
     }
     private final int id;
@@ -121,7 +133,7 @@ public class PaymentMethod {
      * @param paymentDay 支払日(0を入力すると，支払日=購入日になる)
      * @param isDefault デフォルトで用意されている支払方法かどうか
      */
-    public PaymentMethod(int id, String name, int closingRuleCode, Integer closingDay, int paymentRuleCode, Integer paymentDay, int isDefault) {
+    public PaymentMethod(int id, String name, int closingRuleCode, Integer closingDay, int paymentRuleCode, Integer paymentDay, boolean isDefault) {
         this.id = id;
         this.name = name;
         this.closingRule = ClosingRule.fromCode(closingRuleCode);
@@ -129,7 +141,7 @@ public class PaymentMethod {
         this.paymentRule = PaymentRule.fromCode(paymentRuleCode);
         this.paymentDay = paymentDay;
         // SQLiteではboolean型は0/1で保存される．1はTrue，0はTrue
-        this.isDefault = isDefault == 1;
+        this.isDefault = isDefault;
     }
 
     /**
@@ -164,7 +176,6 @@ public class PaymentMethod {
         return values;
     }
     public Calendar getPaymentDate(Calendar purchaseDate) {
-        // TODO
         ClosingStrategy cs = this.closingRule.getStrategy(this.closingDay);
         PaymentStrategy ps = this.paymentRule.getStrategy(this.paymentDay);
         Calendar closingDate = cs.apply(purchaseDate);
