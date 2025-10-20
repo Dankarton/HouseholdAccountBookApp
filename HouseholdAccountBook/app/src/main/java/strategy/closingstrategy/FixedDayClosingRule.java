@@ -22,12 +22,4 @@ public class FixedDayClosingRule implements ClosingStrategy {
         }
         return closingDate;
     }
-    @Override
-    public String getName() {
-        return "指定日";
-    }
-    @Override
-    public boolean usesSettingNum() {
-        return true;
-    }
 }

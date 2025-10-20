@@ -23,19 +23,19 @@ import strategy.paymentstrategy.SameDayPaymentRule;
  */
 public class PaymentMethod {
     public enum ClosingRule {
-        FixedDay(0) {
+        FixedDay(0, "毎月指定日", true, "日付(日)") {
             @Override
             public ClosingStrategy getStrategy(Integer settingNum) {
                 return new FixedDayClosingRule(settingNum);
             }
         },    //毎月指定日が締め日
-        EndOfMonth(1) {
+        EndOfMonth(1, "月末", false, "") {
             @Override
             public ClosingStrategy getStrategy(Integer settingNum) {
                 return new EndOfMonthClosingRule();
             }
         },  //月末が締め日
-        None(2) {
+        None(2, "締め日なし(当日)", false, "") {
             @Override
             public ClosingStrategy getStrategy(Integer settingNum) {
                 return new NoneClosingRule();
@@ -43,13 +43,22 @@ public class PaymentMethod {
         };        //締め日なし(当日払いなどの場合)
 
         private final int code;
+        private final String nameText;
+        private final boolean usesSettingNum;
+        private final String settingNumText;
 
-        ClosingRule(int code) {
+        ClosingRule(int code, String text, boolean usesSettingNum, String settingNumText) {
             this.code = code;
+            this.nameText = text;
+            this.usesSettingNum = usesSettingNum;
+            this.settingNumText = settingNumText;
         }
         public int getCode() {
             return this.code;
         }
+        public String getNameText() { return this.nameText; }
+        public boolean usesSettingNum() { return this.usesSettingNum; }
+        public String getSettingNumText() { return this.settingNumText; }
         public static ClosingRule fromCode(int code) {
             for (ClosingRule rule : ClosingRule.values()) {
                 if(rule.code == code) {
@@ -61,31 +70,31 @@ public class PaymentMethod {
         @NonNull
         @Override
         public String toString() {
-            return getStrategy(null).getName();
+            return this.nameText;
         }
 
         public abstract ClosingStrategy getStrategy(Integer settingNum);
     }
     public enum PaymentRule {
-        FixedDay(0) {
+        FixedDay(0, "毎月指定日に支払い", true, "日付(日)") {
             @Override
             public PaymentStrategy getStrategy(Integer settingNum) {
                 return new FixedDayPaymentRule(settingNum);
             }
         },        // 毎月指定日に支払
-        EndOfMonth(1) {
+        EndOfMonth(1, "月末に支払い", false, "") {
             @Override
             public PaymentStrategy getStrategy(Integer settingNum) {
                 return new EndOfMonthPaymentRule();
             }
         },      // 月末に支払
-        AfterClosing(2) {
+        AfterClosing(2, "締め日の何日後に支払い", true, "日数") {
             @Override
             public PaymentStrategy getStrategy(Integer settingNum) {
                 return new AfterClosingPaymentRule(settingNum);
             }
         },    // 締め日の何日後に支払
-        SameDay(3) {
+        SameDay(3, "無し(当日払い)", false, "") {
             @Override
             public PaymentStrategy getStrategy(Integer settingNum) {
                 return new SameDayPaymentRule();
@@ -93,14 +102,24 @@ public class PaymentMethod {
         };            // ルール無し(当日払い)
 
         private final int code;
+        private final String nameText;
+        private final boolean usesSettingNum;
+        private final String settingNumText;
 
-        PaymentRule(int code) {
+
+        PaymentRule(int code, String text, boolean usesSettingNum, String settingNumText) {
             this.code = code;
+            this.nameText = text;
+            this.usesSettingNum = usesSettingNum;
+            this.settingNumText = settingNumText;
         }
 
         public int getCode() {
             return this.code;
         }
+        public String getText() { return this.nameText; }
+        public boolean usesSettingNum() { return this.usesSettingNum; }
+        public String getSettingNumText() { return this.settingNumText; }
         public static PaymentRule fromCode(int code) {
             for (PaymentRule rule : PaymentRule.values()) {
                 if(rule.code == code) {
@@ -112,7 +131,7 @@ public class PaymentMethod {
         @NonNull
         @Override
         public String toString() {
-            return getStrategy(null).toString();
+            return this.nameText;
         }
         public abstract PaymentStrategy getStrategy(Integer settingNum);
     }

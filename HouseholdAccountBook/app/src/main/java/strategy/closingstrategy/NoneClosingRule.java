@@ -10,12 +10,4 @@ public class NoneClosingRule implements ClosingStrategy {
     public Calendar apply(Calendar purchaseDate) {
         return (Calendar) purchaseDate.clone();
     }
-    @Override
-    public String getName() {
-        return "無し";
-    }
-    @Override
-    public boolean usesSettingNum() {
-        return false;
-    }
 }
