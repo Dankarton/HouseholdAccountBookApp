@@ -222,7 +222,6 @@ public class ExpensesInputFragment extends Fragment {
         );
     }
     private void changeToTrueAddButtonEnabled() {
-        Log.d("MyTestLog", "" + amountEditText.getText().toString().isEmpty());
         if (amountEditText.getText().toString().isEmpty()){
             addButton.setEnabled(false);
             return;

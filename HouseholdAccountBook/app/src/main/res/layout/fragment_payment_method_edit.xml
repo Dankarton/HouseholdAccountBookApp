@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@+id/name_edit_text" />
 
     <EditText
-        android:id="@+id/editTextNumberDecimal"
+        android:id="@+id/closing_rule_setting_num_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -61,23 +61,23 @@
         app:layout_constraintTop_toBottomOf="@+id/closing_rule_spinner" />
 
     <Spinner
-        android:id="@+id/spinner2"
+        android:id="@+id/payment_rule_spinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumberDecimal" />
+        app:layout_constraintTop_toBottomOf="@+id/closing_rule_setting_num_edit" />
 
     <EditText
-        android:id="@+id/editTextNumberDecimal2"
+        android:id="@+id/payment_rule_setting_num_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="numberDecimal"
-        app:layout_constraintEnd_toEndOf="@+id/spinner2"
-        app:layout_constraintTop_toBottomOf="@+id/spinner2" />
+        app:layout_constraintEnd_toEndOf="@+id/payment_rule_spinner"
+        app:layout_constraintTop_toBottomOf="@+id/payment_rule_spinner" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.householdaccountbook.R;
+import com.example.householdaccountbook.adapter.EnumSpinnerAdapter;
 
 import java.util.List;
 
@@ -21,6 +24,18 @@ import myclasses.PaymentMethod;
 
 public class PaymentMethodEditFragment extends Fragment {
     OnInputActionListener listener;
+    Spinner closingRuleSpinner;
+    Spinner paymentRuleSpinner;
+    EditText closingRuleSettingNumEdit;
+    EditText paymentRuleSettingNumEdit;
+
+    PaymentMethod paymentMethod = null;
+
+    public PaymentMethodEditFragment() { /*Do nothing*/ }
+
+    public PaymentMethodEditFragment(PaymentMethod paymentMethodData) {
+        this.paymentMethod = paymentMethodData;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,45 +46,40 @@ public class PaymentMethodEditFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        PaymentMethod.ClosingRule[] methods = PaymentMethod.ClosingRule.values();
-        ArrayAdapter<PaymentMethod.ClosingRule> adapter = new ArrayAdapter<>(
+        closingRuleSpinner = view.findViewById(R.id.closing_rule_spinner);
+        paymentRuleSpinner = view.findViewById(R.id.payment_rule_spinner);
+        closingRuleSettingNumEdit = view.findViewById(R.id.closing_rule_setting_num_edit);
+        paymentRuleSettingNumEdit = view.findViewById(R.id.payment_rule_setting_num_edit);
+
+        PaymentMethod.ClosingRule[] closingRules = PaymentMethod.ClosingRule.values();
+        EnumSpinnerAdapter<PaymentMethod.ClosingRule> closingSpinnerAdapter = new EnumSpinnerAdapter<>(
                 view.getContext(),
                 androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
-                methods
-        ){
-
-        };
+                closingRules,
+                new EnumSpinnerAdapter.LabelProvider<PaymentMethod.ClosingRule>() {
+                    @Override
+                    public String getLabel(PaymentMethod.ClosingRule item) {
+                        return item.getNameText();
+                    }
+                }
+        );
+        PaymentMethod.PaymentRule[] paymentRules = PaymentMethod.PaymentRule.values();
+        EnumSpinnerAdapter<PaymentMethod.PaymentRule> paymentSpinnerAdapter = new EnumSpinnerAdapter<>(
+                view.getContext(),
+                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                paymentRules,
+                new EnumSpinnerAdapter.LabelProvider<PaymentMethod.PaymentRule>() {
+                    @Override
+                    public String getLabel(PaymentMethod.PaymentRule item) {
+                        return item.getText();
+                    }
+                }
+        );
+        // TODO スピナー作成中
 
     }
 
     public void setListener(OnInputActionListener listener) {
         this.listener = listener;
-    }
-    private class EnumSpinnerAdapter<T extends Enum<T>> extends ArrayAdapter<T> {
-        // TODO 内部クラスじゃなくて別でファイル宣言したほうがいいかも
-        private final LabelProvider<T> labelProvider;
-        public EnumSpinnerAdapter(@NonNull Context context, int resource, @NonNull T[] objects, @NonNull LabelProvider<T> labelProvider) {
-            super(context, resource, objects);
-            this.labelProvider = labelProvider;
-        }
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            View view = super.getView(position, convertView, parent);
-            TextView text = view.findViewById(android.R.id.text1);
-            text.setText(labelProvider.getLabel(getItem(position)));
-            return view;
-        }
-        @Override
-        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            View view = super.getDropDownView(position, convertView, parent);
-            TextView text = view.findViewById(android.R.id.text1);
-            text.setText(labelProvider.getLabel(getItem(position)));
-            return view;
-        }
-
-        public interface LabelProvider<T> {
-            String getLabel(T item);
-        }
     }
 }
