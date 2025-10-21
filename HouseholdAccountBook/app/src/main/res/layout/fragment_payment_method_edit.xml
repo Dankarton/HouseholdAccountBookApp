@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/name_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -26,12 +26,12 @@
         android:inputType="text"
         android:text="Name"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintStart_toEndOf="@+id/name_text"
         app:layout_constraintTop_toTopOf="parent" />
 
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/save_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -78,6 +78,24 @@
         android:inputType="numberDecimal"
         app:layout_constraintEnd_toEndOf="@+id/payment_rule_spinner"
         app:layout_constraintTop_toBottomOf="@+id/payment_rule_spinner" />
+
+    <TextView
+        android:id="@+id/closing_rule_setting_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/closing_rule_setting_num_edit"
+        app:layout_constraintEnd_toStartOf="@+id/closing_rule_setting_num_edit"
+        app:layout_constraintTop_toTopOf="@+id/closing_rule_setting_num_edit" />
+
+    <TextView
+        android:id="@+id/payment_rule_setting_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/payment_rule_setting_num_edit"
+        app:layout_constraintEnd_toStartOf="@+id/payment_rule_setting_num_edit"
+        app:layout_constraintTop_toTopOf="@+id/payment_rule_setting_num_edit" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -64,7 +64,7 @@ public class MyDbManager {
         if (count == 0) {
             MyDbManager.setRecordToDataBase(
                     MyOpenHelper.PAYMENT_METHOD_TABLE_NAME,
-                    PaymentMethod.getContentValues(
+                    PaymentMethod.makeContentValues(
                             "通常支払い",
                             PaymentMethod.ClosingRule.None.getCode(), null,
                             PaymentMethod.PaymentRule.SameDay.getCode(), null,

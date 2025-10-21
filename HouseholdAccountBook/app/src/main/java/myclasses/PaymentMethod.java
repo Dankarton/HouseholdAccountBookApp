@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import com.example.householdaccountbook.MyOpenHelper;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import strategy.closingstrategy.ClosingStrategy;
 import strategy.closingstrategy.EndOfMonthClosingRule;
@@ -72,7 +74,6 @@ public class PaymentMethod {
         public String toString() {
             return this.nameText;
         }
-
         public abstract ClosingStrategy getStrategy(Integer settingNum);
     }
     public enum PaymentRule {
@@ -135,7 +136,7 @@ public class PaymentMethod {
         }
         public abstract PaymentStrategy getStrategy(Integer settingNum);
     }
-    private final int id;
+    private final Integer id;
     private final String name;
     private final ClosingRule closingRule;
     private final Integer closingDay;
@@ -144,22 +145,20 @@ public class PaymentMethod {
     private final boolean isDefault;
 
     /**
-     * 支払方法クラスインスタンス化
-     * isDefaultはクラス内ではboolean型として保持しているが，SQLiteではbool型は0か1で保存されるため引数がint型になっている．．
+     * 支払方法クラス．
      * @param id SQLiteのデータテーブルに登録したときのID
      * @param name 支払方法名(ユーザー指定可能)
      * @param closingDay 締め日
      * @param paymentDay 支払日(0を入力すると，支払日=購入日になる)
      * @param isDefault デフォルトで用意されている支払方法かどうか
      */
-    public PaymentMethod(int id, String name, int closingRuleCode, Integer closingDay, int paymentRuleCode, Integer paymentDay, boolean isDefault) {
+    public PaymentMethod(Integer id, String name, int closingRuleCode, Integer closingDay, int paymentRuleCode, Integer paymentDay, boolean isDefault) {
         this.id = id;
         this.name = name;
         this.closingRule = ClosingRule.fromCode(closingRuleCode);
         this.closingDay = closingDay;
         this.paymentRule = PaymentRule.fromCode(paymentRuleCode);
         this.paymentDay = paymentDay;
-        // SQLiteではboolean型は0/1で保存される．1はTrue，0はTrue
         this.isDefault = isDefault;
     }
 
@@ -176,7 +175,7 @@ public class PaymentMethod {
      * @param _isDefault    デフォルトで用意されている支払方法かどうか
      * @return ContentValues
      */
-    public static ContentValues getContentValues(String _name, int _closingRuleCode, Integer _closingSettingNum, int _paymentRuleCode, Integer _paymentSettingNum, boolean _isDefault) {
+    public static ContentValues makeContentValues(String _name, int _closingRuleCode, Integer _closingSettingNum, int _paymentRuleCode, Integer _paymentSettingNum, boolean _isDefault) {
         ContentValues values = new ContentValues();
         // SQLiteはbool型に対応してないので0,1整数に変換
         int isDefaultInteger;
@@ -194,6 +193,18 @@ public class PaymentMethod {
         values.put(MyOpenHelper.COLUMN_IS_DEFAULT, isDefaultInteger);
         return values;
     }
+
+    public ContentValues getContentValuesWithoutId() {
+        return PaymentMethod.makeContentValues(
+                this.name,
+                this.closingRule.code,
+                this.closingDay,
+                this.paymentRule.code,
+                this.paymentDay,
+                this.isDefault
+        );
+    }
+
     public Calendar getPaymentDate(Calendar purchaseDate) {
         ClosingStrategy cs = this.closingRule.getStrategy(this.closingDay);
         PaymentStrategy ps = this.paymentRule.getStrategy(this.paymentDay);
@@ -201,7 +212,7 @@ public class PaymentMethod {
         return ps.apply(closingDate);
     }
 
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
     public String getName() {
