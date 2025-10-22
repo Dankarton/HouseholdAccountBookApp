@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.householdaccountbook.InputFragmentPagerAdapter;
+import com.example.householdaccountbook.adapter.InputFragmentPagerAdapter;
 import com.example.householdaccountbook.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;

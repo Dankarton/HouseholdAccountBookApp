@@ -52,8 +52,8 @@ public class MyDbManager {
         Cursor cursor = db.query(
                 MyOpenHelper.PAYMENT_METHOD_TABLE_NAME,
                 new String[]{"COUNT(*)"},
-                "name = ?",
-                new String[]{"通常支払い"},
+                MyOpenHelper.ID + " = ?",
+                new String[]{"0"},
                 null,
                 null,
                 null
@@ -61,42 +61,81 @@ public class MyDbManager {
         cursor.moveToFirst();
         int count = cursor.getInt(0);
         cursor.close();
-        if (count == 0) {
-            MyDbManager.setRecordToDataBase(
-                    MyOpenHelper.PAYMENT_METHOD_TABLE_NAME,
-                    PaymentMethod.makeContentValues(
-                            "通常支払い",
-                            PaymentMethod.ClosingRule.None.getCode(), null,
-                            PaymentMethod.PaymentRule.SameDay.getCode(), null,
-                            true
-                    )
-            );
+        // 件数が1以上だったら登録する必要はないので終了
+        if (count > 0) return;
+        // デフォルトの支払方法を新規作成
+        ArrayList<PaymentMethod> newlyList = MyDbManager.getAllPaymentMethodData();
+        // リストの一番最初に来るように登録
+        PaymentMethod defaultMethod = new PaymentMethod(0, "通常支払い",
+                PaymentMethod.ClosingRule.None.getCode(), null,
+                PaymentMethod.PaymentRule.SameDay.getCode(), null,
+                0, true);
+        ContentValues values = defaultMethod.getContentValues();
+        values.put(MyOpenHelper.ID, defaultMethod.getId());
+        db.insert(MyOpenHelper.PAYMENT_METHOD_TABLE_NAME, null, values);
+        for (int i = 1; i < newlyList.size(); i++) {
+            // indexを更新
+            // 先頭はデフォルトの支払が来るためindexを+1してる
+            newlyList.get(i).setIndex(i + 1);
+            upsertDatabase(db, MyOpenHelper.PAYMENT_METHOD_TABLE_NAME, newlyList.get(i).getContentValues());
         }
     }
-    public static void setRecordToDataBase(String table, ContentValues values){
+
+    public static void setRecordToDataBase(String table, ContentValues values) {
         SQLiteDatabase db = helper.getWritableDatabase();
         db.insert(table, null, values);
     }
 
     /**
+     * Database内のデータを更新(データが無い場合は挿入)する関数
+     *
+     * @param db        SQLiteDatabase
+     * @param tableName テーブル名
+     * @param values    ContentValues (IDカラムは必ず必要!)
+     * @return boolean 成功するとtrue，失敗するとfalse
+     */
+    private static boolean upsertDatabase(SQLiteDatabase db, String tableName, ContentValues values) {
+        Integer id = values.getAsInteger(MyOpenHelper.ID);
+        if (id == null) {
+            Log.e("MyDbManager", "upsertDatabase: idがnullのため更新・挿入を中止しました．");
+            return false;
+        }
+        int updatedRows = db.update(tableName, values, MyOpenHelper.ID + " = ?", new String[]{String.valueOf(id)});
+        if (updatedRows > 0) return true;
+        long result = db.insert(tableName, null, values);
+        if (result == -1) {
+            Log.e("MyDbManager", "upsertDatabase: insertに失敗しました．(" + tableName + ")");
+            return false;
+        } else {
+            return true;
+        }
+    }
+    public static boolean upsertDatabase(String tableName, ContentValues values) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        return MyDbManager.upsertDatabase(db, tableName, values);
+    }
+
+    /**
      * DataTableから一致するIDのデータを削除する関数
+     *
      * @param table DataTable名
-     * @param id データID
+     * @param id    データID
      */
     public static void deleteRecordByID(String table, String id) {
         SQLiteDatabase db = helper.getReadableDatabase();
-        db.delete(table, "_id=?", new String[]{ id });
+        db.delete(table, "_id=?", new String[]{id});
     }
 
     /**
      * 購入日付からデータを検索してListにして返す関数
-     * @param year 購入年(nullを入れると条件は無視される)
+     *
+     * @param year  購入年(nullを入れると条件は無視される)
      * @param month 購入月(nullを入れると条件は無視される)
-     * @param day 購入日(nullを入れると条件は無視される)
+     * @param day   購入日(nullを入れると条件は無視される)
      * @return Expensesリスト
      */
     public static ArrayList<Expenses> getExpensesByPurchaseDate(Integer year, Integer month, Integer day) {
-        SQLiteDatabase db =helper.getReadableDatabase();
+        SQLiteDatabase db = helper.getReadableDatabase();
         ArrayList<String> selectionParts = new ArrayList<>();
         ArrayList<String> selectionArgsList = new ArrayList<>();
 
@@ -136,24 +175,25 @@ public class MyDbManager {
 
     /**
      * 引数で指定した日付と購入日もしくは支払日が一致する支出データを取得
-     * @param year 年
+     *
+     * @param year  年
      * @param month 月
-     * @param day 日
+     * @param day   日
      * @return Expensesリスト
      */
     public static ArrayList<Expenses> getExpensesByPurchaseOrPaymentDate(Integer year, Integer month, Integer day) {
-        SQLiteDatabase db =helper.getReadableDatabase();
+        SQLiteDatabase db = helper.getReadableDatabase();
         String purchaseSelection = buildWhereClauseByDate(
                 year, month, day,
                 MyOpenHelper.COLUMN_YEAR,
                 MyOpenHelper.COLUMN_MONTH,
                 MyOpenHelper.COLUMN_DAY
-                );
+        );
         String paymentSelection = buildWhereClauseByDate(
-          year, month, day,
-          MyOpenHelper.COLUMN_PAYMENT_YEAR,
-          MyOpenHelper.COLUMN_PAYMENT_MONTH,
-          MyOpenHelper.COLUMN_PAYMENT_DAY
+                year, month, day,
+                MyOpenHelper.COLUMN_PAYMENT_YEAR,
+                MyOpenHelper.COLUMN_PAYMENT_MONTH,
+                MyOpenHelper.COLUMN_PAYMENT_DAY
         );
         String selection = "(" + purchaseSelection + ") OR (" + paymentSelection + ")";
         String orderBy = MyOpenHelper.COLUMN_YEAR + " ASC, " + MyOpenHelper.COLUMN_MONTH + " ASC, " + MyOpenHelper.COLUMN_DAY;
@@ -173,13 +213,14 @@ public class MyDbManager {
 
     /**
      * 支払日時からデータを検索してListにして返す関数
-     * @param year 支払年(nullを入れると条件は無視される)
+     *
+     * @param year  支払年(nullを入れると条件は無視される)
      * @param month 支払月(nullを入れると条件は無視される)
-     * @param day 支払日(nullを入れると条件は無視される)
+     * @param day   支払日(nullを入れると条件は無視される)
      * @return ListArray
      */
     public static ArrayList<Expenses> getExpensesByPaymentDate(Integer year, Integer month, Integer day) {
-        SQLiteDatabase db =helper.getReadableDatabase();
+        SQLiteDatabase db = helper.getReadableDatabase();
         ArrayList<String> selectionParts = new ArrayList<>();
         ArrayList<String> selectionArgsList = new ArrayList<>();
 
@@ -239,7 +280,7 @@ public class MyDbManager {
         String orderBy = "year ASC, month ASC, day ASC";
         Cursor cursor = db.query(
                 MyOpenHelper.INCOME_TABLE_NAME,
-                new String[] {"_id", "year", "month", "day", "amount", "memo", "category"},
+                new String[]{"_id", "year", "month", "day", "amount", "memo", "category"},
                 null,
                 null,
                 null,
@@ -247,7 +288,7 @@ public class MyDbManager {
                 orderBy);
         cursor.moveToFirst();
         ArrayList<Income> incomeList = new ArrayList<Income>();
-        for (int i = 0; i < cursor.getCount(); i++){
+        for (int i = 0; i < cursor.getCount(); i++) {
             Income tmp = new Income(
                     cursor.getInt(0),
                     MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
@@ -263,7 +304,7 @@ public class MyDbManager {
     }
 
     public static ArrayList<Income> getIncomeDataByDate(Integer year, Integer month, Integer day) {
-        SQLiteDatabase db =helper.getReadableDatabase();
+        SQLiteDatabase db = helper.getReadableDatabase();
         String selection = buildWhereClauseByDate(
                 year, month, day,
                 MyOpenHelper.COLUMN_YEAR,
@@ -284,6 +325,7 @@ public class MyDbManager {
         cursor.close();
         return incomesList;
     }
+
     public static DailyBop getDailyData(int year, int month, int day) {
         ArrayList<Expenses> expensesList = MyDbManager.getExpensesByPurchaseOrPaymentDate(year, month, day);
         ArrayList<Income> incomeList = MyDbManager.getIncomeDataByDate(year, month, day);
@@ -309,22 +351,26 @@ public class MyDbManager {
                 purchaseList.add(exp);
             }
         }
-        return new DailyBop(year, month ,day, incomeList, purchaseList, paymentList);
+        return new DailyBop(year, month, day, incomeList, purchaseList, paymentList);
     }
+
     public static ArrayList<BopCategory> getAllExpensesCategoryData() {
         return getAllCategoryData(MyOpenHelper.EXPENSES_CATEGORY_TABLE_NAME);
     }
+
     public static ArrayList<BopCategory> getAllIncomeCategoryData() {
         return getAllCategoryData(MyOpenHelper.INCOME_CATEGORY_TABLE_NAME);
     }
+
     private static ArrayList<BopCategory> getAllCategoryData(String tableName) {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(
                 tableName,
-                new String[] {
+                new String[]{
                         MyOpenHelper.ID,
                         MyOpenHelper.COLUMN_NAME,
                         MyOpenHelper.COLUMN_COLOR,
+                        MyOpenHelper.COLUMN_INDEX,
                         MyOpenHelper.COLUMN_IS_DELETED
                 },
                 null,
@@ -340,7 +386,8 @@ public class MyDbManager {
                     cursor.getInt(1),
                     cursor.getString(2),
                     cursor.getInt(3),
-                    cursor.getInt(4) == 1
+                    cursor.getInt(4),
+                    cursor.getInt(5) == 1
             );
             categoryList.add(tmp);
             cursor.moveToNext();
@@ -351,19 +398,21 @@ public class MyDbManager {
 
     /**
      * 支払方法のデータを全て取得
+     *
      * @return ArrayList<PaymentMethod>
      */
     public static ArrayList<PaymentMethod> getAllPaymentMethodData() {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(
                 MyOpenHelper.PAYMENT_METHOD_TABLE_NAME,
-                new String[] {
+                new String[]{
                         MyOpenHelper.ID,
                         MyOpenHelper.COLUMN_NAME,
                         MyOpenHelper.COLUMN_CLOSING_RULE_CODE,
                         MyOpenHelper.COLUMN_CLOSING_DAY,
                         MyOpenHelper.COLUMN_PAYMENT_RULE_CODE,
                         MyOpenHelper.COLUMN_PAYMENT_DAY,
+                        MyOpenHelper.COLUMN_INDEX,
                         MyOpenHelper.COLUMN_IS_DEFAULT
                 },
                 null,
@@ -382,7 +431,8 @@ public class MyDbManager {
                     cursor.getInt(3),
                     cursor.getInt(4),
                     cursor.getInt(5),
-                    cursor.getInt(6) == 1
+                    cursor.getInt(6),
+                    cursor.getInt(7) == 1
             );
             paymentMethodList.add(tmp);
             cursor.moveToNext();
@@ -407,8 +457,10 @@ public class MyDbManager {
         }
         return incomeList;
     }
+
     /**
      * CursorをExpensesリストに変換する関数
+     *
      * @param cursor Cursor
      * @return ArrayList
      */
@@ -416,7 +468,7 @@ public class MyDbManager {
         ArrayList<Expenses> expensesList = new ArrayList<Expenses>();
 
         cursor.moveToFirst();
-        for (int i = 0; i < cursor.getCount(); i++){
+        for (int i = 0; i < cursor.getCount(); i++) {
             Expenses tmp = new Expenses(
                     cursor.getInt(0),
                     MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
@@ -456,16 +508,16 @@ public class MyDbManager {
      * データテーブル内にあるデータをログに表示する関数
      * コードテスト用
      */
-    public static void checkExpensesDbList(){
+    public static void checkExpensesDbList() {
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor cursor = db.query("ExpensesDb", new String[] {"_id", "year", "month", "day", "amount", "memo", "category"},
+        Cursor cursor = db.query("ExpensesDb", new String[]{"_id", "year", "month", "day", "amount", "memo", "category"},
                 null,
                 null,
                 null,
                 null,
                 null);
         cursor.moveToFirst();
-        for (int i = 0; i < cursor.getCount(); i++){
+        for (int i = 0; i < cursor.getCount(); i++) {
             String strBuilder =
                     "id:" + cursor.getInt(0) +
                             ", y:" +

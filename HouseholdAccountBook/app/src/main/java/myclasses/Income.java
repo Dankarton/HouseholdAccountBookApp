@@ -2,9 +2,10 @@ package myclasses;
 
 import android.content.ContentValues;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
-public class Income extends BOP {
+public class Income extends BOP implements Serializable {
 
     public Income(int id, Calendar date, int amount, String memo, String category) {
         super(id, date, amount, memo, category);

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.example.householdaccountbook.MyOpenHelper;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,7 @@ import strategy.paymentstrategy.SameDayPaymentRule;
 /**
  * 支払方法クラス
  */
-public class PaymentMethod {
+public class PaymentMethod implements Serializable {
     public enum ClosingRule {
         FixedDay(0, "毎月指定日", true, "日付(日)") {
             @Override
@@ -142,8 +143,19 @@ public class PaymentMethod {
     private final Integer closingDay;
     private final PaymentRule paymentRule;
     private final Integer paymentDay;
+    private int index;
     private final boolean isDefault;
 
+    public PaymentMethod() {
+        this.id = null;
+        this.name = null;
+        this.closingRule = ClosingRule.fromCode(0);
+        this.closingDay = null;
+        this.paymentRule = PaymentRule.fromCode(0);
+        this.paymentDay = null;
+        this.index = 0;
+        this.isDefault = false;
+    }
     /**
      * 支払方法クラス．
      * @param id SQLiteのデータテーブルに登録したときのID
@@ -152,13 +164,14 @@ public class PaymentMethod {
      * @param paymentDay 支払日(0を入力すると，支払日=購入日になる)
      * @param isDefault デフォルトで用意されている支払方法かどうか
      */
-    public PaymentMethod(Integer id, String name, int closingRuleCode, Integer closingDay, int paymentRuleCode, Integer paymentDay, boolean isDefault) {
+    public PaymentMethod(Integer id, String name, int closingRuleCode, Integer closingDay, int paymentRuleCode, Integer paymentDay, int index, boolean isDefault) {
         this.id = id;
         this.name = name;
         this.closingRule = ClosingRule.fromCode(closingRuleCode);
         this.closingDay = closingDay;
         this.paymentRule = PaymentRule.fromCode(paymentRuleCode);
         this.paymentDay = paymentDay;
+        this.index = index;
         this.isDefault = isDefault;
     }
 
@@ -175,7 +188,7 @@ public class PaymentMethod {
      * @param _isDefault    デフォルトで用意されている支払方法かどうか
      * @return ContentValues
      */
-    public static ContentValues makeContentValues(String _name, int _closingRuleCode, Integer _closingSettingNum, int _paymentRuleCode, Integer _paymentSettingNum, boolean _isDefault) {
+    public static ContentValues makeContentValues(String _name, int _closingRuleCode, Integer _closingSettingNum, int _paymentRuleCode, Integer _paymentSettingNum, int _index, boolean _isDefault) {
         ContentValues values = new ContentValues();
         // SQLiteはbool型に対応してないので0,1整数に変換
         int isDefaultInteger;
@@ -190,10 +203,25 @@ public class PaymentMethod {
         values.put(MyOpenHelper.COLUMN_CLOSING_DAY, _closingSettingNum);
         values.put(MyOpenHelper.COLUMN_PAYMENT_RULE_CODE, _paymentRuleCode);
         values.put(MyOpenHelper.COLUMN_PAYMENT_DAY, _paymentSettingNum);
+        values.put(MyOpenHelper.COLUMN_INDEX, _index);
         values.put(MyOpenHelper.COLUMN_IS_DEFAULT, isDefaultInteger);
         return values;
     }
 
+    /**
+     * ContentValues取得
+     * @return ContentValues
+     */
+    public ContentValues getContentValues() {
+        ContentValues values = this.getContentValuesWithoutId();
+        values.put(MyOpenHelper.ID, id);
+        return values;
+    }
+
+    /**
+     * ContentValues取得(ID除外)
+     * @return ContentValues
+     */
     public ContentValues getContentValuesWithoutId() {
         return PaymentMethod.makeContentValues(
                 this.name,
@@ -201,6 +229,7 @@ public class PaymentMethod {
                 this.closingDay,
                 this.paymentRule.code,
                 this.paymentDay,
+                this.index,
                 this.isDefault
         );
     }
@@ -228,6 +257,8 @@ public class PaymentMethod {
     public int getPaymentDay() {
         return this.paymentDay;
     }
+    public void setIndex(int newlyIndex) { this.index = newlyIndex; }
+    public int getIndex() { return this.index; }
     public boolean isDefault() {
         return this.isDefault;
     }

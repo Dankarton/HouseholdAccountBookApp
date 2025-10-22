@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.activities.SettingSelectPaymentMethodActivity;
+import com.example.householdaccountbook.activities.SettingEditPaymentMethodActivity;
 import com.example.householdaccountbook.customviews.SettingMenuButtonView;
 import com.example.householdaccountbook.data.SettingMenuFragmentKind;
 
@@ -55,7 +55,7 @@ public class SettingsMenuFragment extends Fragment implements SettingMenuButtonV
         switch (type) {
             case PAYMENT_METHOD_EDIT:
                 Context context = requireContext();
-                Intent intent = new Intent(context, SettingSelectPaymentMethodActivity.class);
+                Intent intent = new Intent(context, SettingEditPaymentMethodActivity.class);
                 context.startActivity(intent);
                 break;
             case EXPENSES_CATEGORY_EDIT:

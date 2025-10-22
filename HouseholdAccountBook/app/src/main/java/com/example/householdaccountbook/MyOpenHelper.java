@@ -40,6 +40,7 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PAYMENT_RULE_CODE = "payment_rule_code";
     public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id"; // 支払方法のID (支出の方のカラムが持つ情報)
 
+    public static final String COLUMN_INDEX = "list_index";
     public static final String COLUMN_COLOR = "color_code_text";
     public static final String COLUMN_IS_DELETED = "is_deleted";
 
@@ -67,24 +68,27 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     COLUMN_MEMO + " TEXT)";
     private static final String EXP_CATEGORY_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + EXPENSES_CATEGORY_TABLE_NAME + " (" +
-                    ID + " INTEGER PRIMARY KEY," +
+                    ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
                     COLUMN_COLOR + " TEXT NOT NULL," +
+                    COLUMN_INDEX + "INTEGER," +
             COLUMN_IS_DELETED + "INTEGER NOT NULL DEFAULT 0)";
     private static final String INC_CATEGORY_CREATE_ENTRIES =
             "CREATE TABLE " + INCOME_CATEGORY_TABLE_NAME + " (" +
-                    ID + " INTEGER PRIMARY KEY," +
+                    ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
                     COLUMN_COLOR + " TEXT NOT NULL," +
+                    COLUMN_INDEX + "INTEGER," +
                     COLUMN_IS_DELETED + "INTEGER NOT NULL DEFAULT 0)";
     private static final String PAYMENT_METHOD_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + PAYMENT_METHOD_TABLE_NAME + " (" +
-                    ID + " INTEGER PRIMARY KEY," +
+                    ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
                     COLUMN_CLOSING_RULE_CODE + " INTEGER," +
                     COLUMN_CLOSING_DAY + " INTEGER," +
                     COLUMN_PAYMENT_RULE_CODE + " INTEGER," +
                     COLUMN_PAYMENT_DAY + " INTEGER," +
+                    COLUMN_INDEX + "INTEGER," +
                     COLUMN_IS_DEFAULT + " INTEGER NOT NULL DEFAULT 0)";
     private static final String INCOME_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + INCOME_TABLE_NAME;
     private static final String EXPENSES_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + EXPENSES_TABLE_NAME;

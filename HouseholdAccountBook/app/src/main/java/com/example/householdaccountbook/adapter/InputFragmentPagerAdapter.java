@@ -1,11 +1,8 @@
-package com.example.householdaccountbook;
+package com.example.householdaccountbook.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-
-import com.example.householdaccountbook.fragments.ExpensesInputFragment;
-import com.example.householdaccountbook.fragments.IncomeInputFragment;
 
 public class InputFragmentPagerAdapter extends FragmentStateAdapter {
     private Fragment fragmentPage1 = null;

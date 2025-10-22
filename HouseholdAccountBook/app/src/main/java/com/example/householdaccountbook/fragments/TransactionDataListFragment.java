@@ -14,19 +14,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.householdaccountbook.DailyRecordAdapter;
 import com.example.householdaccountbook.MyDbManager;
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.TransactionDateAdapter;
+import com.example.householdaccountbook.adapter.TransactionDateAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import myclasses.DailyBop;
-import myclasses.Expenses;
-import myclasses.Income;
 
 public class TransactionDataListFragment extends Fragment {
     RecyclerView dailyRecordRecyclerView;

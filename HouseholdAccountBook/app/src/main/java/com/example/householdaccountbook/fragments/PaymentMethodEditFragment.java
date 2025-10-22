@@ -2,11 +2,14 @@ package com.example.householdaccountbook.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -15,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.adapter.EnumSpinnerAdapter;
 
@@ -32,6 +36,7 @@ public class PaymentMethodEditFragment extends Fragment {
     TextView paymentRuleSettingText;
     EditText closingRuleSettingNumEdit;
     EditText paymentRuleSettingNumEdit;
+    Button saveButton;
 
     PaymentMethod paymentMethod = null;
 
@@ -58,6 +63,7 @@ public class PaymentMethodEditFragment extends Fragment {
         paymentRuleSettingText = view.findViewById(R.id.payment_rule_setting_text);
         closingRuleSettingNumEdit = view.findViewById(R.id.closing_rule_setting_num_edit);
         paymentRuleSettingNumEdit = view.findViewById(R.id.payment_rule_setting_num_edit);
+        saveButton = view.findViewById(R.id.save_button);
         // 締め日スピナー用Adapter作成
         EnumSpinnerAdapter<PaymentMethod.ClosingRule> closingSpinnerAdapter = new EnumSpinnerAdapter<>(
                 view.getContext(),
@@ -107,15 +113,47 @@ public class PaymentMethodEditFragment extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> parent) { /* Do nothing. */ }
         });
+        // Editが変更された時などに実行される処理を記述するWatcher
+        TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { /* Do nothing */ }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { /* Do nothing */ }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkInputData();
+            }
+        };
+        // Editが変更された時に追加処理を行えるようにwatcherをセット
+        nameEdit.addTextChangedListener(watcher);
+        closingRuleSettingNumEdit.addTextChangedListener(watcher);
+        paymentRuleSettingNumEdit.addTextChangedListener(watcher);
         // 保存ボタンが押された時の処理を記述
-        // TODO 10/21 ユーザーの入力内容を確認して保存ボタンの状態を変更する処理が欲しい．型が合わないような入力だったら保存ボタンが押せないようにしたい．
-        view.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 notifyListenerCompleted(createPaymentMethodFromInput());
                 view.setEnabled(false);
             }
         });
+        // 初期値設定
+        saveButton.setEnabled(false);
+        if (paymentMethod != null) {
+            nameEdit.setText(paymentMethod.getName());
+            closingRuleSpinner.setSelection(paymentMethod.getClosingRule().ordinal());
+            paymentRuleSpinner.setSelection(paymentMethod.getPaymentRule().ordinal());
+            closingRuleSettingNumEdit.setText(paymentMethod.getClosingDay());
+            paymentRuleSettingNumEdit.setText(paymentMethod.getPaymentDay());
+        }
+        else {
+            nameEdit.setText("");
+            closingRuleSpinner.setSelection(0);
+            paymentRuleSpinner.setSelection(0);
+            closingRuleSettingNumEdit.setText(null);
+            paymentRuleSettingNumEdit.setText(null);
+        }
     }
     private void notifyListenerCompleted(PaymentMethod enteredData) {
         this.listener.onCompleted(enteredData);
@@ -148,6 +186,39 @@ public class PaymentMethodEditFragment extends Fragment {
             paymentSettingNum = null;
         }
         return new PaymentMethod(id, name, closingRuleCode, closingSettingNum, paymentRuleCode, paymentSettingNum, false);
+    }
+
+    private void checkInputData() {
+        // 支払い方法名が入力されているか検証
+        boolean isNameValid = !nameEdit.getText().toString().isEmpty();
+        // 締め日設定値が正しく入力されているか検証
+        boolean isClosingSettingNumValid = false;
+        if (closingRuleSettingNumEdit.isEnabled()) {
+            String numText = closingRuleSettingNumEdit.getText().toString();
+            if(MyStdlib.canConvertToInteger(numText)) {
+                if(Integer.parseInt(numText) > 0) {
+                    isClosingSettingNumValid = true;
+                }
+            }
+        }
+        else {
+            isClosingSettingNumValid = true;
+        }
+        // 支払日設定値が正しく入力されているか検証
+        boolean isPaymentSettingNumValid = false;
+        if (paymentRuleSettingNumEdit.isEnabled()) {
+            String numText = paymentRuleSettingNumEdit.getText().toString();
+            if (MyStdlib.canConvertToInteger(numText)) {
+                if (Integer.parseInt(numText) > 0) {
+                    isPaymentSettingNumValid = true;
+                }
+            }
+        }
+        else {
+            isPaymentSettingNumValid = true;
+        }
+
+        saveButton.setEnabled(isNameValid && isClosingSettingNumValid && isPaymentSettingNumValid);
     }
     public void setListener(OnInputActionListener<PaymentMethod> listener) {
         this.listener = listener;

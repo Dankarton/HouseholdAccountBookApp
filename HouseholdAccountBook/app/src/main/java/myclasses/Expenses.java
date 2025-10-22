@@ -5,9 +5,10 @@ import android.content.ContentValues;
 import com.example.householdaccountbook.MyOpenHelper;
 import com.example.householdaccountbook.MyStdlib;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
-public class Expenses extends BOP {
+public class Expenses extends BOP implements Serializable {
     private final int paymentMethodId;
     private final Calendar paymentDate;
     private final boolean isSameDay;

@@ -1,21 +1,20 @@
-package com.example.householdaccountbook;
+package com.example.householdaccountbook.adapter;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.customviews.ExpensesSettingsCustomView;
 import com.example.householdaccountbook.customviews.IncomeSettingsCustomView;
 
 import java.util.List;
 
 import myclasses.BalanceOfPayments;
-import myclasses.DailyBop;
 import myclasses.Expenses;
 import myclasses.Income;
 

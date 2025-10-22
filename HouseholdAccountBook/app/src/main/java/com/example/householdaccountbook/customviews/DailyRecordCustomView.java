@@ -1,7 +1,6 @@
 package com.example.householdaccountbook.customviews;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -10,9 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.example.householdaccountbook.DailyRecordAdapter;
+import com.example.householdaccountbook.adapter.DailyRecordAdapter;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.databinding.CustomViewDailyRecordBinding;
 
 import java.util.List;
 
