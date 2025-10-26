@@ -62,8 +62,8 @@ public class DailyBop {
 
     public List<Expenses> getPaymentList() { return this._paymentList; }
 
-    public List<BalanceOfPayments> getBopList() {
-        List<BalanceOfPayments> bopList = new ArrayList<>();
+    public List<BOP> getBopList() {
+        List<BOP> bopList = new ArrayList<>();
         bopList.addAll(this._incomeList);
         bopList.addAll(this._paymentList);
         bopList.addAll(this._purchaseList);

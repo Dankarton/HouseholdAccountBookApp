@@ -2,6 +2,7 @@ package myclasses;
 
 import android.content.ContentValues;
 
+import com.example.householdaccountbook.MyDbContract;
 import com.example.householdaccountbook.MyOpenHelper;
 
 import java.io.Serializable;
@@ -29,9 +30,9 @@ public abstract class BopCategory implements DatabaseEntity, Serializable {
         else {
             isDeletedInteger = 0;
         }
-        values.put(MyOpenHelper.COLUMN_NAME, this._name);
-        values.put(MyOpenHelper.COLUMN_COLOR, this._colorCode);
-        values.put(MyOpenHelper.COLUMN_IS_DELETED, isDeletedInteger);
+        values.put(MyDbContract.BaseCategoryEntry.COLUMN_NAME, this._name);
+        values.put(MyDbContract.BaseCategoryEntry.COLUMN_COLOR, this._colorCode);
+        values.put(MyDbContract.BaseCategoryEntry.COLUMN_IS_DELETED, isDeletedInteger);
         return values;
     }
     @Override

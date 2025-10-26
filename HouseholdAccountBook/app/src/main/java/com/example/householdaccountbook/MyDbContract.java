@@ -86,12 +86,13 @@ public final class MyDbContract {
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_COLOR = "color_code_text";
         public static final String COLUMN_INDEX = "list_index";
+        public static final String COLUMN_IS_DELETED = "is_deleted";
         private static final String[] COLUMNS = {
-                MyOpenHelper.ID,
-                MyOpenHelper.COLUMN_NAME,
-                MyOpenHelper.COLUMN_COLOR,
-                MyOpenHelper.COLUMN_INDEX,
-                MyOpenHelper.COLUMN_IS_DELETED
+                BaseCategoryEntry.ID,
+                BaseCategoryEntry.COLUMN_NAME,
+                BaseCategoryEntry.COLUMN_COLOR,
+                BaseCategoryEntry.COLUMN_INDEX,
+                BaseCategoryEntry.COLUMN_IS_DELETED
         };
     }
 
@@ -125,6 +126,7 @@ public final class MyDbContract {
 
     public static final class PaymentMethodEntry {
         private PaymentMethodEntry() { /*インスタンス化防止*/ }
+        public static final String TABLE_NAME = "PaymentMethodDb";
         public static final String ID = "_id";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_CLOSING_RULE_CODE = "closing_rule_code";

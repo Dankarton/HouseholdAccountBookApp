@@ -2,6 +2,7 @@ package myclasses;
 
 import android.content.ContentValues;
 
+import com.example.householdaccountbook.MyDbContract;
 import com.example.householdaccountbook.MyOpenHelper;
 import com.example.householdaccountbook.MyStdlib;
 
@@ -20,16 +21,16 @@ public class Expenses extends BOP implements Serializable {
     }
     public static ContentValues makeContentValues(int _year, int _month, int _day, int _amount, String _memo, String _category, int _paymentMethodId, int pYear, int pMonth, int pDay) {
         ContentValues values = new ContentValues();
-        values.put(MyOpenHelper.COLUMN_YEAR, _year);
-        values.put(MyOpenHelper.COLUMN_MONTH, _month);
-        values.put(MyOpenHelper.COLUMN_DAY, _day);
-        values.put(MyOpenHelper.COLUMN_AMOUNT, _amount);
-        values.put(MyOpenHelper.COLUMN_MEMO, _memo);
-        values.put(MyOpenHelper.COLUMN_CATEGORY, _category);
-        values.put(MyOpenHelper.COLUMN_PAYMENT_METHOD_ID, _paymentMethodId);
-        values.put(MyOpenHelper.COLUMN_PAYMENT_YEAR, pYear);
-        values.put(MyOpenHelper.COLUMN_PAYMENT_MONTH, pMonth);
-        values.put(MyOpenHelper.COLUMN_PAYMENT_DAY, pDay);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_YEAR, _year);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_MONTH, _month);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_DAY, _day);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_AMOUNT, _amount);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_MEMO, _memo);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_CATEGORY, _category);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_PAYMENT_METHOD_ID, _paymentMethodId);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_PAYMENT_YEAR, pYear);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_PAYMENT_MONTH, pMonth);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_PAYMENT_DAY, pDay);
         return values;
     }
 
@@ -43,7 +44,7 @@ public class Expenses extends BOP implements Serializable {
         return this.paymentDate;
     }
     @Override
-    public String getDatabaseName() { return MyOpenHelper.EXPENSES_TABLE_NAME; }
+    public String getDatabaseName() { return MyDbContract.ExpensesEntry.TABLE_NAME; }
     @Override
     public ContentValues getContentValues() {
         return Expenses.makeContentValues(

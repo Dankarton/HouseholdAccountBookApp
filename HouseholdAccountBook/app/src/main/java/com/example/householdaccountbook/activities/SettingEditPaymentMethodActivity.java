@@ -2,6 +2,7 @@ package com.example.householdaccountbook.activities;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.householdaccountbook.MyDbContract;
 import com.example.householdaccountbook.MyDbManager;
 import com.example.householdaccountbook.MyOpenHelper;
 import com.example.householdaccountbook.fragments.PaymentMethodEditFragment;
@@ -20,18 +21,24 @@ public class SettingEditPaymentMethodActivity extends SettingMotherActivity impl
     public void onSaveButtonClicked(PaymentMethod data) {
         // IDが無い場合(新規追加の場合)
         if (data.getId() == null) {
-            MyDbManager.setRecordToDataBase(MyOpenHelper.PAYMENT_METHOD_TABLE_NAME, data.getContentValuesWithoutId());
+            MyDbManager.setRecordToDataBase(
+                    MyDbContract.PaymentMethodEntry.TABLE_NAME,
+                    data.getContentValuesWithoutId());
         }
         // 編集の場合
         else {
-            MyDbManager.upsertDatabase(MyOpenHelper.PAYMENT_METHOD_TABLE_NAME, data.getContentValues());
+            MyDbManager.upsertDatabase(
+                    MyDbContract.PaymentMethodEntry.TABLE_NAME,
+                    data.getContentValues());
         }
         finish();
     }
     @Override
     public void onDeleteButtonClicked(PaymentMethod data) {
         if (data.getId() != null) {
-            MyDbManager.deleteRecordByID(MyOpenHelper.PAYMENT_METHOD_TABLE_NAME, String.valueOf(data.getId()));
+            MyDbManager.deleteRecordByID(
+                    MyDbContract.PaymentMethodEntry.TABLE_NAME,
+                    String.valueOf(data.getId()));
         }
         finish();
     }

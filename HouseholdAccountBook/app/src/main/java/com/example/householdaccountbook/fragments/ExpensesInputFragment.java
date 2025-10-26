@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.householdaccountbook.MyDbContract;
 import com.example.householdaccountbook.MyDbManager;
 import com.example.householdaccountbook.MyOpenHelper;
 import com.example.householdaccountbook.MyStdlib;
@@ -153,7 +154,7 @@ public class ExpensesInputFragment extends Fragment {
                 PaymentMethod paymentMethod = paymentMethodArray[paymentMethodSpinner.getSelectedItemPosition()];
                 Calendar paymentDate = paymentMethod.getPaymentDate(MyStdlib.convertToCalendar(year, month, day));
                 MyDbManager.setRecordToDataBase(
-                        MyOpenHelper.EXPENSES_TABLE_NAME,
+                        MyDbContract.ExpensesEntry.TABLE_NAME,
                         Expenses.makeContentValues(
                                 year,
                                 month,

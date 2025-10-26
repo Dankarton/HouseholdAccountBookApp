@@ -7,91 +7,56 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MyOpenHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "HouseholdDb.db";
-    // 支出テーブル
-    public static final String EXPENSES_TABLE_NAME = "ExpensesDb";
-    // 収入テーブル
-    public static final String INCOME_TABLE_NAME = "IncomeDb";
-    // 支出カテゴリテーブル
-    public static final String EXPENSES_CATEGORY_TABLE_NAME = "ExpCategoryDb";
-    // 収入カテゴリテーブル
-    public static final String INCOME_CATEGORY_TABLE_NAME = "IncCategoryDb";
-    // 支払方法テーブル
-    public static final String PAYMENT_METHOD_TABLE_NAME = "PaymentMethodDb";
-
-    public static final String ID = "_id";                     // ID
-
-    public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_IS_DEFAULT = "is_default";
-    // 支出，収入で使う共通カラム
-    public static final String COLUMN_YEAR = "year";           // 年
-    public static final String COLUMN_MONTH = "month";         // 月
-    public static final String COLUMN_DAY = "day";             // 日
-    public static final String COLUMN_AMOUNT = "amount";       // 金額
-    public static final String COLUMN_CATEGORY = "category";   // カテゴリ
-    public static final String COLUMN_MEMO = "memo";           // メモ
-
-    public static final String COLUMN_PAYMENT_YEAR = "payment_year";
-    public static final String COLUMN_PAYMENT_MONTH = "payment_month";
-    public static final String COLUMN_PAYMENT_DAY = "payment_day";
-
-    public static final String COLUMN_CLOSING_DAY = "closing_day";
-    public static final String COLUMN_CLOSING_RULE_CODE = "closing_rule_code";
-    public static final String COLUMN_PAYMENT_RULE_CODE = "payment_rule_code";
-    public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id"; // 支払方法のID (支出の方のカラムが持つ情報)
-
-    public static final String COLUMN_INDEX = "list_index";
-    public static final String COLUMN_COLOR = "color_code_text";
-    public static final String COLUMN_IS_DELETED = "is_deleted";
 
     private static final String EXPENSES_SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + EXPENSES_TABLE_NAME + " (" +
-                    ID + " INTEGER PRIMARY KEY," +
-                    COLUMN_YEAR + " INTEGER," +
-                    COLUMN_MONTH + " INTEGER," +
-                    COLUMN_DAY + " INTEGER," +
-                    COLUMN_AMOUNT + " INTEGER," +
-                    COLUMN_CATEGORY + " TEXT," +
-                    COLUMN_MEMO + " TEXT," +
-                    COLUMN_PAYMENT_METHOD_ID + " INTEGER," +
-                    COLUMN_PAYMENT_YEAR + " INTEGER," +
-                    COLUMN_PAYMENT_MONTH + " INTEGER," +
-                    COLUMN_PAYMENT_DAY + " INTEGER)";
+            "CREATE TABLE " + MyDbContract.ExpensesEntry.TABLE_NAME + " (" +
+                    MyDbContract.ExpensesEntry.ID + " INTEGER PRIMARY KEY," +
+                    MyDbContract.ExpensesEntry.COLUMN_YEAR + " INTEGER," +
+                    MyDbContract.ExpensesEntry.COLUMN_MONTH + " INTEGER," +
+                    MyDbContract.ExpensesEntry.COLUMN_DAY + " INTEGER," +
+                    MyDbContract.ExpensesEntry.COLUMN_AMOUNT + " INTEGER," +
+                    MyDbContract.ExpensesEntry.COLUMN_CATEGORY + " TEXT," +
+                    MyDbContract.ExpensesEntry.COLUMN_MEMO + " TEXT," +
+                    MyDbContract.ExpensesEntry.COLUMN_PAYMENT_METHOD_ID + " INTEGER," +
+                    MyDbContract.ExpensesEntry.COLUMN_PAYMENT_YEAR + " INTEGER," +
+                    MyDbContract.ExpensesEntry.COLUMN_PAYMENT_MONTH + " INTEGER," +
+                    MyDbContract.ExpensesEntry.COLUMN_PAYMENT_DAY + " INTEGER)";
     private static final String INCOME_SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + INCOME_TABLE_NAME + " (" +
-                    ID + " INTEGER PRIMARY KEY," +
-                    COLUMN_YEAR + " INTEGER," +
-                    COLUMN_MONTH + " INTEGER," +
-                    COLUMN_DAY + " INTEGER," +
-                    COLUMN_AMOUNT + " INTEGER," +
-                    COLUMN_CATEGORY + " TEXT," +
-                    COLUMN_MEMO + " TEXT)";
+            "CREATE TABLE " + MyDbContract.IncomeEntry.TABLE_NAME + " (" +
+                    MyDbContract.IncomeEntry.ID + " INTEGER PRIMARY KEY," +
+                    MyDbContract.IncomeEntry.COLUMN_YEAR + " INTEGER," +
+                    MyDbContract.IncomeEntry.COLUMN_MONTH + " INTEGER," +
+                    MyDbContract.IncomeEntry.COLUMN_DAY + " INTEGER," +
+                    MyDbContract.IncomeEntry.COLUMN_AMOUNT + " INTEGER," +
+                    MyDbContract.IncomeEntry.COLUMN_CATEGORY + " TEXT," +
+                    MyDbContract.IncomeEntry.COLUMN_MEMO + " TEXT)";
     private static final String EXP_CATEGORY_SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + EXPENSES_CATEGORY_TABLE_NAME + " (" +
-                    ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
-                    COLUMN_COLOR + " TEXT NOT NULL," +
-                    COLUMN_INDEX + " INTEGER," +
-            COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";
+            "CREATE TABLE " + MyDbContract.ExpensesCategoryEntry.TABLE_NAME + " (" +
+                    MyDbContract.ExpensesCategoryEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    MyDbContract.ExpensesCategoryEntry.COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                    MyDbContract.ExpensesCategoryEntry.COLUMN_COLOR + " TEXT NOT NULL," +
+                    MyDbContract.ExpensesCategoryEntry.COLUMN_INDEX + " INTEGER," +
+                    MyDbContract.ExpensesCategoryEntry.COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";
     private static final String INC_CATEGORY_CREATE_ENTRIES =
-            "CREATE TABLE " + INCOME_CATEGORY_TABLE_NAME + " (" +
-                    ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
-                    COLUMN_COLOR + " TEXT NOT NULL," +
-                    COLUMN_INDEX + " INTEGER," +
-                    COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";
+            "CREATE TABLE " + MyDbContract.IncomeCategoryEntry.TABLE_NAME + " (" +
+                    MyDbContract.IncomeCategoryEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    MyDbContract.IncomeCategoryEntry.COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                    MyDbContract.IncomeCategoryEntry.COLUMN_COLOR + " TEXT NOT NULL," +
+                    MyDbContract.IncomeCategoryEntry.COLUMN_INDEX + " INTEGER," +
+                    MyDbContract.IncomeCategoryEntry.COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";
     private static final String PAYMENT_METHOD_SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + PAYMENT_METHOD_TABLE_NAME + " (" +
-                    ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
-                    COLUMN_CLOSING_RULE_CODE + " INTEGER," +
-                    COLUMN_CLOSING_DAY + " INTEGER," +
-                    COLUMN_PAYMENT_RULE_CODE + " INTEGER," +
-                    COLUMN_PAYMENT_DAY + " INTEGER," +
-                    COLUMN_INDEX + " INTEGER," +
-                    COLUMN_IS_DEFAULT + " INTEGER NOT NULL DEFAULT 0)";
-    private static final String INCOME_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + INCOME_TABLE_NAME;
-    private static final String EXPENSES_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + EXPENSES_TABLE_NAME;
-    private static final String PAYMENT_METHOD_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + PAYMENT_METHOD_TABLE_NAME;
+            "CREATE TABLE " + MyDbContract.PaymentMethodEntry.TABLE_NAME + " (" +
+                    MyDbContract.PaymentMethodEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    MyDbContract.PaymentMethodEntry.COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                    MyDbContract.PaymentMethodEntry.COLUMN_CLOSING_RULE_CODE + " INTEGER," +
+                    MyDbContract.PaymentMethodEntry.COLUMN_CLOSING_SETTING_NUM + " INTEGER," +
+                    MyDbContract.PaymentMethodEntry.COLUMN_PAYMENT_RULE_CODE + " INTEGER," +
+                    MyDbContract.PaymentMethodEntry.COLUMN_PAYMENT_SETTING_NUM + " INTEGER," +
+                    MyDbContract.PaymentMethodEntry.COLUMN_INDEX + " INTEGER," +
+                    MyDbContract.PaymentMethodEntry.COLUMN_IS_DEFAULT + " INTEGER NOT NULL DEFAULT 0)";
+    private static final String INCOME_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + MyDbContract.IncomeEntry.TABLE_NAME;
+    private static final String EXPENSES_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + MyDbContract.ExpensesEntry.TABLE_NAME;
+    private static final String PAYMENT_METHOD_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + MyDbContract.PaymentMethodEntry.TABLE_NAME;
 
     public MyOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

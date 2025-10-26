@@ -14,6 +14,7 @@ import com.example.householdaccountbook.customviews.IncomeSettingsCustomView;
 
 import java.util.List;
 
+import myclasses.BOP;
 import myclasses.Expenses;
 import myclasses.Income;
 
@@ -23,7 +24,7 @@ public class DailyRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         EXPENSE
     }
 
-    private List<BalanceOfPayments> itemList;
+    private List<BOP> itemList;
 
     @NonNull
     @Override
@@ -51,7 +52,7 @@ public class DailyRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ((ExpensesViewHolder) holder).bind((Expenses) itemList.get(position));
         }
     }
-    public void setData(List<BalanceOfPayments> itemList) {
+    public void setData(List<BOP> itemList) {
         Log.d("DailyRecordAdapter", "setData");
         this.itemList = itemList;
     }
@@ -62,7 +63,7 @@ public class DailyRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
     @Override
     public int getItemViewType(int position) {
-        BalanceOfPayments obj = this.itemList.get(position);
+        BOP obj = this.itemList.get(position);
         if (obj instanceof Income) {
             return ViewType.INCOME.ordinal();
         }

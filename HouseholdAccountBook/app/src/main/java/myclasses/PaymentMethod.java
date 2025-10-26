@@ -4,6 +4,7 @@ import android.content.ContentValues;
 
 import androidx.annotation.NonNull;
 
+import com.example.householdaccountbook.MyDbContract;
 import com.example.householdaccountbook.MyOpenHelper;
 
 import java.io.Serializable;
@@ -198,17 +199,17 @@ public class PaymentMethod implements DatabaseEntity, Serializable {
         else {
             isDefaultInteger = 0;
         }
-        values.put(MyOpenHelper.COLUMN_NAME, _name);
-        values.put(MyOpenHelper.COLUMN_CLOSING_RULE_CODE, _closingRuleCode);
+        values.put(MyDbContract.PaymentMethodEntry.COLUMN_NAME, _name);
+        values.put(MyDbContract.PaymentMethodEntry.COLUMN_CLOSING_RULE_CODE, _closingRuleCode);
         // nullだとSQLiteのDBに保存できないのでテキトーな数字を入れとく
         if (_closingSettingNum == null) _closingSettingNum = 0;
-        values.put(MyOpenHelper.COLUMN_CLOSING_DAY, _closingSettingNum);
-        values.put(MyOpenHelper.COLUMN_PAYMENT_RULE_CODE, _paymentRuleCode);
+        values.put(MyDbContract.PaymentMethodEntry.COLUMN_CLOSING_SETTING_NUM, _closingSettingNum);
+        values.put(MyDbContract.PaymentMethodEntry.COLUMN_PAYMENT_RULE_CODE, _paymentRuleCode);
         // nullだとSQLiteのDBに保存できないのでテキトーな数字を入れとく
         if (_paymentSettingNum == null) _paymentSettingNum = 0;
-        values.put(MyOpenHelper.COLUMN_PAYMENT_DAY, _paymentSettingNum);
-        values.put(MyOpenHelper.COLUMN_INDEX, _index);
-        values.put(MyOpenHelper.COLUMN_IS_DEFAULT, isDefaultInteger);
+        values.put(MyDbContract.PaymentMethodEntry.COLUMN_PAYMENT_SETTING_NUM, _paymentSettingNum);
+        values.put(MyDbContract.PaymentMethodEntry.COLUMN_INDEX, _index);
+        values.put(MyDbContract.PaymentMethodEntry.COLUMN_IS_DEFAULT, isDefaultInteger);
         return values;
     }
 
@@ -258,7 +259,7 @@ public class PaymentMethod implements DatabaseEntity, Serializable {
     }
     @Override
     public String getDatabaseName() {
-        return MyOpenHelper.PAYMENT_METHOD_TABLE_NAME;
+        return MyDbContract.PaymentMethodEntry.TABLE_NAME;
     }
     @Override
     public ContentValues getContentValues() {

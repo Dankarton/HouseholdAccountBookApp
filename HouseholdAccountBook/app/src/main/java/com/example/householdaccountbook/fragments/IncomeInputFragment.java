@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.householdaccountbook.MyDbContract;
 import com.example.householdaccountbook.MyDbManager;
 import com.example.householdaccountbook.MyOpenHelper;
 import com.example.householdaccountbook.MyStdlib;
@@ -152,7 +153,9 @@ public class IncomeInputFragment extends Fragment {
                 int day = currentDate.get(Calendar.DAY_OF_MONTH);
                 String memo = memoEditText.getText().toString();
                 String category = (String) categorySpinner.getSelectedItem();
-                MyDbManager.setRecordToDataBase("IncomeDb", Income.makeContentValues(year, month, day, amount, memo, category));
+                MyDbManager.setRecordToDataBase(
+                        MyDbContract.IncomeEntry.TABLE_NAME,
+                        Income.makeContentValues(year, month, day, amount, memo, category));
                 addButton.setEnabled(false);
             }
         });

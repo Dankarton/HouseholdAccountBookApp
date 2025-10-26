@@ -1,5 +1,6 @@
 package myclasses;
 
+import com.example.householdaccountbook.MyDbContract;
 import com.example.householdaccountbook.MyOpenHelper;
 
 public class IncomeCategory extends BopCategory {
@@ -8,6 +9,6 @@ public class IncomeCategory extends BopCategory {
     }
     @Override
     public String getDatabaseName() {
-        return MyOpenHelper.INCOME_CATEGORY_TABLE_NAME;
+        return MyDbContract.IncomeCategoryEntry.TABLE_NAME;
     }
 }
