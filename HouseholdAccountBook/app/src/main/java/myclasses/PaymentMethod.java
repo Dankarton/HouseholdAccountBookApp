@@ -24,7 +24,7 @@ import strategy.paymentstrategy.SameDayPaymentRule;
 /**
  * 支払方法クラス
  */
-public class PaymentMethod implements Serializable {
+public class PaymentMethod implements DatabaseEntity, Serializable {
     public enum ClosingRule {
         FixedDay(0, "毎月指定日", true, "日付(日)") {
             @Override
@@ -148,7 +148,7 @@ public class PaymentMethod implements Serializable {
 
     public PaymentMethod() {
         this.id = null;
-        this.name = null;
+        this.name = "";
         this.closingRule = ClosingRule.fromCode(0);
         this.closingDay = null;
         this.paymentRule = PaymentRule.fromCode(0);
@@ -200,21 +200,15 @@ public class PaymentMethod implements Serializable {
         }
         values.put(MyOpenHelper.COLUMN_NAME, _name);
         values.put(MyOpenHelper.COLUMN_CLOSING_RULE_CODE, _closingRuleCode);
+        // nullだとSQLiteのDBに保存できないのでテキトーな数字を入れとく
+        if (_closingSettingNum == null) _closingSettingNum = 0;
         values.put(MyOpenHelper.COLUMN_CLOSING_DAY, _closingSettingNum);
         values.put(MyOpenHelper.COLUMN_PAYMENT_RULE_CODE, _paymentRuleCode);
+        // nullだとSQLiteのDBに保存できないのでテキトーな数字を入れとく
+        if (_paymentSettingNum == null) _paymentSettingNum = 0;
         values.put(MyOpenHelper.COLUMN_PAYMENT_DAY, _paymentSettingNum);
         values.put(MyOpenHelper.COLUMN_INDEX, _index);
         values.put(MyOpenHelper.COLUMN_IS_DEFAULT, isDefaultInteger);
-        return values;
-    }
-
-    /**
-     * ContentValues取得
-     * @return ContentValues
-     */
-    public ContentValues getContentValues() {
-        ContentValues values = this.getContentValuesWithoutId();
-        values.put(MyOpenHelper.ID, id);
         return values;
     }
 
@@ -240,7 +234,7 @@ public class PaymentMethod implements Serializable {
         Calendar closingDate = cs.apply(purchaseDate);
         return ps.apply(closingDate);
     }
-
+    @Override
     public Integer getId() {
         return this.id;
     }
@@ -250,16 +244,24 @@ public class PaymentMethod implements Serializable {
     public ClosingRule getClosingRule() {
         return this.closingRule;
     }
-    public int getClosingDay() { return this.closingDay; }
+    public Integer getClosingDay() { return this.closingDay; }
     public PaymentRule getPaymentRule() {
         return this.paymentRule;
     }
-    public int getPaymentDay() {
+    public Integer getPaymentDay() {
         return this.paymentDay;
     }
     public void setIndex(int newlyIndex) { this.index = newlyIndex; }
     public int getIndex() { return this.index; }
     public boolean isDefault() {
         return this.isDefault;
+    }
+    @Override
+    public String getDatabaseName() {
+        return MyOpenHelper.PAYMENT_METHOD_TABLE_NAME;
+    }
+    @Override
+    public ContentValues getContentValues() {
+        return this.getContentValuesWithoutId();
     }
 }

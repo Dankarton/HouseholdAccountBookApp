@@ -6,14 +6,14 @@ import com.example.householdaccountbook.MyOpenHelper;
 
 import java.io.Serializable;
 
-public class BopCategory implements Serializable {
-    private final int _id;
+public abstract class BopCategory implements DatabaseEntity, Serializable {
+    private final Integer _id;
     private final String _name;
     private final int _colorCode;
     private final int _index;
     private final boolean _isDeleted;
 
-    public BopCategory(int id, String name, int colorCode, int index, boolean isDeleted) {
+    public BopCategory(Integer id, String name, int colorCode, int index, boolean isDeleted) {
         this._id = id;
         this._name = name;
         this._colorCode = colorCode;
@@ -34,21 +34,22 @@ public class BopCategory implements Serializable {
         values.put(MyOpenHelper.COLUMN_IS_DELETED, isDeletedInteger);
         return values;
     }
-
-    public int getId() {
+    @Override
+    public Integer getId() {
         return this._id;
     }
-
     public String getName() {
         return this._name;
     }
-
     public int getColorCode() {
         return this._colorCode;
     }
     public int getIndex() {
         return this._index;
     }
-
     public boolean isDeleted() { return this._isDeleted; }
+    @Override
+    public ContentValues getContentValues() {
+        return getContentValuesWithoutId();
+    }
 }

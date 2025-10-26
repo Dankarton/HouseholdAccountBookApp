@@ -1,34 +1,32 @@
 package com.example.householdaccountbook.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.adapter.EnumSpinnerAdapter;
 
-import java.util.List;
-
-import myclasses.OnInputActionListener;
 import myclasses.PaymentMethod;
 
 public class PaymentMethodEditFragment extends Fragment {
-    OnInputActionListener<PaymentMethod> listener = null;
+    OnInputActionListener listener = null;
     EditText nameEdit;
     Spinner closingRuleSpinner;
     Spinner paymentRuleSpinner;
@@ -37,8 +35,15 @@ public class PaymentMethodEditFragment extends Fragment {
     EditText closingRuleSettingNumEdit;
     EditText paymentRuleSettingNumEdit;
     Button saveButton;
+    Button deleteButton;
 
     PaymentMethod paymentMethod = null;
+
+    public interface OnInputActionListener {
+        public void onSaveButtonClicked(PaymentMethod data);
+        public void onDeleteButtonClicked(PaymentMethod data);
+    }
+
 
     public PaymentMethodEditFragment() { /*Do nothing*/ }
 
@@ -55,6 +60,7 @@ public class PaymentMethodEditFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Context context = view.getContext();
         // Viewオブジェクト取得
         nameEdit = view.findViewById(R.id.name_edit_text);
         closingRuleSpinner = view.findViewById(R.id.closing_rule_spinner);
@@ -64,9 +70,10 @@ public class PaymentMethodEditFragment extends Fragment {
         closingRuleSettingNumEdit = view.findViewById(R.id.closing_rule_setting_num_edit);
         paymentRuleSettingNumEdit = view.findViewById(R.id.payment_rule_setting_num_edit);
         saveButton = view.findViewById(R.id.save_button);
+        deleteButton = view.findViewById(R.id.delete_button);
         // 締め日スピナー用Adapter作成
         EnumSpinnerAdapter<PaymentMethod.ClosingRule> closingSpinnerAdapter = new EnumSpinnerAdapter<>(
-                view.getContext(),
+                context,
                 androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                 PaymentMethod.ClosingRule.values(),
                 new EnumSpinnerAdapter.LabelProvider<PaymentMethod.ClosingRule>() {
@@ -78,7 +85,7 @@ public class PaymentMethodEditFragment extends Fragment {
         );
         // 支払日スピナー用Adapter作成
         EnumSpinnerAdapter<PaymentMethod.PaymentRule> paymentSpinnerAdapter = new EnumSpinnerAdapter<>(
-                view.getContext(),
+                context,
                 androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                 PaymentMethod.PaymentRule.values(),
                 new EnumSpinnerAdapter.LabelProvider<PaymentMethod.PaymentRule>() {
@@ -99,6 +106,7 @@ public class PaymentMethodEditFragment extends Fragment {
                 closingRuleSettingText.setText(selectedRule.getSettingNumText());
                 closingRuleSettingNumEdit.setEnabled(selectedRule.usesSettingNum());
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) { /* Do nothing. */ }
         });
@@ -109,7 +117,9 @@ public class PaymentMethodEditFragment extends Fragment {
                 PaymentMethod.PaymentRule selectedRule = (PaymentMethod.PaymentRule) parent.getItemAtPosition(position);
                 paymentRuleSettingText.setText(selectedRule.getSettingNumText());
                 paymentRuleSettingNumEdit.setEnabled(selectedRule.usesSettingNum());
+                checkInputData();
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) { /* Do nothing. */ }
         });
@@ -138,34 +148,63 @@ public class PaymentMethodEditFragment extends Fragment {
                 view.setEnabled(false);
             }
         });
+        // 削除ボタンが押された時の処理を記述
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(context)
+                        .setTitle("確認")
+                        .setMessage("このデータを削除してもよろしいですか？")
+                        .setPositiveButton("削除", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                listener.onDeleteButtonClicked(paymentMethod);
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        });
+        // ボタンの状態を変更
+        this.saveButton.setEnabled(false);
+        if (this.paymentMethod.getId() == null){
+            this.deleteButton.setEnabled(false);
+            this.deleteButton.setVisibility(View.GONE);
+        }
         // 初期値設定
-        saveButton.setEnabled(false);
-        if (paymentMethod != null) {
-            nameEdit.setText(paymentMethod.getName());
-            closingRuleSpinner.setSelection(paymentMethod.getClosingRule().ordinal());
-            paymentRuleSpinner.setSelection(paymentMethod.getPaymentRule().ordinal());
-            closingRuleSettingNumEdit.setText(paymentMethod.getClosingDay());
-            paymentRuleSettingNumEdit.setText(paymentMethod.getPaymentDay());
+        if (this.paymentMethod.getName() != null) {
+            this.nameEdit.setText(this.paymentMethod.getName());
         }
         else {
-            nameEdit.setText("");
-            closingRuleSpinner.setSelection(0);
-            paymentRuleSpinner.setSelection(0);
-            closingRuleSettingNumEdit.setText(null);
-            paymentRuleSettingNumEdit.setText(null);
+            this.nameEdit.setText("");
+        }
+        this.closingRuleSpinner.setSelection(this.paymentMethod.getClosingRule().ordinal());
+        this.paymentRuleSpinner.setSelection(this.paymentMethod.getPaymentRule().ordinal());
+        if (this.paymentMethod.getClosingDay() != null) {
+            this.closingRuleSettingNumEdit.setText(String.valueOf(this.paymentMethod.getClosingDay()));
+        }
+        else {
+            this.closingRuleSettingNumEdit.setText("");
+        }
+        if (this.paymentMethod.getPaymentDay() != null) {
+            this.paymentRuleSettingNumEdit.setText(String.valueOf(this.paymentMethod.getPaymentDay()));
+        }
+        else {
+            this.paymentRuleSettingNumEdit.setText("");
         }
     }
+
     private void notifyListenerCompleted(PaymentMethod enteredData) {
-        this.listener.onCompleted(enteredData);
+        this.listener.onSaveButtonClicked(enteredData);
     }
+
     private PaymentMethod createPaymentMethodFromInput() {
-        Integer id;
-        if (this.paymentMethod != null) {
-            id = this.paymentMethod.getId();
-        }
-        else {
-            id = null;
-        }
         String name = nameEdit.getText().toString();
         PaymentMethod.ClosingRule closingRule = (PaymentMethod.ClosingRule) closingRuleSpinner.getSelectedItem();
         PaymentMethod.PaymentRule paymentRule = (PaymentMethod.PaymentRule) paymentRuleSpinner.getSelectedItem();
@@ -173,19 +212,17 @@ public class PaymentMethodEditFragment extends Fragment {
         Integer closingSettingNum;
         if (closingRule.usesSettingNum()) {
             closingSettingNum = Integer.parseInt(closingRuleSettingNumEdit.getText().toString());
-        }
-        else {
+        } else {
             closingSettingNum = null;
         }
         int paymentRuleCode = paymentRule.getCode();
         Integer paymentSettingNum;
         if (paymentRule.usesSettingNum()) {
             paymentSettingNum = Integer.parseInt(paymentRuleSettingNumEdit.getText().toString());
-        }
-        else {
+        } else {
             paymentSettingNum = null;
         }
-        return new PaymentMethod(id, name, closingRuleCode, closingSettingNum, paymentRuleCode, paymentSettingNum, false);
+        return new PaymentMethod(this.paymentMethod.getId(), name, closingRuleCode, closingSettingNum, paymentRuleCode, paymentSettingNum, this.paymentMethod.getIndex(), false);
     }
 
     private void checkInputData() {
@@ -195,13 +232,19 @@ public class PaymentMethodEditFragment extends Fragment {
         boolean isClosingSettingNumValid = false;
         if (closingRuleSettingNumEdit.isEnabled()) {
             String numText = closingRuleSettingNumEdit.getText().toString();
-            if(MyStdlib.canConvertToInteger(numText)) {
-                if(Integer.parseInt(numText) > 0) {
+            if (MyStdlib.canConvertToInteger(numText)) {
+                if (Integer.parseInt(numText) > 0) {
+//                    Log.d("PaymentMethodEditFragment", "closingRuleSetting: true 正常");
                     isClosingSettingNumValid = true;
                 }
+                else {
+//                    Log.d("PaymentMethodEditFragment", "closingRuleSetting: ありえない数値");
+                }
             }
-        }
-        else {
+            else {
+//                Log.d("PaymentMethodEditFragment", "closingRuleSetting: 入力が数値じゃない");
+            }
+        } else {
             isClosingSettingNumValid = true;
         }
         // 支払日設定値が正しく入力されているか検証
@@ -210,17 +253,25 @@ public class PaymentMethodEditFragment extends Fragment {
             String numText = paymentRuleSettingNumEdit.getText().toString();
             if (MyStdlib.canConvertToInteger(numText)) {
                 if (Integer.parseInt(numText) > 0) {
+//                    Log.d("PaymentMethodEditFragment", "paymentRuleSetting: true 正常");
                     isPaymentSettingNumValid = true;
                 }
+                else {
+//                    Log.d("PaymentMethodEditFragment", "paymentRuleSetting: ありえない数値");
+                }
             }
-        }
-        else {
+            else {
+//                Log.d("PaymentMethodEditFragment", "paymentRuleSetting: 入力が数値じゃない");
+            }
+        } else {
+//            Log.d("PaymentMethodEditFragment", "paymentRuleSetting: true 設置値は使わない");
             isPaymentSettingNumValid = true;
         }
 
         saveButton.setEnabled(isNameValid && isClosingSettingNumValid && isPaymentSettingNumValid);
     }
-    public void setListener(OnInputActionListener<PaymentMethod> listener) {
+
+    public void setListener(OnInputActionListener listener) {
         this.listener = listener;
     }
 }

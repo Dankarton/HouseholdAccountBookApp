@@ -18,6 +18,10 @@
             android:label="@string/title_activity_setting_select_payment_method"
             android:theme="@style/Theme.HouseholdAccountBook" />
         <activity
+            android:name=".activities.SettingSelectPaymentMethodActivity"
+            android:exported="false"
+            />
+        <activity
             android:name=".activities.SettingMotherActivity"
             android:exported="false" />
         <activity

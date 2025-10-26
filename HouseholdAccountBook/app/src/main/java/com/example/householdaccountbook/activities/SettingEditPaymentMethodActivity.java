@@ -6,19 +6,18 @@ import com.example.householdaccountbook.MyDbManager;
 import com.example.householdaccountbook.MyOpenHelper;
 import com.example.householdaccountbook.fragments.PaymentMethodEditFragment;
 
-import myclasses.OnInputActionListener;
 import myclasses.PaymentMethod;
 
-public class SettingEditPaymentMethodActivity extends SettingMotherActivity implements OnInputActionListener<PaymentMethod> {
+public class SettingEditPaymentMethodActivity extends SettingMotherActivity implements PaymentMethodEditFragment.OnInputActionListener {
     @Override
     protected Fragment init() {
-        PaymentMethod data = (PaymentMethod) getIntent().getSerializableExtra("PaymentMethod");
+        PaymentMethod data = getIntent().getSerializableExtra("PaymentMethod", PaymentMethod.class);
         PaymentMethodEditFragment fragment = new PaymentMethodEditFragment(data);
         fragment.setListener(this);
         return fragment;
     }
     @Override
-    public void onCompleted(PaymentMethod data) {
+    public void onSaveButtonClicked(PaymentMethod data) {
         // IDが無い場合(新規追加の場合)
         if (data.getId() == null) {
             MyDbManager.setRecordToDataBase(MyOpenHelper.PAYMENT_METHOD_TABLE_NAME, data.getContentValuesWithoutId());
@@ -27,5 +26,13 @@ public class SettingEditPaymentMethodActivity extends SettingMotherActivity impl
         else {
             MyDbManager.upsertDatabase(MyOpenHelper.PAYMENT_METHOD_TABLE_NAME, data.getContentValues());
         }
+        finish();
+    }
+    @Override
+    public void onDeleteButtonClicked(PaymentMethod data) {
+        if (data.getId() != null) {
+            MyDbManager.deleteRecordByID(MyOpenHelper.PAYMENT_METHOD_TABLE_NAME, String.valueOf(data.getId()));
+        }
+        finish();
     }
 }

@@ -23,11 +23,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        MyDbManager.setOpenHelper(getApplicationContext());
-        MyDbManager.ensureDefaultPayments();
         setContentView(R.layout.activity_main);
         setNavViewEvent();
         replaceFragment(new InputMotherFragment());
+        MyDbManager.setOpenHelper(getApplicationContext());
+        MyDbManager.ensureDefaultPayments();
     }
 
     private void setNavViewEvent(){

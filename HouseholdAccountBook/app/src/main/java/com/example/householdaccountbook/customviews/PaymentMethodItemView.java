@@ -38,6 +38,9 @@ public class PaymentMethodItemView extends ConstraintLayout {
         this.data = data;
         changeText();
     }
+    public PaymentMethod getData() {
+        return this.data;
+    }
     private void changeText() {
         this.nameText.setText(this.data.getName());
     }

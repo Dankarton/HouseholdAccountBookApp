@@ -152,7 +152,7 @@ public class IncomeInputFragment extends Fragment {
                 int day = currentDate.get(Calendar.DAY_OF_MONTH);
                 String memo = memoEditText.getText().toString();
                 String category = (String) categorySpinner.getSelectedItem();
-                MyDbManager.setRecordToDataBase("IncomeDb", Income.convertContentValues(year, month, day, amount, memo, category));
+                MyDbManager.setRecordToDataBase("IncomeDb", Income.makeContentValues(year, month, day, amount, memo, category));
                 addButton.setEnabled(false);
             }
         });

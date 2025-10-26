@@ -10,7 +10,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.householdaccountbook"
-        minSdk = 27
+//        minSdk = 27
+        minSdk = 33
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -57,4 +58,7 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+}
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-Xlint:deprecation")
 }

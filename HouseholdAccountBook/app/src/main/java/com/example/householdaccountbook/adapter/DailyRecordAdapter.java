@@ -14,7 +14,6 @@ import com.example.householdaccountbook.customviews.IncomeSettingsCustomView;
 
 import java.util.List;
 
-import myclasses.BalanceOfPayments;
 import myclasses.Expenses;
 import myclasses.Income;
 

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.example.householdaccountbook.MyDbManager;
@@ -24,7 +25,12 @@ import myclasses.PaymentMethod;
  * create an instance of this fragment.
  */
 public class PaymentMethodListingFragment extends Fragment {
+    public interface OnInputEventListener {
+        void onInputDetected(PaymentMethod data);
+    }
+    private OnInputEventListener listener = null;
     private LinearLayout itemList;
+    private int paymentMethodDataNum;
     public PaymentMethodListingFragment() {
         // Required empty public constructor
     }
@@ -43,26 +49,51 @@ public class PaymentMethodListingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         this.itemList = view.findViewById(R.id.payment_method_list);
-        ArrayList<PaymentMethod> methods = MyDbManager.getAllPaymentMethodData();
-        PaymentMethodItemView itemView = new PaymentMethodItemView(view.getContext());
-        itemView.setOnClickListener(
+        Button createButton = view.findViewById(R.id.create_new_button);
+        reload();
+        createButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-
+                    public void onClick(View view) {
+                        if (listener != null) {
+                            PaymentMethod newlyMethod = new PaymentMethod();
+                            // 新しいデータはListの最終行に挿入されるよううにIndexにデータ数を設定
+                            newlyMethod.setIndex(paymentMethodDataNum);
+                            listener.onInputDetected(newlyMethod);
+                        }
                     }
                 }
         );
     }
+
     private PaymentMethodItemView createPaymentMethodItemView(Context context, PaymentMethod data) {
         PaymentMethodItemView itemView = new PaymentMethodItemView(context);
-        itemView.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        
+        itemView.setData(data);
+        if (!data.isDefault()) {
+            itemView.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (listener != null) {
+                                listener.onInputDetected(itemView.getData());
+                            }
+                        }
                     }
-                }
-        )
+            );
+        }
+        return itemView;
+    }
+    public void reload() {
+        this.itemList.removeAllViews();
+        Context context = requireContext();
+        ArrayList<PaymentMethod> methods = MyDbManager.getAllPaymentMethodData();
+        this.paymentMethodDataNum = methods.size();
+        for (PaymentMethod method : methods) {
+            this.itemList.addView(createPaymentMethodItemView(context, method));
+        }
+    }
+
+    public void setListener(OnInputEventListener listener) {
+        this.listener = listener;
     }
 }

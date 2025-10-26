@@ -16,28 +16,9 @@ import myclasses.PaymentMethod;
 
 public class MyDbManager {
     private static MyOpenHelper helper;
-    private static final String[] incomeColumns = {
-            MyOpenHelper.ID,
-            MyOpenHelper.COLUMN_YEAR,
-            MyOpenHelper.COLUMN_MONTH,
-            MyOpenHelper.COLUMN_DAY,
-            MyOpenHelper.COLUMN_AMOUNT,
-            MyOpenHelper.COLUMN_MEMO,
-            MyOpenHelper.COLUMN_CATEGORY
-    };
-    private static final String[] expensesColumns = {
-            MyOpenHelper.ID,
-            MyOpenHelper.COLUMN_YEAR,
-            MyOpenHelper.COLUMN_MONTH,
-            MyOpenHelper.COLUMN_DAY,
-            MyOpenHelper.COLUMN_AMOUNT,
-            MyOpenHelper.COLUMN_MEMO,
-            MyOpenHelper.COLUMN_CATEGORY,
-            MyOpenHelper.COLUMN_PAYMENT_METHOD_ID,
-            MyOpenHelper.COLUMN_PAYMENT_YEAR,
-            MyOpenHelper.COLUMN_PAYMENT_MONTH,
-            MyOpenHelper.COLUMN_PAYMENT_DAY
-    };
+
+
+
 
     public static void setOpenHelper(Context context) {
         helper = new MyOpenHelper(context);
@@ -362,7 +343,7 @@ public class MyDbManager {
         return getAllCategoryData(MyOpenHelper.INCOME_CATEGORY_TABLE_NAME);
     }
 
-    private static ArrayList<BopCategory> getAllCategoryData(String tableName) {
+    private static <T extends BopCategory>  ArrayList<T> getAllCategoryData(String tableName) {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(
                 tableName,
@@ -380,9 +361,9 @@ public class MyDbManager {
                 null
         );
         cursor.moveToFirst();
-        ArrayList<BopCategory> categoryList = new ArrayList<>();
+        ArrayList<T> categoryList = new ArrayList<>();
         for (int i = 0; i < cursor.getCount(); i++) {
-            BopCategory tmp = new BopCategory(
+            T tmp = new <T extends BopCategory>(
                     cursor.getInt(1),
                     cursor.getString(2),
                     cursor.getInt(3),

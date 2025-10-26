@@ -6,6 +6,7 @@
     <color name="item_background">#242424</color>
     <color name="expenses_text_color">#F15412</color>
     <color name="income_text_color">#34b3f1</color>
-    <color name="button_color">#34b3f1</color>
+    <color name="positive_item_color">#34b3f1</color>
+    <color name="negative_item_color">#EE5B11</color>
     //#34b3f1
 </resources>

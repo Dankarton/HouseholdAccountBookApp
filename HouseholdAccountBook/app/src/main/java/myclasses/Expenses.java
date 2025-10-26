@@ -18,28 +18,45 @@ public class Expenses extends BOP implements Serializable {
         this.paymentDate = paymentDate;
         this.isSameDay = MyStdlib.isSameDay(this.getDate(), this.paymentDate);
     }
-    public static ContentValues convertContentValues(int _year, int _month, int _day, int _amount, String _memo, String _category, int _paymentMethodId, int pYear, int pMonth, int pDay) {
+    public static ContentValues makeContentValues(int _year, int _month, int _day, int _amount, String _memo, String _category, int _paymentMethodId, int pYear, int pMonth, int pDay) {
         ContentValues values = new ContentValues();
         values.put(MyOpenHelper.COLUMN_YEAR, _year);
-        values.put("month", _month);
-        values.put("day", _day);
-        values.put("amount", _amount);
-        values.put("memo", _memo);
-        values.put("category", _category);
+        values.put(MyOpenHelper.COLUMN_MONTH, _month);
+        values.put(MyOpenHelper.COLUMN_DAY, _day);
+        values.put(MyOpenHelper.COLUMN_AMOUNT, _amount);
+        values.put(MyOpenHelper.COLUMN_MEMO, _memo);
+        values.put(MyOpenHelper.COLUMN_CATEGORY, _category);
         values.put(MyOpenHelper.COLUMN_PAYMENT_METHOD_ID, _paymentMethodId);
         values.put(MyOpenHelper.COLUMN_PAYMENT_YEAR, pYear);
         values.put(MyOpenHelper.COLUMN_PAYMENT_MONTH, pMonth);
         values.put(MyOpenHelper.COLUMN_PAYMENT_DAY, pDay);
         return values;
     }
+
     public boolean isSameDay() {
         return this.isSameDay;
     }
-
     public int getPaymentMethodId() {
         return this.paymentMethodId;
     }
     public Calendar getPaymentDate() {
         return this.paymentDate;
+    }
+    @Override
+    public String getDatabaseName() { return MyOpenHelper.EXPENSES_TABLE_NAME; }
+    @Override
+    public ContentValues getContentValues() {
+        return Expenses.makeContentValues(
+                this.getYear(),
+                this.getMonth(),
+                this.getDay(),
+                this.getAmount(),
+                this.getMemo(),
+                this.getCategory(),
+                this.getPaymentMethodId(),
+                this.paymentDate.get(Calendar.YEAR),
+                this.paymentDate.get(Calendar.MONTH) + 1,
+                this.paymentDate.get(Calendar.DATE)
+        );
     }
 }

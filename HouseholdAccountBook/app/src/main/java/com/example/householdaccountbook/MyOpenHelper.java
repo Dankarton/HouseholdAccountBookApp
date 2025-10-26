@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MyOpenHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
-    // このアプリのデータベース名
     private static final String DATABASE_NAME = "HouseholdDb.db";
     // 支出テーブル
     public static final String EXPENSES_TABLE_NAME = "ExpensesDb";
@@ -71,15 +70,15 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
                     COLUMN_COLOR + " TEXT NOT NULL," +
-                    COLUMN_INDEX + "INTEGER," +
-            COLUMN_IS_DELETED + "INTEGER NOT NULL DEFAULT 0)";
+                    COLUMN_INDEX + " INTEGER," +
+            COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";
     private static final String INC_CATEGORY_CREATE_ENTRIES =
             "CREATE TABLE " + INCOME_CATEGORY_TABLE_NAME + " (" +
                     ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
                     COLUMN_COLOR + " TEXT NOT NULL," +
-                    COLUMN_INDEX + "INTEGER," +
-                    COLUMN_IS_DELETED + "INTEGER NOT NULL DEFAULT 0)";
+                    COLUMN_INDEX + " INTEGER," +
+                    COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";
     private static final String PAYMENT_METHOD_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + PAYMENT_METHOD_TABLE_NAME + " (" +
                     ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -88,7 +87,7 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     COLUMN_CLOSING_DAY + " INTEGER," +
                     COLUMN_PAYMENT_RULE_CODE + " INTEGER," +
                     COLUMN_PAYMENT_DAY + " INTEGER," +
-                    COLUMN_INDEX + "INTEGER," +
+                    COLUMN_INDEX + " INTEGER," +
                     COLUMN_IS_DEFAULT + " INTEGER NOT NULL DEFAULT 0)";
     private static final String INCOME_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + INCOME_TABLE_NAME;
     private static final String EXPENSES_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + EXPENSES_TABLE_NAME;
@@ -106,6 +105,7 @@ public class MyOpenHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(INC_CATEGORY_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(PAYMENT_METHOD_SQL_CREATE_ENTRIES);
         // 支払いテーブルに
+
     }
 
     @Override
