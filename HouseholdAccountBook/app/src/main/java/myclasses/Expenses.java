@@ -44,8 +44,6 @@ public class Expenses extends BOP implements Serializable {
         return this.paymentDate;
     }
     @Override
-    public String getDatabaseName() { return MyDbContract.ExpensesEntry.TABLE_NAME; }
-    @Override
     public ContentValues getContentValues() {
         return Expenses.makeContentValues(
                 this.getYear(),

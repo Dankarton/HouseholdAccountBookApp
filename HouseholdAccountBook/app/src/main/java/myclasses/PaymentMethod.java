@@ -258,10 +258,6 @@ public class PaymentMethod implements DatabaseEntity, Serializable {
         return this.isDefault;
     }
     @Override
-    public String getDatabaseName() {
-        return MyDbContract.PaymentMethodEntry.TABLE_NAME;
-    }
-    @Override
     public ContentValues getContentValues() {
         return this.getContentValuesWithoutId();
     }

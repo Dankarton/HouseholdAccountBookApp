@@ -13,12 +13,11 @@ import myclasses.DailyBop;
 import myclasses.Expenses;
 import myclasses.Income;
 import myclasses.PaymentMethod;
+import myclasses.DatabaseEntity;
+import myclasses.DatabaseEntityKind;
 
 public class MyDbManager {
     private static MyOpenHelper helper;
-
-
-
 
     public static void setOpenHelper(Context context) {
         helper = new MyOpenHelper(context);
@@ -30,11 +29,14 @@ public class MyDbManager {
      */
     public static void ensureDefaultPayments() {
         SQLiteDatabase db = helper.getWritableDatabase();
+        // デフォルトの支払い方法のIDで検索をかける
         Cursor cursor = db.query(
-                MyOpenHelper.PAYMENT_METHOD_TABLE_NAME,
+                MyDbContract.PaymentMethodEntry.TABLE_NAME,
                 new String[]{"COUNT(*)"},
-                MyOpenHelper.ID + " = ?",
-                new String[]{"0"},
+                MyDbContract.PaymentMethodEntry.ID + " = ?",
+                new String[]{
+                    MyDbContract.PaymentMethodEntry.DEFAULT_PAYMENT_METHOD.getId().toString()
+                },
                 null,
                 null,
                 null
@@ -47,18 +49,21 @@ public class MyDbManager {
         // デフォルトの支払方法を新規作成
         ArrayList<PaymentMethod> newlyList = MyDbManager.getAllPaymentMethodData();
         // リストの一番最初に来るように登録
-        PaymentMethod defaultMethod = new PaymentMethod(0, "通常支払い",
-                PaymentMethod.ClosingRule.None.getCode(), null,
-                PaymentMethod.PaymentRule.SameDay.getCode(), null,
-                0, true);
-        ContentValues values = defaultMethod.getContentValues();
-        values.put(MyOpenHelper.ID, defaultMethod.getId());
-        db.insert(MyOpenHelper.PAYMENT_METHOD_TABLE_NAME, null, values);
+        ContentValues values = MyDbContract.PaymentMethodEntry.DEFAULT_PAYMENT_METHOD.getContentValues();
+        values.put(
+                MyDbContract.PaymentMethodEntry.ID,
+                MyDbContract.PaymentMethodEntry.DEFAULT_PAYMENT_METHOD.getId()
+        );
+        db.insert(MyDbContract.PaymentMethodEntry.TABLE_NAME, null, values);
+        // 他のPaymentMethodのインデックスを更新
         for (int i = 1; i < newlyList.size(); i++) {
-            // indexを更新
             // 先頭はデフォルトの支払が来るためindexを+1してる
             newlyList.get(i).setIndex(i + 1);
-            upsertDatabase(db, MyOpenHelper.PAYMENT_METHOD_TABLE_NAME, newlyList.get(i).getContentValues());
+            upsertDatabase(
+                    db,
+                    MyDbContract.PaymentMethodEntry.TABLE_NAME,
+                    newlyList.get(i).getContentValues()
+            );
         }
     }
 
@@ -483,39 +488,5 @@ public class MyDbManager {
             selection = String.join(" AND ", selectionParts);
         }
         return selection;
-    }
-
-    /**
-     * データテーブル内にあるデータをログに表示する関数
-     * コードテスト用
-     */
-    public static void checkExpensesDbList() {
-        SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor cursor = db.query("ExpensesDb", new String[]{"_id", "year", "month", "day", "amount", "memo", "category"},
-                null,
-                null,
-                null,
-                null,
-                null);
-        cursor.moveToFirst();
-        for (int i = 0; i < cursor.getCount(); i++) {
-            String strBuilder =
-                    "id:" + cursor.getInt(0) +
-                            ", y:" +
-                            cursor.getInt(1) +
-                            ", m:" +
-                            cursor.getInt(2) +
-                            ", d:" +
-                            cursor.getInt(3) +
-                            ", pay:" +
-                            cursor.getInt(4) +
-                            ", memo:" +
-                            cursor.getString(5) +
-                            ", category:" +
-                            cursor.getString(6);
-            Log.d("ExpensesInputFragment", strBuilder);
-            cursor.moveToNext();
-        }
-        cursor.close();
     }
 }

@@ -9,7 +9,7 @@ import myclasses.IncomeCategory;
 import myclasses.PaymentMethod;
 
 public final class MyDbContract {
-    private MyDbContract() { /*Do nothing*/ }
+    private MyDbContract() { /*インスタンス化防止*/ }
     public static class BaseBopEntry {
         private BaseBopEntry() { /*インスタンス化防止*/ }
         public static final String ID = "_id";
@@ -146,6 +146,15 @@ public final class MyDbContract {
                 PaymentMethodEntry.COLUMN_INDEX,
                 PaymentMethodEntry.COLUMN_IS_DEFAULT
         };
+
+        public static final PaymentMethod DEFAULT_PAYMENT_METHOD = new PaymentMethod(
+                0,
+                "通常支払い",
+                PaymentMethod.ClosingRule.None.getCode(), null,
+                PaymentMethod.PaymentRule.SameDay.getCode(), null,
+                0,
+                true
+        );
 
         public static PaymentMethod fromCursor(Cursor cursor) {
             return new PaymentMethod(

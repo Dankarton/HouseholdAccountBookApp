@@ -25,10 +25,6 @@ public class Income extends BOP implements Serializable {
         return values;
     }
     @Override
-    public String getDatabaseName() {
-        return MyDbContract.IncomeEntry.TABLE_NAME;
-    }
-    @Override
     public ContentValues getContentValues() {
         return Income.makeContentValues(
                 this.getYear(),
