@@ -7,11 +7,11 @@ import com.example.householdaccountbook.MyDbContract;
  * --※※※--新しくDatabaseEntityを実装したクラスがあったら必ず登録するように--※※※--
  */
 public enum DatabaseEntityKind {
-    EXPENSES(Expenses.class, MyDbContract.ExpensesEntry.TABLE_NAME),
-    INCOME(Income.class, MyDbContract.IncomeEntry.TABLE_NAME),
-    EXPENSES_CATEGORY(ExpensesCategory.class, MyDbContract.ExpensesCategoryEntry.TABLE_NAME),
-    INCOME_CATEGORY(IncomeCategory.class, MyDbContract.IncomeCategoryEntry.TABLE_NAME),
-    PAYMENT_METHOD(PaymentMethod.class, MyDbContract.PaymentMethodEntry.TABLE_NAME);
+    EXPENSES(Expenses.class, MyDbContract.ExpensesEntry.TABLE_NAME, MyDbContract.ExpensesEntry.ID),
+    INCOME(Income.class, MyDbContract.IncomeEntry.TABLE_NAME, MyDbContract.IncomeEntry.ID),
+    EXPENSES_CATEGORY(ExpensesCategory.class, MyDbContract.ExpensesCategoryEntry.TABLE_NAME, MyDbContract.ExpensesCategoryEntry.ID),
+    INCOME_CATEGORY(IncomeCategory.class, MyDbContract.IncomeCategoryEntry.TABLE_NAME, MyDbContract.IncomeCategoryEntry.ID),
+    PAYMENT_METHOD(PaymentMethod.class, MyDbContract.PaymentMethodEntry.TABLE_NAME, MyDbContract.PaymentMethodEntry.ID);
 
     // フィールド
     // クラス
@@ -24,10 +24,12 @@ public enum DatabaseEntityKind {
      * コンストラクタ
      * @param entityClass クラス
      * @param tableName テーブル名
+     * @param idColumnName idカラム名
      */
-    private DatabaseEntityKind(Class<? extends DatabaseEntity> entityClass, String tableName) {
+    private DatabaseEntityKind(Class<? extends DatabaseEntity> entityClass, String tableName, String idColumnName) {
         this.entityClass = entityClass;
         this.tableName = tableName;
+        this.idColumnName = idColumnName;
     }
 
     /**
@@ -37,8 +39,17 @@ public enum DatabaseEntityKind {
     public Class<? extends DatabaseEntity> getEntityClass() {
         return this.entityClass;
     }
+    /*
+     * テーブル名取得
+     */
     public String getTableName() {
         return this.tableName;
+    }
+    /**
+     * idカラム名取得
+     */
+    public String getIdColumnName() {
+        return this.idColumnName;
     }
 
     // ユーティリティ

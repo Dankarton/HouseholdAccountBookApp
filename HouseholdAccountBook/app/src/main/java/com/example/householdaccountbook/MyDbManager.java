@@ -107,10 +107,29 @@ public class MyDbManager {
      * @param table DataTable名
      * @param id    データID
      */
-    public static void deleteRecordByID(String table, String id) {
+    public static void deleteRecordByID(String table, Integer id) {
         SQLiteDatabase db = helper.getReadableDatabase();
         db.delete(table, "_id=?", new String[]{id});
     }
+
+    /**
+     * データ削除
+     * 
+     * @param <T extends DatabaseEntity> data 
+     */
+    public static <T extends DatabaseEntity> void deleteData(T data) {
+        DatabaseEntityKind classKind = DatabaseEntityKind.fromEntity(T);
+        Integer id = data.getId();
+        if (id != null) {
+            SQLiteDatabase db = helper.getReadableDatabase();
+            db.delete(
+                classKind.getTableName(), 
+                classKind.getIdColumnName() + " = ?",
+                new String[]{ id }
+            );
+        }
+    }
+
 
     /**
      * 購入日付からデータを検索してListにして返す関数
