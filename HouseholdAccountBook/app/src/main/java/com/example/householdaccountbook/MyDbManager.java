@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import myclasses.BOP;
 import myclasses.BopCategory;
 import myclasses.DailyBop;
 import myclasses.Expenses;
@@ -17,18 +18,33 @@ import myclasses.DatabaseEntity;
 import myclasses.DatabaseEntityKind;
 
 public class MyDbManager {
-    private static MyOpenHelper helper;
-
-    public static void setOpenHelper(Context context) {
-        helper = new MyOpenHelper(context);
+    private static class MyOpenHelperContainer {
+        private static MyOpenHelper helper = null;
+        public static void setHelper(MyOpenHelper helper) {
+            MyOpenHelperContainer.helper = helper;
+        }
+        public static MyOpenHelper getHelper() {
+            if (MyOpenHelperContainer.helper != null) {
+                return MyOpenHelperContainer.helper;
+            }
+            else {
+                throw new NullPointerException(
+                        "MyDbManagerにMyOpenHelperがセットされる前に，データベースの参照を行おうとしています．"
+                );
+            }
+        }
     }
+    public static void setMyOpenHelper(Context context) {
+        MyOpenHelperContainer.setHelper(new MyOpenHelper(context));
+    }
+
 
     /**
      * デフォルトの支払方法を確保する関数
      * デフォルトの支払方法(通常支払い)が不具合でデータベースから削除されても自動で補完するためのもの
      */
     public static void ensureDefaultPayments() {
-        SQLiteDatabase db = helper.getWritableDatabase();
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
         // デフォルトの支払い方法のIDで検索をかける
         Cursor cursor = db.query(
                 MyDbContract.PaymentMethodEntry.TABLE_NAME,
@@ -68,27 +84,36 @@ public class MyDbManager {
     }
 
     public static void setRecordToDataBase(String table, ContentValues values) {
-        SQLiteDatabase db = helper.getWritableDatabase();
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
         db.insert(table, null, values);
     }
 
     /**
-     * Database内のデータを更新(データが無い場合は挿入)する関数
+     * Database内の対応IDのデータを更新(データが無い場合は挿入)する関数
      *
      * @param db        SQLiteDatabase
-     * @param tableName テーブル名
-     * @param values    ContentValues (IDカラムは必ず必要!)
+     * @param tableContract テーブル情報
+     * @param data データクラス
      * @return boolean 成功するとtrue，失敗するとfalse
+     * @param <T> DatabaseEntityを継承したデータクラス
      */
-    private static boolean upsertDatabase(SQLiteDatabase db, String tableName, ContentValues values) {
-        Integer id = values.getAsInteger(MyOpenHelper.ID);
+    private static <T extends DatabaseEntity> boolean upsertDatabase(SQLiteDatabase db, MyDbContract.TableContract<T> tableContract, T data) {
+        Integer id = data.getId();
         if (id == null) {
             Log.e("MyDbManager", "upsertDatabase: idがnullのため更新・挿入を中止しました．");
             return false;
         }
-        int updatedRows = db.update(tableName, values, MyOpenHelper.ID + " = ?", new String[]{String.valueOf(id)});
+        final String tableName = tableContract.getTableName();
+        ContentValues dataValues = data.getContentValues();
+        dataValues.put(tableContract.getIdColumnName(), data.getId());
+        int updatedRows = db.update(
+                tableName,
+                dataValues,
+                tableContract.getIdColumnName() + " = ?",
+                new String[]{String.valueOf( id )}
+        );
         if (updatedRows > 0) return true;
-        long result = db.insert(tableName, null, values);
+        long result = db.insert(tableName, null, dataValues);
         if (result == -1) {
             Log.e("MyDbManager", "upsertDatabase: insertに失敗しました．(" + tableName + ")");
             return false;
@@ -96,9 +121,17 @@ public class MyDbManager {
             return true;
         }
     }
-    public static boolean upsertDatabase(String tableName, ContentValues values) {
-        SQLiteDatabase db = helper.getWritableDatabase();
-        return MyDbManager.upsertDatabase(db, tableName, values);
+
+    /**
+     * Database内の対応IDのデータを更新(データが無い場合は同IDで挿入)する関数
+     * @param tableContract テーブル情報
+     * @param data データ
+     * @return boolean 成功するとtrue,失敗するとfalse
+     * @param <T> DatabaseEntityを継承したデータクラス
+     */
+    public static <T extends DatabaseEntity> boolean upsertDatabase(MyDbContract.TableContract<T> tableContract, T data) {
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
+        return MyDbManager.upsertDatabase(db, tableContract, data);
     }
 
     /**
@@ -108,76 +141,27 @@ public class MyDbManager {
      * @param id    データID
      */
     public static void deleteRecordByID(String table, Integer id) {
-        SQLiteDatabase db = helper.getReadableDatabase();
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
         db.delete(table, "_id=?", new String[]{id});
     }
 
     /**
-     * データ削除
+     * データ削除 (DatabaseEntityインターフェース利用)
      * 
-     * @param <T extends DatabaseEntity> data 
+     * @param data <T extends DatabaseEntity>
      */
     public static <T extends DatabaseEntity> void deleteData(T data) {
-        DatabaseEntityKind classKind = DatabaseEntityKind.fromEntity(T);
+        DatabaseEntityKind classKind = DatabaseEntityKind.fromClass(data.getClass());
         Integer id = data.getId();
         if (id != null) {
-            SQLiteDatabase db = helper.getReadableDatabase();
+            SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
             db.delete(
                 classKind.getTableName(), 
                 classKind.getIdColumnName() + " = ?",
-                new String[]{ id }
+                new String[]{ String.valueOf(id) }
             );
         }
     }
-
-
-    /**
-     * 購入日付からデータを検索してListにして返す関数
-     *
-     * @param year  購入年(nullを入れると条件は無視される)
-     * @param month 購入月(nullを入れると条件は無視される)
-     * @param day   購入日(nullを入れると条件は無視される)
-     * @return Expensesリスト
-     */
-    public static ArrayList<Expenses> getExpensesByPurchaseDate(Integer year, Integer month, Integer day) {
-        SQLiteDatabase db = helper.getReadableDatabase();
-        ArrayList<String> selectionParts = new ArrayList<>();
-        ArrayList<String> selectionArgsList = new ArrayList<>();
-
-        if (year != null) {
-            selectionParts.add(MyOpenHelper.COLUMN_YEAR + " = ?");
-            selectionArgsList.add(String.valueOf(year));
-        }
-        if (month != null) {
-            selectionParts.add(MyOpenHelper.COLUMN_MONTH + " = ?");
-            selectionArgsList.add(String.valueOf(month));
-        }
-        if (day != null) {
-            selectionParts.add(MyOpenHelper.COLUMN_DAY + " = ?");
-            selectionArgsList.add(String.valueOf(day));
-        }
-        // 検索項目をいい感じに変換してSQLiteで検索できるようにする
-        String selection = null;
-        String[] selectionArgs = null;
-        if (!selectionParts.isEmpty()) {
-            selection = String.join(" AND ", selectionParts);
-            selectionArgs = selectionArgsList.toArray(new String[0]);
-        }
-        String orderBy = MyOpenHelper.COLUMN_YEAR + " ASC, " + MyOpenHelper.COLUMN_MONTH + " ASC, " + MyOpenHelper.COLUMN_DAY;
-        Cursor cursor = db.query(
-                MyOpenHelper.EXPENSES_TABLE_NAME,
-                expensesColumns,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                orderBy
-        );
-        ArrayList<Expenses> expensesList = toExpensesListBy(cursor);
-        cursor.close();
-        return expensesList;
-    }
-
     /**
      * 引数で指定した日付と購入日もしくは支払日が一致する支出データを取得
      *
@@ -187,24 +171,26 @@ public class MyDbManager {
      * @return Expensesリスト
      */
     public static ArrayList<Expenses> getExpensesByPurchaseOrPaymentDate(Integer year, Integer month, Integer day) {
-        SQLiteDatabase db = helper.getReadableDatabase();
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
         String purchaseSelection = buildWhereClauseByDate(
                 year, month, day,
-                MyOpenHelper.COLUMN_YEAR,
-                MyOpenHelper.COLUMN_MONTH,
-                MyOpenHelper.COLUMN_DAY
+                MyDbContract.ExpensesEntry.COLUMN_YEAR,
+                MyDbContract.ExpensesEntry.COLUMN_MONTH,
+                MyDbContract.ExpensesEntry.COLUMN_DAY
         );
         String paymentSelection = buildWhereClauseByDate(
                 year, month, day,
-                MyOpenHelper.COLUMN_PAYMENT_YEAR,
-                MyOpenHelper.COLUMN_PAYMENT_MONTH,
-                MyOpenHelper.COLUMN_PAYMENT_DAY
+                MyDbContract.ExpensesEntry.COLUMN_PAYMENT_YEAR,
+                MyDbContract.ExpensesEntry.COLUMN_PAYMENT_MONTH,
+                MyDbContract.ExpensesEntry.COLUMN_PAYMENT_DAY
         );
         String selection = "(" + purchaseSelection + ") OR (" + paymentSelection + ")";
-        String orderBy = MyOpenHelper.COLUMN_YEAR + " ASC, " + MyOpenHelper.COLUMN_MONTH + " ASC, " + MyOpenHelper.COLUMN_DAY;
+        String orderBy = MyDbContract.ExpensesEntry.COLUMN_YEAR + " ASC, "
+                + MyDbContract.ExpensesEntry.COLUMN_MONTH + " ASC, "
+                + MyDbContract.ExpensesEntry.COLUMN_DAY + " ASC";
         Cursor cursor = db.query(
-                MyOpenHelper.EXPENSES_TABLE_NAME,
-                expensesColumns,
+                MyDbContract.ExpensesEntry.TABLE_NAME,
+                MyDbContract.ExpensesEntry.COLUMNS,
                 selection,
                 null,
                 null,
@@ -214,112 +200,22 @@ public class MyDbManager {
         ArrayList<Expenses> expensesList = toExpensesListBy(cursor);
         cursor.close();
         return expensesList;
-    }
-
-    /**
-     * 支払日時からデータを検索してListにして返す関数
-     *
-     * @param year  支払年(nullを入れると条件は無視される)
-     * @param month 支払月(nullを入れると条件は無視される)
-     * @param day   支払日(nullを入れると条件は無視される)
-     * @return ListArray
-     */
-    public static ArrayList<Expenses> getExpensesByPaymentDate(Integer year, Integer month, Integer day) {
-        SQLiteDatabase db = helper.getReadableDatabase();
-        ArrayList<String> selectionParts = new ArrayList<>();
-        ArrayList<String> selectionArgsList = new ArrayList<>();
-
-        if (year != null) {
-            selectionParts.add(MyOpenHelper.COLUMN_PAYMENT_YEAR + " = ?");
-            selectionArgsList.add(String.valueOf(year));
-        }
-        if (month != null) {
-            selectionParts.add(MyOpenHelper.COLUMN_PAYMENT_MONTH + " = ?");
-            selectionArgsList.add(String.valueOf(month));
-        }
-        if (day != null) {
-            selectionParts.add(MyOpenHelper.COLUMN_PAYMENT_DAY + " = ?");
-            selectionArgsList.add(String.valueOf(day));
-        }
-        // 検索項目をいい感じに変換してSQLiteで検索できるようにする
-        String selection = null;
-        String[] selectionArgs = null;
-        if (!selectionParts.isEmpty()) {
-            selection = String.join(" AND ", selectionParts);
-            selectionArgs = selectionArgsList.toArray(new String[0]);
-        }
-        String orderBy = MyOpenHelper.COLUMN_PAYMENT_YEAR + " ASC, " + MyOpenHelper.COLUMN_PAYMENT_MONTH + " ASC, " + MyOpenHelper.COLUMN_PAYMENT_DAY;
-        Cursor cursor = db.query(
-                MyOpenHelper.EXPENSES_TABLE_NAME,
-                expensesColumns,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                orderBy
-        );
-        ArrayList<Expenses> expensesList = toExpensesListBy(cursor);
-        cursor.close();
-        return expensesList;
-    }
-
-
-    public static ArrayList<Expenses> getAllExpensesData() {
-        SQLiteDatabase db = helper.getReadableDatabase();
-        String orderBy = "year ASC, month ASC, day ASC";
-        Cursor cursor = db.query(
-                MyOpenHelper.EXPENSES_TABLE_NAME,
-                expensesColumns,
-                null,
-                null,
-                null,
-                null,
-                orderBy);
-        ArrayList<Expenses> expensesList = toExpensesListBy(cursor);
-        cursor.close();
-        return expensesList;
-    }
-
-    public static ArrayList<Income> getAllIncomeData() {
-        SQLiteDatabase db = helper.getReadableDatabase();
-        String orderBy = "year ASC, month ASC, day ASC";
-        Cursor cursor = db.query(
-                MyOpenHelper.INCOME_TABLE_NAME,
-                new String[]{"_id", "year", "month", "day", "amount", "memo", "category"},
-                null,
-                null,
-                null,
-                null,
-                orderBy);
-        cursor.moveToFirst();
-        ArrayList<Income> incomeList = new ArrayList<Income>();
-        for (int i = 0; i < cursor.getCount(); i++) {
-            Income tmp = new Income(
-                    cursor.getInt(0),
-                    MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
-                    cursor.getInt(4),
-                    cursor.getString(5),
-                    cursor.getString(6)
-            );
-            cursor.moveToNext();
-            incomeList.add(tmp);
-        }
-        cursor.close();
-        return incomeList;
     }
 
     public static ArrayList<Income> getIncomeDataByDate(Integer year, Integer month, Integer day) {
-        SQLiteDatabase db = helper.getReadableDatabase();
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
         String selection = buildWhereClauseByDate(
                 year, month, day,
-                MyOpenHelper.COLUMN_YEAR,
-                MyOpenHelper.COLUMN_MONTH,
-                MyOpenHelper.COLUMN_DAY
+                MyDbContract.IncomeEntry.COLUMN_YEAR,
+                MyDbContract.IncomeEntry.COLUMN_MONTH,
+                MyDbContract.IncomeEntry.COLUMN_DAY
         );
-        String orderBy = MyOpenHelper.COLUMN_YEAR + " ASC, " + MyOpenHelper.COLUMN_MONTH + " ASC, " + MyOpenHelper.COLUMN_DAY;
+        String orderBy = MyDbContract.IncomeEntry.COLUMN_YEAR + " ASC, "
+                + MyDbContract.IncomeEntry.COLUMN_MONTH + " ASC, "
+                + MyDbContract.IncomeEntry.COLUMN_DAY + " ASC";
         Cursor cursor = db.query(
-                MyOpenHelper.INCOME_TABLE_NAME,
-                incomeColumns,
+                MyDbContract.IncomeEntry.TABLE_NAME,
+                MyDbContract.IncomeEntry.COLUMNS,
                 selection,
                 null,
                 null,
@@ -357,6 +253,32 @@ public class MyDbManager {
             }
         }
         return new DailyBop(year, month, day, incomeList, purchaseList, paymentList);
+    }
+
+    /**
+     * 全てのデータ取得 (TableContractインターフェース利用)
+     * @param entry MyDbContract.TableContract
+     * @return ArrayList
+     * @param <T> DatabaseEntity継承済み
+     */
+    public static <T extends DatabaseEntity> ArrayList<T> getAll(MyDbContract.TableContract<T> entry) {
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
+        ArrayList<T> result = new ArrayList<>();
+        Cursor cursor = db.query(
+                entry.getTableName(),
+                entry.getColumns(),
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+        while (cursor.moveToNext()) {
+            result.add(entry.fromCursor(cursor));
+        }
+        cursor.close();
+        return result;
     }
 
     public static ArrayList<BopCategory> getAllExpensesCategoryData() {

@@ -63,21 +63,25 @@ public class DailyRecordCustomView extends ConstraintLayout {
 
     private void setDataToLinearLayout(DailyBop bopData) {
         this.dailyRecordLinearLayout.removeAllViews();
+        // 収入のViewオブジェクトを追加
         List<Income> incomeList = bopData.getIncomeList();
         for (int i = 0; i < incomeList.size(); i++) {
             IncomeSettingsCustomView incView = new IncomeSettingsCustomView(this.getContext());
             incView.setData(incomeList.get(i));
             this.dailyRecordLinearLayout.addView(incView);
         }
+        // 支出(購入)のViewオブジェクトを追加
         List<Expenses> expensesList = bopData.getPurchaseList();
         for (int i = 0; i < expensesList.size(); i++) {
             Expenses exp = expensesList.get(i);
+            // 購入日と支払日が異なるものだけ追加
             if (!exp.isSameDay()) {
                 ExpensesSettingsCustomView expView = new ExpensesSettingsCustomView(this.getContext());
                 expView.setData(exp);
                 this.dailyRecordLinearLayout.addView(expView);
             }
         }
+        // 支出(支払い)のViewオブジェクトを追加
         expensesList = bopData.getPaymentList();
         for (int i = 0; i < expensesList.size(); i++) {
             ExpensesSettingsCustomView expView = new ExpensesSettingsCustomView(this.getContext());

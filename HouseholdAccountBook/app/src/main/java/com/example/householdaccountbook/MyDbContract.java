@@ -2,6 +2,7 @@ package com.example.householdaccountbook;
 
 import android.database.Cursor;
 
+import myclasses.DatabaseEntity;
 import myclasses.Expenses;
 import myclasses.ExpensesCategory;
 import myclasses.Income;
@@ -9,8 +10,14 @@ import myclasses.IncomeCategory;
 import myclasses.PaymentMethod;
 
 public final class MyDbContract {
+    public interface TableContract<T extends DatabaseEntity> {
+        String getTableName();
+        String getIdColumnName();
+        String[] getColumns();
+        T fromCursor(Cursor cursor);
+    }
     private MyDbContract() { /*インスタンス化防止*/ }
-    public static class BaseBopEntry {
+    public static abstract class BaseBopEntry {
         private BaseBopEntry() { /*インスタンス化防止*/ }
         public static final String ID = "_id";
         public static final String COLUMN_YEAR = "year";
@@ -21,7 +28,7 @@ public final class MyDbContract {
         public static final String COLUMN_CATEGORY = "category";
     }
 
-    public static final class IncomeEntry extends BaseBopEntry {
+    public static final class IncomeEntry extends BaseBopEntry implements TableContract<Income>{
         private IncomeEntry() { /*インスタンス化防止*/ }
         public static final String TABLE_NAME = "IncomeDb";
         public static final String[] COLUMNS = {
@@ -33,8 +40,14 @@ public final class MyDbContract {
                 IncomeEntry.COLUMN_MEMO,    // 5
                 IncomeEntry.COLUMN_CATEGORY // 6
         };
-
-        public static Income fromCursor(Cursor cursor) {
+        @Override
+        public String getTableName() { return IncomeEntry.TABLE_NAME; }
+        @Override
+        public String getIdColumnName() { return IncomeEntry.ID; }
+        @Override
+        public String[] getColumns() { return IncomeEntry.COLUMNS; }
+        @Override
+        public Income fromCursor(Cursor cursor) {
             return new Income(
                 cursor.getInt(0),
                 MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
@@ -45,7 +58,7 @@ public final class MyDbContract {
         }
     }
 
-    public static final class ExpensesEntry extends BaseBopEntry {
+    public static final class ExpensesEntry extends BaseBopEntry implements TableContract<Expenses> {
         private ExpensesEntry() { /*インスタンス化防止*/ }
         public static final String TABLE_NAME = "ExpensesDb";
         public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id";
@@ -66,8 +79,14 @@ public final class MyDbContract {
                 ExpensesEntry.COLUMN_PAYMENT_MONTH,
                 ExpensesEntry.COLUMN_PAYMENT_DAY
         };
-
-        public static Expenses fromCursor(Cursor cursor) {
+        @Override
+        public String getTableName() { return ExpensesEntry.TABLE_NAME; }
+        @Override
+        public String getIdColumnName() { return ExpensesEntry.ID; }
+        @Override
+        public String[] getColumns() { return ExpensesEntry.COLUMNS; }
+        @Override
+        public Expenses fromCursor(Cursor cursor) {
             return new Expenses(
                 cursor.getInt(0),
                 MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
@@ -80,14 +99,14 @@ public final class MyDbContract {
         };
     }
 
-    public static class BaseCategoryEntry {
+    public static abstract class BaseCategoryEntry {
         private BaseCategoryEntry() { /*インスタンス化防止*/ }
         public static final String ID = "_id";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_COLOR = "color_code_text";
         public static final String COLUMN_INDEX = "list_index";
         public static final String COLUMN_IS_DELETED = "is_deleted";
-        private static final String[] COLUMNS = {
+        public static final String[] COLUMNS = {
                 BaseCategoryEntry.ID,
                 BaseCategoryEntry.COLUMN_NAME,
                 BaseCategoryEntry.COLUMN_COLOR,
@@ -96,9 +115,16 @@ public final class MyDbContract {
         };
     }
 
-    public static final class IncomeCategoryEntry extends BaseCategoryEntry {
+    public static final class IncomeCategoryEntry extends BaseCategoryEntry implements TableContract<IncomeCategory> {
         private IncomeCategoryEntry() { /*インスタンス化防止*/ }
         public static final String TABLE_NAME = "IncomeCategoryDb";
+        @Override
+        public String getTableName() { return IncomeCategoryEntry.TABLE_NAME; }
+        @Override
+        public String getIdColumnName() { return IncomeCategoryEntry.ID; }
+        @Override
+        public String[] getColumns() { return IncomeCategoryEntry.COLUMNS; }
+        @Override
         public IncomeCategory fromCursor(Cursor cursor) {
             return new IncomeCategory(
                     cursor.getInt(0),
@@ -110,9 +136,16 @@ public final class MyDbContract {
         }
     }
 
-    public static final class ExpensesCategoryEntry extends BaseCategoryEntry {
+    public static final class ExpensesCategoryEntry extends BaseCategoryEntry implements TableContract<ExpensesCategory> {
         private ExpensesCategoryEntry() { /*インスタンス化防止*/ }
         public static final String TABLE_NAME = "ExpensesCategoryDb";
+        @Override
+        public String getTableName() { return ExpensesCategoryEntry.TABLE_NAME; }
+        @Override
+        public String getIdColumnName() { return ExpensesCategoryEntry.ID; }
+        @Override
+        public String[] getColumns() { return ExpensesCategoryEntry.COLUMNS; }
+        @Override
         public ExpensesCategory fromCursor(Cursor cursor) {
             return new ExpensesCategory(
                     cursor.getInt(0),
@@ -124,7 +157,7 @@ public final class MyDbContract {
         }
     }
 
-    public static final class PaymentMethodEntry {
+    public static final class PaymentMethodEntry implements TableContract<PaymentMethod> {
         private PaymentMethodEntry() { /*インスタンス化防止*/ }
         public static final String TABLE_NAME = "PaymentMethodDb";
         public static final String ID = "_id";
@@ -155,8 +188,14 @@ public final class MyDbContract {
                 0,
                 true
         );
-
-        public static PaymentMethod fromCursor(Cursor cursor) {
+        @Override
+        public String getTableName() { return PaymentMethodEntry.TABLE_NAME; }
+        @Override
+        public String getIdColumnName() { return PaymentMethodEntry.ID; }
+        @Override
+        public String[] getColumns() { return PaymentMethodEntry.COLUMNS; }
+        @Override
+        public PaymentMethod fromCursor(Cursor cursor) {
             return new PaymentMethod(
                     cursor.getInt(0),
                     cursor.getString(1),

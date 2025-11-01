@@ -1,6 +1,7 @@
 package myclasses;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import com.example.householdaccountbook.MyDbContract;
 import com.example.householdaccountbook.MyOpenHelper;

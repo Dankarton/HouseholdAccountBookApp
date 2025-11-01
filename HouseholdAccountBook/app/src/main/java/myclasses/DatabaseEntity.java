@@ -1,6 +1,7 @@
 package myclasses;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 /**
  * データベース操作時に使うインターフェース
@@ -17,4 +18,6 @@ public interface DatabaseEntity {
      * @return ContentValues
      */
     ContentValues getContentValues();
+
+    static DatabaseEntity fromCursor(Cursor cursor);
 }
