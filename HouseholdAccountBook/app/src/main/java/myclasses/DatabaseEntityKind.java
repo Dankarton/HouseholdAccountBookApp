@@ -11,33 +11,25 @@ import com.example.householdaccountbook.MyDbContract;
  * --※※※--新しくDatabaseEntityを実装したクラスがあったら必ず登録するように--※※※--
  */
 public enum DatabaseEntityKind {
-    EXPENSES(Expenses.class, MyDbContract.ExpensesEntry.TABLE_NAME, MyDbContract.ExpensesEntry.ID, MyDbContract.ExpensesEntry.COLUMNS),
-    INCOME(Income.class, MyDbContract.IncomeEntry.TABLE_NAME, MyDbContract.IncomeEntry.ID, MyDbContract.IncomeEntry.COLUMNS),
-    EXPENSES_CATEGORY(ExpensesCategory.class, MyDbContract.ExpensesCategoryEntry.TABLE_NAME, MyDbContract.ExpensesCategoryEntry.ID, MyDbContract.ExpensesCategoryEntry.COLUMNS),
-    INCOME_CATEGORY(IncomeCategory.class, MyDbContract.IncomeCategoryEntry.TABLE_NAME, MyDbContract.IncomeCategoryEntry.ID, MyDbContract.IncomeCategoryEntry.COLUMNS),
-    PAYMENT_METHOD(PaymentMethod.class, MyDbContract.PaymentMethodEntry.TABLE_NAME, MyDbContract.PaymentMethodEntry.ID, MyDbContract.PaymentMethodEntry.COLUMNS);
+    EXPENSES(Expenses.class, new MyDbContract.ExpensesEntry()),
+    INCOME(Income.class, new MyDbContract.IncomeEntry()),
+    EXPENSES_CATEGORY(ExpensesCategory.class, new MyDbContract.ExpensesCategoryEntry()),
+    INCOME_CATEGORY(IncomeCategory.class, new MyDbContract.IncomeCategoryEntry()),
+    PAYMENT_METHOD(PaymentMethod.class, new MyDbContract.PaymentMethodEntry());
 
     // フィールド
     // クラス
     private final Class<? extends DatabaseEntity> entityClass;
-    // 保存先のテーブル名
-    private final String tableName;
-    // idカラム名
-    private final String idColumnName;
-    // カラム配列
-    private final String[] columns;
-    // メソッド
+    private final MyDbContract.TableContract<? extends DatabaseEntity> tableContract;
     /**
      * コンストラクタ
      * @param entityClass クラス
      * @param tableName テーブル名
      * @param idColumnName idカラム名
      */
-    private DatabaseEntityKind(Class<? extends DatabaseEntity> entityClass, String tableName, String idColumnName, String[] columns) {
+    private DatabaseEntityKind(Class<? extends DatabaseEntity> entityClass, MyDbContract.TableContract<? extends DatabaseEntity> tableContract) {
         this.entityClass = entityClass;
-        this.tableName = tableName;
-        this.idColumnName = idColumnName;
-        this.columns = columns;
+        this.tableContract = tableContract;
     }
 
     /**
@@ -50,21 +42,7 @@ public enum DatabaseEntityKind {
     /**
      * テーブル名取得
      */
-    public String getTableName() {
-        return this.tableName;
-    }
-    /**
-     * idカラム名取得
-     */
-    public String getIdColumnName() {
-        return this.idColumnName;
-    }
-    /**
-     *
-     */
-    public String[] getColumns() {
-        return this.columns;
-    }
+    public MyDbContract.TableContract<? extends DatabaseEntity> getTableContract() { return this.tableContract; }
     // ユーティリティ
     /**
      * クラスから対応するEnumを取得

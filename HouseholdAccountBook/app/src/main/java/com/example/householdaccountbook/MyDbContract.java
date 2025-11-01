@@ -29,7 +29,7 @@ public final class MyDbContract {
     }
 
     public static final class IncomeEntry extends BaseBopEntry implements TableContract<Income>{
-        private IncomeEntry() { /*インスタンス化防止*/ }
+        public IncomeEntry(){ }
         public static final String TABLE_NAME = "IncomeDb";
         public static final String[] COLUMNS = {
                 IncomeEntry.ID,             // 0
@@ -59,7 +59,7 @@ public final class MyDbContract {
     }
 
     public static final class ExpensesEntry extends BaseBopEntry implements TableContract<Expenses> {
-        private ExpensesEntry() { /*インスタンス化防止*/ }
+        public ExpensesEntry() { /*インスタンス化防止*/ }
         public static final String TABLE_NAME = "ExpensesDb";
         public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id";
         public static final String COLUMN_PAYMENT_YEAR = "payment_year";
