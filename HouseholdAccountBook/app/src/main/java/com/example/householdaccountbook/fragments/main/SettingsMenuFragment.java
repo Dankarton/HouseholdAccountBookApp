@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.fragments;
+package com.example.householdaccountbook.fragments.main;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +13,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.activities.SettingEditPaymentMethodActivity;
-import com.example.householdaccountbook.activities.SettingSelectPaymentMethodActivity;
+import com.example.householdaccountbook.activities.settings.edit.SettingEditExpensesCategoryActivity;
+import com.example.householdaccountbook.activities.settings.edit.SettingEditIncomeCategoryActivity;
+import com.example.householdaccountbook.activities.settings.listing.SettingSelectPaymentMethodActivity;
 import com.example.householdaccountbook.customviews.SettingMenuButtonView;
 import com.example.householdaccountbook.data.SettingMenuFragmentKind;
 
@@ -52,16 +53,17 @@ public class SettingsMenuFragment extends Fragment implements SettingMenuButtonV
     }
     @Override
     public void onClicked(SettingMenuFragmentKind type) {
+        Context context = requireContext();
         // TODO 10/20 テスト
         switch (type) {
             case PAYMENT_METHOD_EDIT:
-                Context context = requireContext();
-                Intent intent = new Intent(context, SettingSelectPaymentMethodActivity.class);
-                context.startActivity(intent);
+                context.startActivity(new Intent(context, SettingSelectPaymentMethodActivity.class));
                 break;
             case EXPENSES_CATEGORY_EDIT:
+                context.startActivity(new Intent(context, SettingEditExpensesCategoryActivity.class));
                 break;
             case INCOME_CATEGORY_EDIT:
+                context.startActivity(new Intent(context, SettingEditIncomeCategoryActivity.class));
                 break;
             default:
         }

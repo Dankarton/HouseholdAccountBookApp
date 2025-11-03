@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.fragments;
+package com.example.householdaccountbook.fragments.main;
 
 import android.os.Bundle;
 
@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 
 import com.example.householdaccountbook.adapter.InputFragmentPagerAdapter;
 import com.example.householdaccountbook.R;
+import com.example.householdaccountbook.fragments.ExpensesInputFragment;
+import com.example.householdaccountbook.fragments.IncomeInputFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 

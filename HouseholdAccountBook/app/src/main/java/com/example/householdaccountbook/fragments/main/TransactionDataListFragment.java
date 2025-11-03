@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.fragments;
+package com.example.householdaccountbook.fragments.main;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.householdaccountbook.MyDbManager;
+import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.adapter.TransactionDateAdapter;

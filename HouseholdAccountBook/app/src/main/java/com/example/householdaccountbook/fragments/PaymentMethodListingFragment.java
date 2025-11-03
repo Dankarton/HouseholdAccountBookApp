@@ -12,18 +12,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.example.householdaccountbook.MyDbManager;
+import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.customviews.PaymentMethodItemView;
+import com.example.householdaccountbook.customviews.item.PaymentMethodItemView;
 
 import java.util.ArrayList;
 
 import myclasses.PaymentMethod;
 
-/**
- * A simple {@link Fragment} subclass.
- * create an instance of this fragment.
- */
 public class PaymentMethodListingFragment extends Fragment {
     public interface OnInputEventListener {
         void onInputDetected(PaymentMethod data);
@@ -31,9 +27,6 @@ public class PaymentMethodListingFragment extends Fragment {
     private OnInputEventListener listener = null;
     private LinearLayout itemList;
     private int paymentMethodDataNum;
-    public PaymentMethodListingFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,7 +79,7 @@ public class PaymentMethodListingFragment extends Fragment {
     public void reload() {
         this.itemList.removeAllViews();
         Context context = requireContext();
-        ArrayList<PaymentMethod> methods = MyDbManager.getAllPaymentMethodData();
+        ArrayList<PaymentMethod> methods = MyDbManager.getAll(PaymentMethod.class);
         this.paymentMethodDataNum = methods.size();
         for (PaymentMethod method : methods) {
             this.itemList.addView(createPaymentMethodItemView(context, method));

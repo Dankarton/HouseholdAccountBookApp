@@ -1,7 +1,6 @@
 package com.example.householdaccountbook.customviews;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -13,10 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.activities.MainActivity;
-import com.example.householdaccountbook.activities.SettingMotherActivity;
 import com.example.householdaccountbook.data.SettingMenuFragmentKind;
-import com.example.householdaccountbook.util.SettingMenuIntentKeys;
 
 public class SettingMenuButtonView extends ConstraintLayout {
     public interface OnClickListener {

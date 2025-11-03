@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.fragments;
+package com.example.householdaccountbook.fragments.edit;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
@@ -25,8 +23,7 @@ import com.example.householdaccountbook.adapter.EnumSpinnerAdapter;
 
 import myclasses.PaymentMethod;
 
-public class PaymentMethodEditFragment extends Fragment {
-    OnInputActionListener listener = null;
+public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
     EditText nameEdit;
     Spinner closingRuleSpinner;
     Spinner paymentRuleSpinner;
@@ -37,18 +34,10 @@ public class PaymentMethodEditFragment extends Fragment {
     Button saveButton;
     Button deleteButton;
 
-    PaymentMethod paymentMethod = null;
-
-    public interface OnInputActionListener {
-        public void onSaveButtonClicked(PaymentMethod data);
-        public void onDeleteButtonClicked(PaymentMethod data);
-    }
-
-
     public PaymentMethodEditFragment() { /*Do nothing*/ }
 
-    public PaymentMethodEditFragment(PaymentMethod paymentMethodData) {
-        this.paymentMethod = paymentMethodData;
+    public PaymentMethodEditFragment(@NonNull PaymentMethod paymentMethodData) {
+        super(paymentMethodData);
     }
 
     @Override
@@ -56,6 +45,8 @@ public class PaymentMethodEditFragment extends Fragment {
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_payment_method_edit, container, false);
     }
+
+
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -74,7 +65,7 @@ public class PaymentMethodEditFragment extends Fragment {
         // 締め日スピナー用Adapter作成
         EnumSpinnerAdapter<PaymentMethod.ClosingRule> closingSpinnerAdapter = new EnumSpinnerAdapter<>(
                 context,
-                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                android.R.layout.simple_spinner_dropdown_item,
                 PaymentMethod.ClosingRule.values(),
                 new EnumSpinnerAdapter.LabelProvider<PaymentMethod.ClosingRule>() {
                     @Override
@@ -86,7 +77,7 @@ public class PaymentMethodEditFragment extends Fragment {
         // 支払日スピナー用Adapter作成
         EnumSpinnerAdapter<PaymentMethod.PaymentRule> paymentSpinnerAdapter = new EnumSpinnerAdapter<>(
                 context,
-                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                android.R.layout.simple_spinner_dropdown_item,
                 PaymentMethod.PaymentRule.values(),
                 new EnumSpinnerAdapter.LabelProvider<PaymentMethod.PaymentRule>() {
                     @Override
@@ -105,6 +96,7 @@ public class PaymentMethodEditFragment extends Fragment {
                 PaymentMethod.ClosingRule selectedRule = (PaymentMethod.ClosingRule) parent.getItemAtPosition(position);
                 closingRuleSettingText.setText(selectedRule.getSettingNumText());
                 closingRuleSettingNumEdit.setEnabled(selectedRule.usesSettingNum());
+                saveButton.setEnabled(checkInputData());
             }
 
             @Override
@@ -117,7 +109,7 @@ public class PaymentMethodEditFragment extends Fragment {
                 PaymentMethod.PaymentRule selectedRule = (PaymentMethod.PaymentRule) parent.getItemAtPosition(position);
                 paymentRuleSettingText.setText(selectedRule.getSettingNumText());
                 paymentRuleSettingNumEdit.setEnabled(selectedRule.usesSettingNum());
-                checkInputData();
+                saveButton.setEnabled(checkInputData());
             }
 
             @Override
@@ -133,67 +125,30 @@ public class PaymentMethodEditFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                checkInputData();
+                saveButton.setEnabled(checkInputData());
             }
         };
         // Editが変更された時に追加処理を行えるようにwatcherをセット
         nameEdit.addTextChangedListener(watcher);
         closingRuleSettingNumEdit.addTextChangedListener(watcher);
         paymentRuleSettingNumEdit.addTextChangedListener(watcher);
-        // 保存ボタンが押された時の処理を記述
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                notifyListenerCompleted(createPaymentMethodFromInput());
-                view.setEnabled(false);
-            }
-        });
-        // 削除ボタンが押された時の処理を記述
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new AlertDialog.Builder(context)
-                        .setTitle("確認")
-                        .setMessage("このデータを削除してもよろしいですか？")
-                        .setPositiveButton("削除", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                listener.onDeleteButtonClicked(paymentMethod);
-                                dialogInterface.dismiss();
-                            }
-                        })
-                        .setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        })
-                        .show();
-            }
-        });
-        // ボタンの状態を変更
-        this.saveButton.setEnabled(false);
-        if (this.paymentMethod.getId() == null){
-            this.deleteButton.setEnabled(false);
-            this.deleteButton.setVisibility(View.GONE);
-        }
         // 初期値設定
-        if (this.paymentMethod.getName() != null) {
-            this.nameEdit.setText(this.paymentMethod.getName());
+        if (this.databaseEntityData.getName() != null) {
+            this.nameEdit.setText(this.databaseEntityData.getName());
         }
         else {
             this.nameEdit.setText("");
         }
-        this.closingRuleSpinner.setSelection(this.paymentMethod.getClosingRule().ordinal());
-        this.paymentRuleSpinner.setSelection(this.paymentMethod.getPaymentRule().ordinal());
-        if (this.paymentMethod.getClosingDay() != null) {
-            this.closingRuleSettingNumEdit.setText(String.valueOf(this.paymentMethod.getClosingDay()));
+        this.closingRuleSpinner.setSelection(this.databaseEntityData.getClosingRule().ordinal());
+        this.paymentRuleSpinner.setSelection(this.databaseEntityData.getPaymentRule().ordinal());
+        if (this.databaseEntityData.getClosingDay() != null) {
+            this.closingRuleSettingNumEdit.setText(String.valueOf(this.databaseEntityData.getClosingDay()));
         }
         else {
             this.closingRuleSettingNumEdit.setText("");
         }
-        if (this.paymentMethod.getPaymentDay() != null) {
-            this.paymentRuleSettingNumEdit.setText(String.valueOf(this.paymentMethod.getPaymentDay()));
+        if (this.databaseEntityData.getPaymentDay() != null) {
+            this.paymentRuleSettingNumEdit.setText(String.valueOf(this.databaseEntityData.getPaymentDay()));
         }
         else {
             this.paymentRuleSettingNumEdit.setText("");
@@ -204,28 +159,12 @@ public class PaymentMethodEditFragment extends Fragment {
         this.listener.onSaveButtonClicked(enteredData);
     }
 
-    private PaymentMethod createPaymentMethodFromInput() {
-        String name = nameEdit.getText().toString();
-        PaymentMethod.ClosingRule closingRule = (PaymentMethod.ClosingRule) closingRuleSpinner.getSelectedItem();
-        PaymentMethod.PaymentRule paymentRule = (PaymentMethod.PaymentRule) paymentRuleSpinner.getSelectedItem();
-        int closingRuleCode = closingRule.getCode();
-        Integer closingSettingNum;
-        if (closingRule.usesSettingNum()) {
-            closingSettingNum = Integer.parseInt(closingRuleSettingNumEdit.getText().toString());
-        } else {
-            closingSettingNum = null;
-        }
-        int paymentRuleCode = paymentRule.getCode();
-        Integer paymentSettingNum;
-        if (paymentRule.usesSettingNum()) {
-            paymentSettingNum = Integer.parseInt(paymentRuleSettingNumEdit.getText().toString());
-        } else {
-            paymentSettingNum = null;
-        }
-        return new PaymentMethod(this.paymentMethod.getId(), name, closingRuleCode, closingSettingNum, paymentRuleCode, paymentSettingNum, this.paymentMethod.getIndex(), false);
-    }
-
-    private void checkInputData() {
+    /**
+     * ユーザーが入力したデータが正しく揃っているか確認する関数
+     *
+     * @return すべてそろっているtrue，一つでも適合しないとfalse
+     */
+    private boolean checkInputData() {
         // 支払い方法名が入力されているか検証
         boolean isNameValid = !nameEdit.getText().toString().isEmpty();
         // 締め日設定値が正しく入力されているか検証
@@ -244,7 +183,8 @@ public class PaymentMethodEditFragment extends Fragment {
             else {
 //                Log.d("PaymentMethodEditFragment", "closingRuleSetting: 入力が数値じゃない");
             }
-        } else {
+        }
+        else {  // EditのEnabledがFalseの時は，settingNumの入力がそもそも必要ない項目
             isClosingSettingNumValid = true;
         }
         // 支払日設定値が正しく入力されているか検証
@@ -268,10 +208,57 @@ public class PaymentMethodEditFragment extends Fragment {
             isPaymentSettingNumValid = true;
         }
 
-        saveButton.setEnabled(isNameValid && isClosingSettingNumValid && isPaymentSettingNumValid);
+        return isNameValid && isClosingSettingNumValid && isPaymentSettingNumValid;
+    }
+    @Override
+    protected int getContainerContentLayoutId() {
+        return R.layout.fragment_payment_method_edit;
     }
 
-    public void setListener(OnInputActionListener listener) {
-        this.listener = listener;
+    @Override
+    protected void onSaveClicked() {
+        String name = nameEdit.getText().toString();
+        PaymentMethod.ClosingRule closingRule = (PaymentMethod.ClosingRule) closingRuleSpinner.getSelectedItem();
+        PaymentMethod.PaymentRule paymentRule = (PaymentMethod.PaymentRule) paymentRuleSpinner.getSelectedItem();
+        int closingRuleCode = closingRule.getCode();
+        Integer closingSettingNum;
+        if (closingRule.usesSettingNum()) {
+            closingSettingNum = Integer.parseInt(closingRuleSettingNumEdit.getText().toString());
+        } else {
+            closingSettingNum = null;
+        }
+        int paymentRuleCode = paymentRule.getCode();
+        Integer paymentSettingNum;
+        if (paymentRule.usesSettingNum()) {
+            paymentSettingNum = Integer.parseInt(paymentRuleSettingNumEdit.getText().toString());
+        } else {
+            paymentSettingNum = null;
+        }
+        PaymentMethod paymentMethod = new PaymentMethod(
+                this.databaseEntityData.getId(), name, closingRuleCode, closingSettingNum,
+                paymentRuleCode, paymentSettingNum, this.databaseEntityData.getIndex(), false
+        );
+        this.listener.onSaveButtonClicked(paymentMethod);
+    }
+
+    @Override
+    protected void onDeleteClicked() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("確認")
+                .setMessage("このデータを削除してもよろしいですか？")
+                .setPositiveButton("削除", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        listener.onDeleteButtonClicked(databaseEntityData);
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
     }
 }

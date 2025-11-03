@@ -1,4 +1,4 @@
-package com.example.householdaccountbook;
+package com.example.householdaccountbook.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,7 +15,7 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.ExpensesEntry.COLUMN_MONTH + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_DAY + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_AMOUNT + " INTEGER," +
-                    MyDbContract.ExpensesEntry.COLUMN_CATEGORY + " TEXT," +
+                    MyDbContract.ExpensesEntry.COLUMN_CATEGORY_ID + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_MEMO + " TEXT," +
                     MyDbContract.ExpensesEntry.COLUMN_PAYMENT_METHOD_ID + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_PAYMENT_YEAR + " INTEGER," +
@@ -28,7 +28,7 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.IncomeEntry.COLUMN_MONTH + " INTEGER," +
                     MyDbContract.IncomeEntry.COLUMN_DAY + " INTEGER," +
                     MyDbContract.IncomeEntry.COLUMN_AMOUNT + " INTEGER," +
-                    MyDbContract.IncomeEntry.COLUMN_CATEGORY + " TEXT," +
+                    MyDbContract.IncomeEntry.COLUMN_CATEGORY_ID + " INTEGER," +
                     MyDbContract.IncomeEntry.COLUMN_MEMO + " TEXT)";
     private static final String EXP_CATEGORY_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.ExpensesCategoryEntry.TABLE_NAME + " (" +

@@ -1,7 +1,6 @@
-package com.example.householdaccountbook.customviews;
+package com.example.householdaccountbook.customviews.item;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
@@ -19,7 +18,7 @@ import com.example.householdaccountbook.R;
 import myclasses.BopCategory;
 import myclasses.SelectableItem;
 
-public class CategoryItemView extends ConstraintLayout implements SelectableItem {
+public class CategoryItemView extends ConstraintLayout implements SelectableItem<BopCategory> {
     View colorDot;
     TextView categoryText;
     BopCategory bopCategory;
@@ -48,7 +47,7 @@ public class CategoryItemView extends ConstraintLayout implements SelectableItem
         Drawable background = colorDot.getBackground();
         if (background instanceof GradientDrawable) {
             GradientDrawable drawable = (GradientDrawable) background.mutate();
-            drawable.setColor(category.getColorCode());  // ← shape の塗り色を変更
+            drawable.setColor(category.getColorCode());  // shape の塗り色を変更
         }
 //        this.colorDot.setBackgroundTintList(ColorStateList.valueOf(category.getColorCode()));
         this.categoryText.setText(category.getName());
@@ -57,14 +56,13 @@ public class CategoryItemView extends ConstraintLayout implements SelectableItem
     public void setSelectedState(boolean selected) {
         this.isSelected = selected;
         this.setSelected(selected);
-        Log.d("CategoryItemView", bopCategory.getName() + " clicked");
     }
     @Override
     public boolean isSelected() {
         return this.isSelected;
     }
     @Override
-    public Object getData() {
+    public BopCategory getData() {
         return this.bopCategory;
     }
 }

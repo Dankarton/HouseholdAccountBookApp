@@ -20,6 +20,10 @@ import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 
 public class ColorPaletteCustomView extends ConstraintLayout {
+    public interface OnColorSelectedListener {
+        void onColorSelected(int colorInt);
+    }
+    private OnColorSelectedListener listener;
     private GridLayout gridLayout;
     private ImageButton selectedButton = null;
     private int columnCount = 4; // デフォルト列数
@@ -85,6 +89,9 @@ public class ColorPaletteCustomView extends ConstraintLayout {
                 @Override
                 public void onClick(View view) {
                     selectButton((ImageButton) view);
+                    if (listener != null) {
+                        listener.onColorSelected(getSelectedColor());
+                    }
                 }
             });
 
@@ -102,21 +109,36 @@ public class ColorPaletteCustomView extends ConstraintLayout {
 
     /**
      * 現在選択されているボタンの背景色を取得
-     * @return 選択色、未選択なら -1
+     * @return 選択色、未選択ならnull
      */
-    public int getSelectedColor() {
+    public Integer getSelectedColor() {
         if (selectedButton != null) {
             // Tagに埋め込まれたカラーコードを取得
             return (int) selectedButton.getTag();
         }
-        return -1;
+        return null;
     }
 
+    /**
+     * 選択されているかどうか
+     * @return 選択されているtrue，されていないfalse
+     */
+    public boolean isSelected() {
+        if (selectedButton != null) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     /**
      * 列数を設定
      */
     public void setColumnCount(int count) {
         this.columnCount = count;
         gridLayout.setColumnCount(count);
+    }
+    public void setOnColorSelectedListener(OnColorSelectedListener listener) {
+        this.listener = listener;
     }
 }

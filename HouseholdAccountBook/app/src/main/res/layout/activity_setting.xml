@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize"
     android:fitsSystemWindows="true"
-    tools:context=".activities.SettingMotherActivity">
+    tools:context=".activities.settings.SettingMotherActivity">
     <!-- 戻るボタン -->
     <ImageButton
         android:id="@+id/back_button"

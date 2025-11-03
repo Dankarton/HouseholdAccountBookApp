@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.example.householdaccountbook.MyDbManager;
+import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.R;
 
 import myclasses.Expenses;
@@ -68,7 +68,7 @@ public class ExpensesSettingsCustomView extends ConstraintLayout {
     }
     public void setData(Expenses expenses){
         myExpenses = expenses;
-        categoryTextView.setText(myExpenses.getCategory());
+        categoryTextView.setText(myExpenses.getCategoryId());
         String formattedDate = myExpenses.getYear() + "/" + myExpenses.getMonth() + "/" + myExpenses.getDay();
         dateTextView.setText(formattedDate);
 //        dateTextView.setText(String.valueOf(myExpenses.getPaymentMethodId()));
@@ -84,7 +84,7 @@ public class ExpensesSettingsCustomView extends ConstraintLayout {
 
     public void clickDeleteButton(View view) {
         Log.d("ExpSettingCustomView", "" + myExpenses.getId());
-        MyDbManager.deleteRecordByID("ExpensesDb", "" + myExpenses.getId());
+        MyDbManager.deleteData(myExpenses);
         this.setVisibility(View.GONE);
 //        String inpText = "Delete";
 //        categoryTextView.setText(inpText);

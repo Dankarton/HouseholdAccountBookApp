@@ -13,9 +13,15 @@ import java.util.ArrayList;
 
 import myclasses.SelectableItem;
 
-public class ItemListCustomView<T extends View & SelectableItem> extends ScrollView {
+/**
+ * SelectableItemを継承したCustomView用の選択可能なリスト
+ * 選択は一つだけ(ラジオボタン的な使用)
+ * @param <T1> extends View & SelectableItem
+ * @param <T2> SelectableItemが持つobject
+ */
+public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extends ScrollView {
     private LinearLayout listLinearLayout;
-    private T selectedItem = null;
+    private T1 selectedItem = null;
     public ItemListCustomView(Context context) {
         super(context);
         init(context);
@@ -34,17 +40,17 @@ public class ItemListCustomView<T extends View & SelectableItem> extends ScrollV
         LayoutInflater.from(context).inflate(R.layout.custom_view_item_list, this, true);
         listLinearLayout = findViewById(R.id.item_list_linear_layout);
     }
-    public void setItem(ArrayList<T> items) {
+    public void setItem(ArrayList<T1> items) {
         for (int i = 0; i < items.size(); i++) {
-            T item = items.get(i);
+            T1 item = items.get(i);
             item.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     selectItem(item);
                 }
             });
-            // 一番最初の項目を選択した状態にする
-            if (i == 0) {
+            // 選択された状態でオブジェが渡されたらそれを選択状態にする．
+            if (item.isSelected()) {
                 selectItem(item);
             }
             else {
@@ -53,14 +59,14 @@ public class ItemListCustomView<T extends View & SelectableItem> extends ScrollV
             listLinearLayout.addView(item);
         }
     }
-    private void selectItem(T selectableItem) {
+    private void selectItem(T1 selectableItem) {
         if (this.selectedItem != null) {
             selectedItem.setSelectedState(false);
         }
         selectableItem.setSelectedState(true);
         this.selectedItem = selectableItem;
     }
-    public T getSelectedItem() {
+    public T1 getSelectedItem() {
         return this.selectedItem;
     }
 }

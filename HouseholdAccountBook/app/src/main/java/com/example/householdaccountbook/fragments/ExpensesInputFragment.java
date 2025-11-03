@@ -17,12 +17,10 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.householdaccountbook.MyDbContract;
-import com.example.householdaccountbook.MyDbManager;
-import com.example.householdaccountbook.MyOpenHelper;
+import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.customviews.CategoryItemView;
+import com.example.householdaccountbook.customviews.item.CategoryItemView;
 import com.example.householdaccountbook.customviews.ItemListCustomView;
 
 import java.util.ArrayList;
@@ -30,6 +28,7 @@ import java.util.Calendar;
 
 import myclasses.BopCategory;
 import myclasses.Expenses;
+import myclasses.ExpensesCategory;
 import myclasses.PaymentMethod;
 
 public class ExpensesInputFragment extends Fragment {
@@ -60,16 +59,16 @@ public class ExpensesInputFragment extends Fragment {
         memoEditText = view.findViewById(R.id.exp_memo_edit_text);
         amountEditText = view.findViewById(R.id.exp_amount_edit_text);
         addButton = view.findViewById(R.id.expenses_add_button);
-        ArrayList<BopCategory> categories = MyDbManager.getAllExpensesCategoryData();
+        ArrayList<ExpensesCategory> categories = MyDbManager.getAll(ExpensesCategory.class);
         String[] categoryArray = {"食費", "日用品", "通信費", "通販", "グッズ", "サブスク"};
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(
                 view.getContext(),
-                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                android.R.layout.simple_spinner_dropdown_item,
                 categoryArray
         );
         categorySpinner.setAdapter(categoryAdapter);
         // 支払方法をスピナーに登録する
-        ArrayList<PaymentMethod> paymentMethods = MyDbManager.getAllPaymentMethodData();
+        ArrayList<PaymentMethod> paymentMethods = MyDbManager.getAll(PaymentMethod.class);
         String[] pmStrings = new String[paymentMethods.size()];
         paymentMethodArray = new PaymentMethod[paymentMethods.size()];
         for (int i = 0; i < pmStrings.length; i++) {
@@ -78,7 +77,7 @@ public class ExpensesInputFragment extends Fragment {
         }
         ArrayAdapter<String> paymentMethodAdapter = new ArrayAdapter<>(
                 view.getContext(),
-                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                android.R.layout.simple_spinner_dropdown_item,
                 pmStrings
         );
         paymentMethodSpinner.setAdapter(paymentMethodAdapter);
@@ -152,22 +151,16 @@ public class ExpensesInputFragment extends Fragment {
                 String memo = memoEditText.getText().toString();
                 String category = (String)categorySpinner.getSelectedItem();
                 PaymentMethod paymentMethod = paymentMethodArray[paymentMethodSpinner.getSelectedItemPosition()];
-                Calendar paymentDate = paymentMethod.getPaymentDate(MyStdlib.convertToCalendar(year, month, day));
-                MyDbManager.setRecordToDataBase(
-                        MyDbContract.ExpensesEntry.TABLE_NAME,
-                        Expenses.makeContentValues(
-                                year,
-                                month,
-                                day,
-                                amount,
-                                memo,
-                                category,
-                                paymentMethod.getId(),
-                                paymentDate.get(Calendar.YEAR),
-                                paymentDate.get(Calendar.MONTH),
-                                paymentDate.get(Calendar.DATE)
-                                )
+                Expenses expenses = new Expenses(
+                        null,
+                        MyStdlib.convertToCalendar(year, month, day),
+                        amount,
+                        memo,
+                        category,
+                        paymentMethod.getId(),
+                        paymentMethod.getPaymentDate(MyStdlib.convertToCalendar(year, month, day))
                 );
+                MyDbManager.setData(expenses);
                 if(null != listener) {
                     listener.onExpensesInputCompleted();
                 }

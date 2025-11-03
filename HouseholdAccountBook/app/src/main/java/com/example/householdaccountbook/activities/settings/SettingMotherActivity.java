@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.activities;
+package com.example.householdaccountbook.activities.settings;
 
 import android.os.Bundle;
 import android.view.View;
@@ -10,11 +10,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.data.SettingMenuFragmentKind;
-import com.example.householdaccountbook.fragments.ExpensesCategoryEditFragment;
-import com.example.householdaccountbook.fragments.IncomeCategoryEditFragment;
-import com.example.householdaccountbook.fragments.PaymentMethodEditFragment;
-import com.example.householdaccountbook.util.SettingMenuIntentKeys;
 
 /**
  *

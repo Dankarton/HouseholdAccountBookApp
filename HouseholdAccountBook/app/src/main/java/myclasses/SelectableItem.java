@@ -1,7 +1,7 @@
 package myclasses;
 
-public interface SelectableItem {
+public interface SelectableItem<T> {
     void setSelectedState(boolean selected);
     boolean isSelected();
-    Object getData();
+    T getData();
 }

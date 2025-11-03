@@ -4,13 +4,10 @@ import android.content.ContentValues;
 
 import androidx.annotation.NonNull;
 
-import com.example.householdaccountbook.MyDbContract;
-import com.example.householdaccountbook.MyOpenHelper;
+import com.example.householdaccountbook.db.MyDbContract;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import strategy.closingstrategy.ClosingStrategy;
 import strategy.closingstrategy.EndOfMonthClosingRule;
@@ -25,7 +22,7 @@ import strategy.paymentstrategy.SameDayPaymentRule;
 /**
  * 支払方法クラス
  */
-public class PaymentMethod implements DatabaseEntity, Serializable {
+public class PaymentMethod implements DatabaseEntity {
     public enum ClosingRule {
         FixedDay(0, "毎月指定日", true, "日付(日)") {
             @Override

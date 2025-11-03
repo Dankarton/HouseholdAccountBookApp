@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.fragments;
+package com.example.householdaccountbook.fragments.main;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

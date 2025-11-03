@@ -20,9 +20,9 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.householdaccountbook.MyDbContract;
-import com.example.householdaccountbook.MyDbManager;
-import com.example.householdaccountbook.MyOpenHelper;
+import com.example.householdaccountbook.db.MyDbContract;
+import com.example.householdaccountbook.db.MyDbManager;
+import com.example.householdaccountbook.db.MyOpenHelper;
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 
@@ -66,7 +66,7 @@ public class IncomeInputFragment extends Fragment {
         String[] categoryArray = {"給料", "アルバイト", "おこづかい", "副業", "賞与"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 view.getContext(),
-                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                android.R.layout.simple_spinner_dropdown_item,
                 categoryArray
         );
         categorySpinner.setAdapter(adapter);
@@ -78,36 +78,6 @@ public class IncomeInputFragment extends Fragment {
         setAddButtonEvent();
         updateDateTextView();
         addButton.setEnabled(false);
-    }
-
-    private void checkList() {
-        SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor cursor = db.query("IncomeDb", new String[] {"_id", "year", "month", "day", "amount", "memo", "category"},
-                null,
-                null,
-                null,
-                null,
-                null);
-        cursor.moveToFirst();
-        for (int i = 0; i < cursor.getCount(); i++){
-            String strBuilder =
-                    "id:" + cursor.getInt(0) +
-                            ", y:" +
-                            cursor.getInt(1) +
-                            ", m:" +
-                            cursor.getInt(2) +
-                            ", d:" +
-                            cursor.getInt(3) +
-                            ", pay:" +
-                            cursor.getInt(4) +
-                            ", memo:" +
-                            cursor.getString(5) +
-                            ", category:" +
-                            cursor.getString(6);
-            Log.d("IncomeInputFragment", strBuilder);
-            cursor.moveToNext();
-        }
-        cursor.close();
     }
 
     private void setDateUpButtonEvent(View view){
@@ -153,9 +123,14 @@ public class IncomeInputFragment extends Fragment {
                 int day = currentDate.get(Calendar.DAY_OF_MONTH);
                 String memo = memoEditText.getText().toString();
                 String category = (String) categorySpinner.getSelectedItem();
-                MyDbManager.setRecordToDataBase(
-                        MyDbContract.IncomeEntry.TABLE_NAME,
-                        Income.makeContentValues(year, month, day, amount, memo, category));
+                Income income = new Income(
+                        null,
+                        MyStdlib.convertToCalendar(year, month, day),
+                        amount,
+                        memo,
+                        category
+                );
+                MyDbManager.setData(income);
                 addButton.setEnabled(false);
             }
         });
