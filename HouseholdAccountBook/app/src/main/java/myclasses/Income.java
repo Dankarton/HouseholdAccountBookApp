@@ -7,9 +7,10 @@ import com.example.householdaccountbook.db.MyDbContract;
 import java.util.Calendar;
 
 public class Income extends BOP {
-
+    private final int categoryId;
     public Income(Integer id, Calendar date, int amount, String memo, int categoryId) {
-        super(id, date, amount, memo, categoryId);
+        super(id, date, amount, memo);
+        this.categoryId = categoryId;
     }
 
     public static ContentValues makeContentValues(int _year, int _month, int _day, int _amount, String _memo, int _categoryId) {
@@ -30,7 +31,7 @@ public class Income extends BOP {
                 this.getDay(),
                 this.getAmount(),
                 this.getMemo(),
-                this.getCategoryId()
+                this.categoryId
         );
     }
 }

@@ -34,11 +34,11 @@ public final class MyDbContract {
         public static final String COLUMN_DAY = "day";
         public static final String COLUMN_AMOUNT = "amount";
         public static final String COLUMN_MEMO = "memo";
-        public static final String COLUMN_CATEGORY_ID = "category_id";
     }
 
     public static final class IncomeEntry extends BaseBopEntry implements TableContract<Income> {
         public static final String TABLE_NAME = "IncomeDb";
+        public static final String COLUMN_CATEGORY_ID = "category_id";
         public static final String[] COLUMNS = {
                 IncomeEntry.ID,             // 0
                 IncomeEntry.COLUMN_YEAR,    // 1
@@ -78,6 +78,7 @@ public final class MyDbContract {
 
     public static final class PurchaseEntry extends BaseBopEntry implements TableContract<Purchase> {
         public static final String TABLE_NAME = "PurchaseDb";
+        public static final String COLUMN_CATEGORY_ID = "category_id";
         public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id";
         public static final String COLUMN_IS_SAME_DAY = "is_same_day";
         public static final String[] COLUMNS = {
@@ -123,10 +124,7 @@ public final class MyDbContract {
 
     public static final class ExpensesEntry extends BaseBopEntry implements TableContract<Expenses> {
         public static final String TABLE_NAME = "ExpensesDb";
-        public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id";
-        public static final String COLUMN_PAYMENT_YEAR = "payment_year";
-        public static final String COLUMN_PAYMENT_MONTH = "payment_month";
-        public static final String COLUMN_PAYMENT_DAY = "payment_day";
+        public static final String COLUMN_PURCHASE_ID = "purchase_id";
 
         public static final String[] COLUMNS = {
                 ExpensesEntry.ID,
@@ -135,11 +133,7 @@ public final class MyDbContract {
                 ExpensesEntry.COLUMN_DAY,
                 ExpensesEntry.COLUMN_AMOUNT,
                 ExpensesEntry.COLUMN_MEMO,
-                ExpensesEntry.COLUMN_CATEGORY_ID,
-                ExpensesEntry.COLUMN_PAYMENT_METHOD_ID,
-                ExpensesEntry.COLUMN_PAYMENT_YEAR,
-                ExpensesEntry.COLUMN_PAYMENT_MONTH,
-                ExpensesEntry.COLUMN_PAYMENT_DAY
+                ExpensesEntry.COLUMN_PURCHASE_ID,
         };
 
         @Override
@@ -164,13 +158,9 @@ public final class MyDbContract {
                     MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
                     cursor.getInt(4),
                     cursor.getString(5),
-                    cursor.getInt(6),
-                    cursor.getInt(7),
-                    MyStdlib.convertToCalendar(cursor.getInt(8), cursor.getInt(9), cursor.getInt(10))
+                    cursor.getInt(6)
             );
         }
-
-        ;
     }
 
     public static abstract class BaseCategoryEntry {

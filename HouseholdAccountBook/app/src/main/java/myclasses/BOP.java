@@ -11,14 +11,12 @@ public abstract class BOP implements DatabaseEntity {
     private final Calendar date;
     private final int amount;
     private final String memo;
-    private final int categoryId;
 
-    BOP(Integer id, Calendar date, int amount, String memo, Integer categoryId) {
+    BOP(Integer id, Calendar date, int amount, String memo) {
         this.id = id;
         this.date = date;
         this.amount = amount;
         this.memo = memo;
-        this.categoryId = categoryId;
     }
     @Override
     public Integer getId() {
@@ -42,8 +40,5 @@ public abstract class BOP implements DatabaseEntity {
     }
     public String getMemo() {
         return memo;
-    }
-    public int getCategoryId() {
-        return categoryId;
     }
 }

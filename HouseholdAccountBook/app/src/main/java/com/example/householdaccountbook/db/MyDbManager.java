@@ -10,11 +10,15 @@ import com.example.householdaccountbook.MyStdlib;
 
 import java.util.ArrayList;
 
+import myclasses.BOP;
 import myclasses.DailyBop;
 import myclasses.Expenses;
+import myclasses.ExpensesCategory;
 import myclasses.Income;
+import myclasses.IncomeCategory;
 import myclasses.PaymentMethod;
 import myclasses.DatabaseEntity;
+import myclasses.Purchase;
 
 public class MyDbManager {
     // フィールド
@@ -28,6 +32,7 @@ public class MyDbManager {
 
         /**
          * Helperセット
+         *
          * @param helper MyOpenHelper
          */
         public static void setHelper(MyOpenHelper helper) {
@@ -36,6 +41,7 @@ public class MyDbManager {
 
         /**
          * Helper取得
+         *
          * @return MyOpenHelper
          */
         public static MyOpenHelper getHelper() {
@@ -152,6 +158,7 @@ public class MyDbManager {
             return true;
         }
     }
+
     /**
      * Database内の対応IDのデータを更新(データが無い場合は同IDで挿入)する関数
      *
@@ -164,18 +171,76 @@ public class MyDbManager {
 
         return MyDbManager.upsertDatabase(db, data);
     }
+
     /**
-     * データ削除 (DatabaseEntityインターフェース利用)
+     * アプリケーションのデータ構造を考慮した安全な削除処理
+     * (DatabaseEntityインターフェース利用)
      *
      * @param data <T extends DatabaseEntity>
      */
-    public static <T extends DatabaseEntity> boolean deleteData(T data) {
-        MyDbContract.TableContract<T> classKind = TableContractRegistry.getContract(data.getClass());
-        Integer id = data.getId();
-        if (id == null) {
-            Log.d("MyDbManager.deleteData", "IDがnullです．データベースに追加前のデータを削除することはできません．");
-            return false;
+    public static <T extends DatabaseEntity> void deleteDataSafely(T data) {
+        if (data.getClass() == Purchase.class) {
+            // 購入日に付随する全ての支払日も削除
+            deleteData(
+                    MyDbContract.ExpensesEntry.TABLE_NAME,
+                    MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID + " = ?",
+                    new String[]{String.valueOf(data.getId())}
+            );
+            deleteData(data);
+        } else if (data.getClass() == ExpensesCategory.class) {
+            // カテゴリは過去の購入日などが参照する可能性があるため見かけ上の削除
+            ExpensesCategory beforeCategory = (ExpensesCategory) data;
+            upsertDatabase(
+                    new ExpensesCategory(
+                            beforeCategory.getId(),
+                            beforeCategory.getName(),
+                            beforeCategory.getColorCode(),
+                            beforeCategory.getIndex(),
+                            true
+                    )
+            );
+        } else if (data.getClass() == IncomeCategory.class) {
+            // カテゴリは過去の購入日などが参照する可能性があるため見かけ上の削除
+            IncomeCategory beforeCategory = (IncomeCategory) data;
+            upsertDatabase(
+                    new ExpensesCategory(
+                            beforeCategory.getId(),
+                            beforeCategory.getName(),
+                            beforeCategory.getColorCode(),
+                            beforeCategory.getIndex(),
+                            true
+                    )
+            );
+        } else if (data.getClass() == PaymentMethod.class) {
+
+        } else {
+            deleteData(data);
         }
+    }
+
+    /**
+     * データ削除(低レベル操作，依存関係などを無視して指定されたデータを削除する)
+     * アプリケーションのデータ構造を維持したまま削除するなら deleteDataSafely を使うように!
+     */
+    private static <T extends DatabaseEntity> void deleteData(T data) {
+        if (data.getId() == null) {
+            Log.d("MyDbManager.deleteData", "IDがnullです．データベースに追加前のデータを削除することはできません．");
+            return;
+        }
+        deleteData(data.getClass(), data.getId());
+    }
+
+    /**
+     * データ削除(低レベル操作，依存関係などを無視して指定されたデータを削除する)
+     * アプリケーションのデータ構造を維持したまま削除するなら deleteDataSafely を使うように!
+     *
+     * @param clazz データクラス
+     * @param id    ID
+     * @param <T>   DatabaseEntity
+     */
+    private static <T extends DatabaseEntity> void deleteData(Class<T> clazz, int id) {
+        MyDbContract.TableContract<T> classKind = TableContractRegistry.getContract(clazz);
+
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
         int deletedRowNum = db.delete(
                 classKind.getTableName(),
@@ -183,14 +248,25 @@ public class MyDbManager {
                 new String[]{String.valueOf(id)}
         );
         if (deletedRowNum == 0) {
-            Log.d("MyDbManager.deleteData", "データの削除に失敗しました．Class: " + data.getClass().getSimpleName() + "，id: " + data.getId());
-            return false;
-        }
-        else {
-            return true;
+            Log.d("MyDbManager.deleteData", "削除されたデータが0件です．Class: " + classKind.getClass().getSimpleName() + "，id: " + id);
         }
     }
 
+    /**
+     * データ削除(低レベル操作，依存関係などを無視して指定されたデータを削除する)
+     * アプリケーションのデータ構造を維持したまま削除するなら deleteDataSafely を使うように!
+     *
+     * @param tableName   テーブル名
+     * @param whereClause where句
+     * @param whereArgs   args
+     */
+    private static void deleteData(String tableName, String whereClause, String[] whereArgs) {
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
+        int deletedRowNum = db.delete(tableName, whereClause, whereArgs);
+        if (deletedRowNum == 0) {
+            Log.d("MyDbManager.deleteData", "削除されたデータが0件です．TableName: " + tableName);
+        }
+    }
 
     /**
      * 引数で指定した日付と購入日もしくは支払日が一致する支出データを取得
@@ -230,44 +306,46 @@ public class MyDbManager {
         );
         ArrayList<Expenses> expensesList = new ArrayList<>();
         MyDbContract.ExpensesEntry entry = new MyDbContract.ExpensesEntry();
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             do {
                 expensesList.add(entry.fromCursor(cursor));
             } while (cursor.moveToNext());
-        };
+        }
+        ;
         cursor.close();
         return expensesList;
     }
 
-    public static ArrayList<Income> getIncomeDataByDate(Integer year, Integer month, Integer day) {
+    public static <T extends BOP> ArrayList<T> getBopDataByDate(Class<T> clazz, Integer year, Integer month, Integer day) {
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
+        MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
         String selection = buildWhereClauseByDate(
                 year, month, day,
-                MyDbContract.IncomeEntry.COLUMN_YEAR,
-                MyDbContract.IncomeEntry.COLUMN_MONTH,
-                MyDbContract.IncomeEntry.COLUMN_DAY
+                MyDbContract.BaseBopEntry.COLUMN_YEAR,
+                MyDbContract.BaseBopEntry.COLUMN_MONTH,
+                MyDbContract.BaseBopEntry.COLUMN_DAY
         );
-        String orderBy = MyDbContract.IncomeEntry.COLUMN_YEAR + " ASC, "
-                + MyDbContract.IncomeEntry.COLUMN_MONTH + " ASC, "
-                + MyDbContract.IncomeEntry.COLUMN_DAY + " ASC";
+        String orderBy = MyDbContract.BaseBopEntry.COLUMN_YEAR + " ASC, "
+                + MyDbContract.BaseBopEntry.COLUMN_MONTH + " ASC, "
+                + MyDbContract.BaseBopEntry.COLUMN_DAY + " ASC";
         Cursor cursor = db.query(
-                MyDbContract.IncomeEntry.TABLE_NAME,
-                MyDbContract.IncomeEntry.COLUMNS,
+                contract.getTableName(),
+                contract.getColumns(),
                 selection,
                 null,
                 null,
                 null,
                 orderBy
         );
-        ArrayList<Income> incomeList = new ArrayList<>();
-        MyDbContract.IncomeEntry entry = new MyDbContract.IncomeEntry();
-        if(cursor.moveToFirst()) {
+        ArrayList<T> bopDataList = new ArrayList<>();
+        if (cursor.moveToFirst()) {
             do {
-                incomeList.add(entry.fromCursor(cursor));
+                bopDataList.add(contract.fromCursor(cursor));
             } while (cursor.moveToNext());
-        };
+        }
+        ;
         cursor.close();
-        return incomeList;
+        return bopDataList;
     }
 
     public static DailyBop getDailyData(int year, int month, int day) {
@@ -318,23 +396,25 @@ public class MyDbManager {
                 null,
                 null
         );
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             do {
                 result.add(contract.fromCursor(cursor));
             } while (cursor.moveToNext());
-        };
+        }
+        ;
         cursor.close();
         return result;
     }
 
     /**
      * 日付を昇順に並べるためのWhere句を作るための関数
-     * @param year 年
-     * @param month 月
-     * @param day 日
-     * @param yearColumn 年のカラム名
+     *
+     * @param year        年
+     * @param month       月
+     * @param day         日
+     * @param yearColumn  年のカラム名
      * @param monthColumn 月のカラム名
-     * @param dayColumn 日のカラム名
+     * @param dayColumn   日のカラム名
      * @return Where句
      */
     private static String buildWhereClauseByDate(Integer year, Integer month, Integer day, String yearColumn, String monthColumn, String dayColumn) {

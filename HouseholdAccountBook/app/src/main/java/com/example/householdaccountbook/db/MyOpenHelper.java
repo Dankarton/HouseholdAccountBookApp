@@ -7,7 +7,17 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MyOpenHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "HouseholdDb.db";
-
+    private static final String PURCHASE_SQL_CREATE_ENTRIES =
+            "CREATE TABLE " + MyDbContract.PurchaseEntry.TABLE_NAME + " (" +
+                    MyDbContract.PurchaseEntry.ID + " INTEGER PRIMARY KEY," +
+                    MyDbContract.PurchaseEntry.COLUMN_YEAR + " INTEGER," +
+                    MyDbContract.PurchaseEntry.COLUMN_MONTH + " INTEGER," +
+                    MyDbContract.PurchaseEntry.COLUMN_DAY + " INTEGER," +
+                    MyDbContract.PurchaseEntry.COLUMN_AMOUNT + " INTEGER," +
+                    MyDbContract.PurchaseEntry.COLUMN_MEMO + " TEXT," +
+                    MyDbContract.PurchaseEntry.COLUMN_CATEGORY_ID + " INTEGER," +
+                    MyDbContract.PurchaseEntry.COLUMN_PAYMENT_METHOD_ID + " INTEGER," +
+                    MyDbContract.PurchaseEntry.COLUMN_IS_SAME_DAY + " INTEGER)";
     private static final String EXPENSES_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.ExpensesEntry.TABLE_NAME + " (" +
                     MyDbContract.ExpensesEntry.ID + " INTEGER PRIMARY KEY," +
@@ -15,12 +25,8 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.ExpensesEntry.COLUMN_MONTH + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_DAY + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_AMOUNT + " INTEGER," +
-                    MyDbContract.ExpensesEntry.COLUMN_CATEGORY_ID + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_MEMO + " TEXT," +
-                    MyDbContract.ExpensesEntry.COLUMN_PAYMENT_METHOD_ID + " INTEGER," +
-                    MyDbContract.ExpensesEntry.COLUMN_PAYMENT_YEAR + " INTEGER," +
-                    MyDbContract.ExpensesEntry.COLUMN_PAYMENT_MONTH + " INTEGER," +
-                    MyDbContract.ExpensesEntry.COLUMN_PAYMENT_DAY + " INTEGER)";
+                    MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID + " INTEGER)";
     private static final String INCOME_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.IncomeEntry.TABLE_NAME + " (" +
                     MyDbContract.IncomeEntry.ID + " INTEGER PRIMARY KEY," +
@@ -64,6 +70,7 @@ public class MyOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.execSQL(PURCHASE_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(EXPENSES_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(INCOME_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(EXP_CATEGORY_SQL_CREATE_ENTRIES);
