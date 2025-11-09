@@ -7,19 +7,21 @@ import java.util.Calendar;
  支出と収支の親クラス
  */
 public abstract class BOP implements DatabaseEntity {
-    private final Integer id;   // データベース用ID
+    private final Long id;   // データベース用ID
     private final Calendar date;
     private final int amount;
     private final String memo;
+    private final long categoryId;
 
-    BOP(Integer id, Calendar date, int amount, String memo) {
+    BOP(Long id, Calendar date, int amount, String memo, long categoryId) {
         this.id = id;
         this.date = date;
         this.amount = amount;
         this.memo = memo;
+        this.categoryId = categoryId;
     }
     @Override
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -41,4 +43,5 @@ public abstract class BOP implements DatabaseEntity {
     public String getMemo() {
         return memo;
     }
+    public long getCategoryId() { return categoryId; }
 }

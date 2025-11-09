@@ -8,14 +8,18 @@ import com.example.householdaccountbook.MyStdlib;
 import java.util.Calendar;
 
 public class Expenses extends BOP {
-    private final int purchaseId;
+    private final long purchaseId;
+    private final long paymentMethodId;
 
-    public Expenses(Integer id, Calendar date, int amount, String memo, int purchaseId) {
-        super(id, date, amount, memo);
+    public Expenses(Long id, Calendar date, int amount, String memo, long categoryId, long paymentMethodId, long purchaseId) {
+        super(id, date, amount, memo, categoryId);
+        this.paymentMethodId = paymentMethodId;
         this.purchaseId = purchaseId;
     }
-
-    public int getPurchaseId() {
+    public long getPaymentMethodId() {
+        return this.paymentMethodId;
+    }
+    public long getPurchaseId() {
         return this.purchaseId;
     }
 

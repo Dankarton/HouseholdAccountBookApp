@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.example.householdaccountbook.db.MyDbContract;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import strategy.closingstrategy.ClosingStrategy;
@@ -135,12 +135,12 @@ public class PaymentMethod implements DatabaseEntity {
         }
         public abstract PaymentStrategy getStrategy(Integer settingNum);
     }
-    private final Integer id;
+    private final Long id;
     private final String name;
     private final ClosingRule closingRule;
-    private final Integer closingDay;
+    private final Integer closingSettingNum;
     private final PaymentRule paymentRule;
-    private final Integer paymentDay;
+    private final Integer paymentSettingNum;
     private int index;
     private final boolean isDefault;
 
@@ -148,9 +148,9 @@ public class PaymentMethod implements DatabaseEntity {
         this.id = null;
         this.name = "";
         this.closingRule = ClosingRule.fromCode(0);
-        this.closingDay = null;
+        this.closingSettingNum = null;
         this.paymentRule = PaymentRule.fromCode(0);
-        this.paymentDay = null;
+        this.paymentSettingNum = null;
         this.index = 0;
         this.isDefault = false;
     }
@@ -158,17 +158,17 @@ public class PaymentMethod implements DatabaseEntity {
      * 支払方法クラス．
      * @param id SQLiteのデータテーブルに登録したときのID
      * @param name 支払方法名(ユーザー指定可能)
-     * @param closingDay 締め日
-     * @param paymentDay 支払日(0を入力すると，支払日=購入日になる)
+     * @param closingSettingNum 締め日
+     * @param paymentSettingNum 支払日(0を入力すると，支払日=購入日になる)
      * @param isDefault デフォルトで用意されている支払方法かどうか
      */
-    public PaymentMethod(Integer id, String name, int closingRuleCode, Integer closingDay, int paymentRuleCode, Integer paymentDay, int index, boolean isDefault) {
+    public PaymentMethod(Long id, String name, int closingRuleCode, Integer closingSettingNum, int paymentRuleCode, Integer paymentSettingNum, int index, boolean isDefault) {
         this.id = id;
         this.name = name;
         this.closingRule = ClosingRule.fromCode(closingRuleCode);
-        this.closingDay = closingDay;
+        this.closingSettingNum = closingSettingNum;
         this.paymentRule = PaymentRule.fromCode(paymentRuleCode);
-        this.paymentDay = paymentDay;
+        this.paymentSettingNum = paymentSettingNum;
         this.index = index;
         this.isDefault = isDefault;
     }
@@ -218,22 +218,35 @@ public class PaymentMethod implements DatabaseEntity {
         return PaymentMethod.makeContentValues(
                 this.name,
                 this.closingRule.code,
-                this.closingDay,
+                this.closingSettingNum,
                 this.paymentRule.code,
-                this.paymentDay,
+                this.paymentSettingNum,
                 this.index,
                 this.isDefault
         );
     }
 
     public Calendar getPaymentDate(Calendar purchaseDate) {
-        ClosingStrategy cs = this.closingRule.getStrategy(this.closingDay);
-        PaymentStrategy ps = this.paymentRule.getStrategy(this.paymentDay);
+        ClosingStrategy cs = this.closingRule.getStrategy(this.closingSettingNum);
+        PaymentStrategy ps = this.paymentRule.getStrategy(this.paymentSettingNum);
         Calendar closingDate = cs.apply(purchaseDate);
         return ps.apply(closingDate);
     }
+    public ArrayList<Expenses> makeExpenses(Purchase purchase) {
+        ArrayList<Expenses> result = new ArrayList<>();
+        result.add(new Expenses(
+                null,
+                getPaymentDate(purchase.getDate()),
+                purchase.getAmount(),
+                purchase.getMemo(),
+                purchase.getCategoryId(),
+                purchase.getPaymentMethodId(),
+                purchase.getId()
+        ));
+        return result;
+    }
     @Override
-    public Integer getId() {
+    public Long getId() {
         return this.id;
     }
     public String getName() {
@@ -242,12 +255,12 @@ public class PaymentMethod implements DatabaseEntity {
     public ClosingRule getClosingRule() {
         return this.closingRule;
     }
-    public Integer getClosingDay() { return this.closingDay; }
+    public Integer getClosingSettingNum() { return this.closingSettingNum; }
     public PaymentRule getPaymentRule() {
         return this.paymentRule;
     }
-    public Integer getPaymentDay() {
-        return this.paymentDay;
+    public Integer getPaymentSettingNum() {
+        return this.paymentSettingNum;
     }
     public void setIndex(int newlyIndex) { this.index = newlyIndex; }
     public int getIndex() { return this.index; }

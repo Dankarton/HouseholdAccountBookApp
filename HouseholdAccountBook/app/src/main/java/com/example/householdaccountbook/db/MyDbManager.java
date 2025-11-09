@@ -6,14 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.householdaccountbook.MyStdlib;
+import com.example.householdaccountbook.repository.CacheProvider;
 
 import java.util.ArrayList;
 
 import myclasses.BOP;
 import myclasses.DailyBop;
 import myclasses.Expenses;
-import myclasses.ExpensesCategory;
+import myclasses.PurchaseCategory;
 import myclasses.Income;
 import myclasses.IncomeCategory;
 import myclasses.PaymentMethod;
@@ -53,10 +53,20 @@ public class MyDbManager {
                 );
             }
         }
+
+        public boolean existHelper() {
+            return MyOpenHelperContainer.helper != null;
+        }
     }
+
+    private static CacheProvider cacheProvider = null;
 
     public static void setMyOpenHelper(Context context) {
         MyOpenHelperContainer.setHelper(new MyOpenHelper(context));
+    }
+
+    public static void setCacheProvider(CacheProvider provider) {
+        MyDbManager.cacheProvider = provider;
     }
 
 
@@ -105,22 +115,56 @@ public class MyDbManager {
      *
      * @param data データクラス
      * @param <T>  extends DatabaseEntity
-     * @return 成功true，失敗false
+     * @return id番号
      */
-    public static <T extends DatabaseEntity> boolean setData(T data) {
+    private static <T extends DatabaseEntity> long setData(SQLiteDatabase db, MyDbContract.TableContract<T> contract, T data) {
+        if (data.getId() != null) {
+            throw new IllegalArgumentException(
+                    "データにIDが設定されています．既存データを謝って登録している可能性があります: id = " + data.getId()
+            );
+        }
+        return db.insert(contract.getTableName(), null, data.getContentValues());
+    }
+    private static <T extends DatabaseEntity> long setData(T data) {
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
+        return setData(db, TableContractRegistry.getContract(data.getClass()), data);
+    }
+    public static <T extends DatabaseEntity> void setDataSafely(T data) {
         if (data.getId() != null) {
             throw new IllegalArgumentException(
                     "データにIDが設定されています．既存データを謝って登録している可能性があります: id = " + data.getId()
             );
         }
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
-        MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(data.getClass());
-        long resultNum = db.insert(contract.getTableName(), null, data.getContentValues());
-        if (resultNum == -1) {
-            Log.d("MyDbManager.setData", "データの挿入に失敗しました．");
-            return false;
-        } else {
-            return true;
+        if (data.getClass() == Purchase.class) {
+            long newId = setData(db, TableContractRegistry.getContract(data.getClass()), data);
+            if (newId == -1) {
+                Log.d("MyDbManager.setData", "データの挿入に失敗しました．");
+                return;
+            }
+            // Purchaseの子オブジェクトExpensesを生成
+            Purchase newPurchase = new Purchase(
+                    newId,
+                    ((Purchase) data).getDate(),
+                    ((Purchase) data).getAmount(),
+                    ((Purchase) data).getMemo(),
+                    ((Purchase) data).getCategoryId(),
+                    ((Purchase) data).getPaymentMethodId(),
+                    ((Purchase) data).isSameDay()
+            );
+            ArrayList<Expenses> newExpList = cacheProvider.getPaymentMethodRepository()
+                    .getDataById(newPurchase.getPaymentMethodId())
+                    .makeExpenses(newPurchase);
+            // Purchaseセット
+            // Expensesリストセット
+            MyDbContract.TableContract<Expenses> expContract = TableContractRegistry.getContract(Expenses.class);
+            for (Expenses exp : newExpList) {
+                setData(db, expContract, exp);
+            }
+        }
+        else {
+            // それ以外のデータはそのままセット
+            setData(db, TableContractRegistry.getContract(data.getClass()), data);
         }
     }
 
@@ -133,7 +177,7 @@ public class MyDbManager {
      * @return boolean 成功するとtrue，失敗するとfalse
      */
     private static <T extends DatabaseEntity> boolean upsertDatabase(SQLiteDatabase db, T data) {
-        Integer id = data.getId();
+        Long id = data.getId();
         if (id == null) {
             Log.e("MyDbManager", "upsertDatabase: idがnullのため更新・挿入を中止しました．");
             return false;
@@ -143,15 +187,19 @@ public class MyDbManager {
         final String tableName = tableContract.getTableName();
         ContentValues dataValues = data.getContentValues();
         dataValues.put(tableContract.getIdColumnName(), data.getId());
+        // アップデート
         int updatedRows = db.update(
                 tableName,
                 dataValues,
                 tableContract.getIdColumnName() + " = ?",
                 new String[]{String.valueOf(id)}
         );
+        // アップデートに成功したら終了
         if (updatedRows > 0) return true;
+        // データが存在しない場合，挿入に切り替え
         long result = db.insert(tableName, null, dataValues);
         if (result == -1) {
+            // 挿入にも失敗した場合
             Log.e("MyDbManager", "upsertDatabase: insertに失敗しました．(" + tableName + ")");
             return false;
         } else {
@@ -166,10 +214,40 @@ public class MyDbManager {
      * @param <T>  DatabaseEntityを継承したデータクラス
      * @return boolean 成功するとtrue,失敗するとfalse
      */
-    public static <T extends DatabaseEntity> boolean upsertDatabase(T data) {
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
+    private static <T extends DatabaseEntity> boolean upsertDatabase(T data) {
 
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
         return MyDbManager.upsertDatabase(db, data);
+    }
+
+    /**
+     * データ構造を考慮した安全なデータ更新
+     *
+     * @param data データ
+     * @param <T>  DatabaseEntityを継承したデータクラス
+     */
+    public static <T extends DatabaseEntity> void upsertDatabaseSafely(T data) {
+        if (data.getId() == null) {
+            Log.e("MyDbManager", "upsertDatabase: idがnullのため更新・挿入を中止しました．");
+            return;
+        }
+        if (data.getClass() == Purchase.class) {
+            // Purchaseに付随するExpensesデータも削除する必要があるので，Purchase諸々，一度すべて削除
+            deleteDataSafely(data);
+            // Purchaseの子オブジェクトExpensesを生成
+            ArrayList<Expenses> newExpList = cacheProvider.getPaymentMethodRepository()
+                    .getDataById(((Purchase) data).getPaymentMethodId())
+                    .makeExpenses((Purchase) data);
+            // Purchase挿入
+            upsertDatabase(data);
+            // Expenses挿入
+            for (Expenses exp : newExpList) {
+                setData(exp);
+            }
+        } else {
+            // それ以外のデータはただ更新するだけ．
+            upsertDatabase(data);
+        }
     }
 
     /**
@@ -187,11 +265,11 @@ public class MyDbManager {
                     new String[]{String.valueOf(data.getId())}
             );
             deleteData(data);
-        } else if (data.getClass() == ExpensesCategory.class) {
+        } else if (data.getClass() == PurchaseCategory.class) {
             // カテゴリは過去の購入日などが参照する可能性があるため見かけ上の削除
-            ExpensesCategory beforeCategory = (ExpensesCategory) data;
+            PurchaseCategory beforeCategory = (PurchaseCategory) data;
             upsertDatabase(
-                    new ExpensesCategory(
+                    new PurchaseCategory(
                             beforeCategory.getId(),
                             beforeCategory.getName(),
                             beforeCategory.getColorCode(),
@@ -203,7 +281,7 @@ public class MyDbManager {
             // カテゴリは過去の購入日などが参照する可能性があるため見かけ上の削除
             IncomeCategory beforeCategory = (IncomeCategory) data;
             upsertDatabase(
-                    new ExpensesCategory(
+                    new PurchaseCategory(
                             beforeCategory.getId(),
                             beforeCategory.getName(),
                             beforeCategory.getColorCode(),
@@ -238,7 +316,7 @@ public class MyDbManager {
      * @param id    ID
      * @param <T>   DatabaseEntity
      */
-    private static <T extends DatabaseEntity> void deleteData(Class<T> clazz, int id) {
+    private static <T extends DatabaseEntity> void deleteData(Class<T> clazz, long id) {
         MyDbContract.TableContract<T> classKind = TableContractRegistry.getContract(clazz);
 
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
@@ -269,53 +347,15 @@ public class MyDbManager {
     }
 
     /**
-     * 引数で指定した日付と購入日もしくは支払日が一致する支出データを取得
+     * 収支データを日付から取得する関数
      *
+     * @param clazz BOPを継承したクラス(Purchase, Expenses, Income)
      * @param year  年
      * @param month 月
      * @param day   日
-     * @return Expensesリスト
+     * @param <T>   BOP
+     * @return ArrayList
      */
-    public static ArrayList<Expenses> getExpensesByPurchaseOrPaymentDate(Integer year, Integer month, Integer day) {
-
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
-        String purchaseSelection = buildWhereClauseByDate(
-                year, month, day,
-                MyDbContract.ExpensesEntry.COLUMN_YEAR,
-                MyDbContract.ExpensesEntry.COLUMN_MONTH,
-                MyDbContract.ExpensesEntry.COLUMN_DAY
-        );
-        String paymentSelection = buildWhereClauseByDate(
-                year, month, day,
-                MyDbContract.ExpensesEntry.COLUMN_PAYMENT_YEAR,
-                MyDbContract.ExpensesEntry.COLUMN_PAYMENT_MONTH,
-                MyDbContract.ExpensesEntry.COLUMN_PAYMENT_DAY
-        );
-        String selection = "(" + purchaseSelection + ") OR (" + paymentSelection + ")";
-        String orderBy = MyDbContract.ExpensesEntry.COLUMN_YEAR + " ASC, "
-                + MyDbContract.ExpensesEntry.COLUMN_MONTH + " ASC, "
-                + MyDbContract.ExpensesEntry.COLUMN_DAY + " ASC";
-        Cursor cursor = db.query(
-                MyDbContract.ExpensesEntry.TABLE_NAME,
-                MyDbContract.ExpensesEntry.COLUMNS,
-                selection,
-                null,
-                null,
-                null,
-                orderBy
-        );
-        ArrayList<Expenses> expensesList = new ArrayList<>();
-        MyDbContract.ExpensesEntry entry = new MyDbContract.ExpensesEntry();
-        if (cursor.moveToFirst()) {
-            do {
-                expensesList.add(entry.fromCursor(cursor));
-            } while (cursor.moveToNext());
-        }
-        ;
-        cursor.close();
-        return expensesList;
-    }
-
     public static <T extends BOP> ArrayList<T> getBopDataByDate(Class<T> clazz, Integer year, Integer month, Integer day) {
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
         MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
@@ -349,31 +389,14 @@ public class MyDbManager {
     }
 
     public static DailyBop getDailyData(int year, int month, int day) {
-        ArrayList<Expenses> expensesList = MyDbManager.getExpensesByPurchaseOrPaymentDate(year, month, day);
-        ArrayList<Income> incomeList = MyDbManager.getIncomeDataByDate(year, month, day);
+        ArrayList<Purchase> purchaseList = MyDbManager.getBopDataByDate(Purchase.class, year, month, day);
+        ArrayList<Expenses> expensesList = MyDbManager.getBopDataByDate(Expenses.class, year, month, day);
+        ArrayList<Income> incomeList = MyDbManager.getBopDataByDate(Income.class, year, month, day);
         // 収入も支出もない場合
-        if (expensesList.isEmpty() && incomeList.isEmpty()) {
+        if (purchaseList.isEmpty() && expensesList.isEmpty() && incomeList.isEmpty()) {
             return null;
         }
-        ArrayList<Expenses> purchaseList = new ArrayList<>();
-        ArrayList<Expenses> paymentList = new ArrayList<>();
-        for (int i = 0; i < expensesList.size(); i++) {
-            Expenses exp = expensesList.get(i);
-            // 購入日と支払日が同じとき
-            if (exp.isSameDay()) {
-                purchaseList.add(exp);
-                paymentList.add(exp);
-            }
-            // 対象日が支払日の時
-            else if (MyStdlib.isSameDay(exp.getPaymentDate(), MyStdlib.convertToCalendar(year, month, day))) {
-                paymentList.add(exp);
-            }
-            // 購入日だけと支払日じゃない時
-            else {
-                purchaseList.add(exp);
-            }
-        }
-        return new DailyBop(year, month, day, incomeList, purchaseList, paymentList);
+        return new DailyBop(year, month, day, incomeList, purchaseList, expensesList);
     }
 
     /**

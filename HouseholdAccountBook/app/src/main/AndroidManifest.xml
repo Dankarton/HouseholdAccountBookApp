@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".HouseHoldApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -18,9 +19,21 @@
             android:label="@string/title_activity_setting_select_payment_method"
             android:theme="@style/Theme.HouseholdAccountBook" />
         <activity
+            android:name=".activities.settings.edit.SettingEditIncomeCategoryActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".activities.settings.edit.SettingEditPurchaseCategoryActivity"
+            android:exported="false"/>
+        <activity
             android:name=".activities.settings.listing.SettingSelectPaymentMethodActivity"
             android:exported="false"
             />
+        <activity
+            android:name=".activities.settings.listing.SettingSelectIncomeCategoryActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".activities.settings.listing.SettingSelectPurchaseCategoryActivity"
+            android:exported="false"/>
         <activity
             android:name=".activities.settings.SettingMotherActivity"
             android:exported="false" />

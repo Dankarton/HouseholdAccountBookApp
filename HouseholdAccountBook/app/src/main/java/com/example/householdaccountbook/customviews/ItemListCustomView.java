@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.example.householdaccountbook.R;
+import com.example.householdaccountbook.adapter.DailyRecordAdapter;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,10 @@ import myclasses.SelectableItem;
  * @param <T2> SelectableItemが持つobject
  */
 public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extends ScrollView {
+    public interface OnItemSelectedListener {
+        <T1> void onItemSelected(T1 itemView);
+    }
+    private OnItemSelectedListener listener;
     private LinearLayout listLinearLayout;
     private T1 selectedItem = null;
     public ItemListCustomView(Context context) {
@@ -47,6 +52,7 @@ public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extend
                 @Override
                 public void onClick(View view) {
                     selectItem(item);
+                    if (listener != null) listener.onItemSelected(selectedItem);
                 }
             });
             // 選択された状態でオブジェが渡されたらそれを選択状態にする．
@@ -66,7 +72,17 @@ public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extend
         selectableItem.setSelectedState(true);
         this.selectedItem = selectableItem;
     }
+    public void deselect() {
+        if (this.selectedItem != null) {
+            selectedItem.setSelectedState(false);
+            this.selectedItem = null;
+        }
+    }
     public T1 getSelectedItem() {
         return this.selectedItem;
+    }
+
+    public void setListener(OnItemSelectedListener listener) {
+        this.listener = listener;
     }
 }

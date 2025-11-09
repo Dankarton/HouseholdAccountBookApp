@@ -43,25 +43,25 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_payment_method_edit, container, false);
+        View layout = inflater.inflate(R.layout.fragment_payment_method_edit, container, false);
+        // Viewオブジェクト取得
+        nameEdit = layout.findViewById(R.id.name_edit_text);
+        closingRuleSpinner = layout.findViewById(R.id.closing_rule_spinner);
+        paymentRuleSpinner = layout.findViewById(R.id.payment_rule_spinner);
+        closingRuleSettingText = layout.findViewById(R.id.closing_rule_setting_text);
+        paymentRuleSettingText = layout.findViewById(R.id.payment_rule_setting_text);
+        closingRuleSettingNumEdit = layout.findViewById(R.id.closing_rule_setting_num_edit);
+        paymentRuleSettingNumEdit = layout.findViewById(R.id.payment_rule_setting_num_edit);
+        saveButton = layout.findViewById(R.id.save_button);
+        deleteButton = layout.findViewById(R.id.delete_button);
+        return layout;
     }
-
 
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Context context = view.getContext();
-        // Viewオブジェクト取得
-        nameEdit = view.findViewById(R.id.name_edit_text);
-        closingRuleSpinner = view.findViewById(R.id.closing_rule_spinner);
-        paymentRuleSpinner = view.findViewById(R.id.payment_rule_spinner);
-        closingRuleSettingText = view.findViewById(R.id.closing_rule_setting_text);
-        paymentRuleSettingText = view.findViewById(R.id.payment_rule_setting_text);
-        closingRuleSettingNumEdit = view.findViewById(R.id.closing_rule_setting_num_edit);
-        paymentRuleSettingNumEdit = view.findViewById(R.id.payment_rule_setting_num_edit);
-        saveButton = view.findViewById(R.id.save_button);
-        deleteButton = view.findViewById(R.id.delete_button);
         // 締め日スピナー用Adapter作成
         EnumSpinnerAdapter<PaymentMethod.ClosingRule> closingSpinnerAdapter = new EnumSpinnerAdapter<>(
                 context,
@@ -135,22 +135,19 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
         // 初期値設定
         if (this.databaseEntityData.getName() != null) {
             this.nameEdit.setText(this.databaseEntityData.getName());
-        }
-        else {
+        } else {
             this.nameEdit.setText("");
         }
         this.closingRuleSpinner.setSelection(this.databaseEntityData.getClosingRule().ordinal());
         this.paymentRuleSpinner.setSelection(this.databaseEntityData.getPaymentRule().ordinal());
-        if (this.databaseEntityData.getClosingDay() != null) {
-            this.closingRuleSettingNumEdit.setText(String.valueOf(this.databaseEntityData.getClosingDay()));
-        }
-        else {
+        if (this.databaseEntityData.getClosingSettingNum() != null) {
+            this.closingRuleSettingNumEdit.setText(String.valueOf(this.databaseEntityData.getClosingSettingNum()));
+        } else {
             this.closingRuleSettingNumEdit.setText("");
         }
-        if (this.databaseEntityData.getPaymentDay() != null) {
-            this.paymentRuleSettingNumEdit.setText(String.valueOf(this.databaseEntityData.getPaymentDay()));
-        }
-        else {
+        if (this.databaseEntityData.getPaymentSettingNum() != null) {
+            this.paymentRuleSettingNumEdit.setText(String.valueOf(this.databaseEntityData.getPaymentSettingNum()));
+        } else {
             this.paymentRuleSettingNumEdit.setText("");
         }
     }
@@ -175,16 +172,13 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
                 if (Integer.parseInt(numText) > 0) {
 //                    Log.d("PaymentMethodEditFragment", "closingRuleSetting: true 正常");
                     isClosingSettingNumValid = true;
-                }
-                else {
+                } else {
 //                    Log.d("PaymentMethodEditFragment", "closingRuleSetting: ありえない数値");
                 }
-            }
-            else {
+            } else {
 //                Log.d("PaymentMethodEditFragment", "closingRuleSetting: 入力が数値じゃない");
             }
-        }
-        else {  // EditのEnabledがFalseの時は，settingNumの入力がそもそも必要ない項目
+        } else {  // EditのEnabledがFalseの時は，settingNumの入力がそもそも必要ない項目
             isClosingSettingNumValid = true;
         }
         // 支払日設定値が正しく入力されているか検証
@@ -195,12 +189,10 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
                 if (Integer.parseInt(numText) > 0) {
 //                    Log.d("PaymentMethodEditFragment", "paymentRuleSetting: true 正常");
                     isPaymentSettingNumValid = true;
-                }
-                else {
+                } else {
 //                    Log.d("PaymentMethodEditFragment", "paymentRuleSetting: ありえない数値");
                 }
-            }
-            else {
+            } else {
 //                Log.d("PaymentMethodEditFragment", "paymentRuleSetting: 入力が数値じゃない");
             }
         } else {
@@ -210,6 +202,7 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
 
         return isNameValid && isClosingSettingNumValid && isPaymentSettingNumValid;
     }
+
     @Override
     protected int getContainerContentLayoutId() {
         return R.layout.fragment_payment_method_edit;

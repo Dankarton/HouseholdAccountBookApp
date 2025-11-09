@@ -26,6 +26,8 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.ExpensesEntry.COLUMN_DAY + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_AMOUNT + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_MEMO + " TEXT," +
+                    MyDbContract.ExpensesEntry.COLUMN_CATEGORY_ID + " INTEGER," +
+                    MyDbContract.ExpensesEntry.COLUMN_PAYMENT_METHOD_ID + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID + " INTEGER)";
     private static final String INCOME_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.IncomeEntry.TABLE_NAME + " (" +
@@ -36,14 +38,14 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.IncomeEntry.COLUMN_AMOUNT + " INTEGER," +
                     MyDbContract.IncomeEntry.COLUMN_CATEGORY_ID + " INTEGER," +
                     MyDbContract.IncomeEntry.COLUMN_MEMO + " TEXT)";
-    private static final String EXP_CATEGORY_SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + MyDbContract.ExpensesCategoryEntry.TABLE_NAME + " (" +
-                    MyDbContract.ExpensesCategoryEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    MyDbContract.ExpensesCategoryEntry.COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
-                    MyDbContract.ExpensesCategoryEntry.COLUMN_COLOR + " TEXT NOT NULL," +
-                    MyDbContract.ExpensesCategoryEntry.COLUMN_INDEX + " INTEGER," +
-                    MyDbContract.ExpensesCategoryEntry.COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";
-    private static final String INC_CATEGORY_CREATE_ENTRIES =
+    private static final String PURCHASE_CATEGORY_SQL_CREATE_ENTRIES =
+            "CREATE TABLE " + MyDbContract.PurchaseCategoryEntry.TABLE_NAME + " (" +
+                    MyDbContract.PurchaseCategoryEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    MyDbContract.PurchaseCategoryEntry.COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                    MyDbContract.PurchaseCategoryEntry.COLUMN_COLOR + " TEXT NOT NULL," +
+                    MyDbContract.PurchaseCategoryEntry.COLUMN_INDEX + " INTEGER," +
+                    MyDbContract.PurchaseCategoryEntry.COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";
+    private static final String INCOME_CATEGORY_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.IncomeCategoryEntry.TABLE_NAME + " (" +
                     MyDbContract.IncomeCategoryEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     MyDbContract.IncomeCategoryEntry.COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
@@ -73,8 +75,8 @@ public class MyOpenHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(PURCHASE_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(EXPENSES_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(INCOME_SQL_CREATE_ENTRIES);
-        sqLiteDatabase.execSQL(EXP_CATEGORY_SQL_CREATE_ENTRIES);
-        sqLiteDatabase.execSQL(INC_CATEGORY_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL(PURCHASE_CATEGORY_SQL_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL(INCOME_CATEGORY_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(PAYMENT_METHOD_SQL_CREATE_ENTRIES);
         // 支払いテーブルに
 

@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.householdaccountbook.activities.settings.SettingMotherActivity;
 import com.example.householdaccountbook.activities.settings.edit.SettingEditPaymentMethodActivity;
-import com.example.householdaccountbook.fragments.PaymentMethodListingFragment;
+import com.example.householdaccountbook.fragments.listing.PaymentMethodListingFragment;
 
 import myclasses.PaymentMethod;
 

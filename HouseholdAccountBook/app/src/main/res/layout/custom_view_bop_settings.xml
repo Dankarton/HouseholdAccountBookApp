@@ -34,7 +34,7 @@
 
     <!--削除ボタン-->
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/more_action_button"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:background="@null"
@@ -55,12 +55,12 @@
         android:text="@string/yen_in_japanese"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/category_text_view"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintEnd_toStartOf="@+id/more_action_button"
         app:layout_constraintTop_toTopOf="@+id/category_text_view" />
 
     <!--金額欄-->
     <TextView
-        android:id="@+id/payment_amount_text_view"
+        android:id="@+id/amount_text_view"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:gravity="right|center_vertical"
@@ -90,12 +90,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:ellipsize="end"
-        android:gravity="center_vertical"
         android:singleLine="true"
+        android:gravity="center_vertical"
         android:text="PlayStationネットワーク"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/category_text_view"
-        app:layout_constraintEnd_toStartOf="@+id/payment_amount_text_view"
+        app:layout_constraintEnd_toStartOf="@+id/amount_text_view"
         app:layout_constraintStart_toEndOf="@+id/category_text_view"
         app:layout_constraintTop_toBottomOf="@+id/date_text_view" />
 

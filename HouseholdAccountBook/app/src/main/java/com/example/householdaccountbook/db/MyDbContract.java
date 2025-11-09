@@ -6,7 +6,7 @@ import com.example.householdaccountbook.MyStdlib;
 
 import myclasses.DatabaseEntity;
 import myclasses.Expenses;
-import myclasses.ExpensesCategory;
+import myclasses.PurchaseCategory;
 import myclasses.Income;
 import myclasses.IncomeCategory;
 import myclasses.PaymentMethod;
@@ -34,11 +34,11 @@ public final class MyDbContract {
         public static final String COLUMN_DAY = "day";
         public static final String COLUMN_AMOUNT = "amount";
         public static final String COLUMN_MEMO = "memo";
+        public static final String COLUMN_CATEGORY_ID = "category_id";
     }
 
     public static final class IncomeEntry extends BaseBopEntry implements TableContract<Income> {
         public static final String TABLE_NAME = "IncomeDb";
-        public static final String COLUMN_CATEGORY_ID = "category_id";
         public static final String[] COLUMNS = {
                 IncomeEntry.ID,             // 0
                 IncomeEntry.COLUMN_YEAR,    // 1
@@ -67,7 +67,7 @@ public final class MyDbContract {
         @Override
         public Income fromCursor(Cursor cursor) {
             return new Income(
-                    cursor.getInt(0),
+                    cursor.getLong(0),
                     MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
                     cursor.getInt(4),
                     cursor.getString(5),
@@ -78,7 +78,6 @@ public final class MyDbContract {
 
     public static final class PurchaseEntry extends BaseBopEntry implements TableContract<Purchase> {
         public static final String TABLE_NAME = "PurchaseDb";
-        public static final String COLUMN_CATEGORY_ID = "category_id";
         public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id";
         public static final String COLUMN_IS_SAME_DAY = "is_same_day";
         public static final String[] COLUMNS = {
@@ -111,7 +110,7 @@ public final class MyDbContract {
         @Override
         public Purchase fromCursor(Cursor cursor) {
             return new Purchase(
-                    cursor.getInt(0),
+                    cursor.getLong(0),
                     MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
                     cursor.getInt(4),
                     cursor.getString(5),
@@ -124,6 +123,7 @@ public final class MyDbContract {
 
     public static final class ExpensesEntry extends BaseBopEntry implements TableContract<Expenses> {
         public static final String TABLE_NAME = "ExpensesDb";
+        public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id";
         public static final String COLUMN_PURCHASE_ID = "purchase_id";
 
         public static final String[] COLUMNS = {
@@ -133,6 +133,8 @@ public final class MyDbContract {
                 ExpensesEntry.COLUMN_DAY,
                 ExpensesEntry.COLUMN_AMOUNT,
                 ExpensesEntry.COLUMN_MEMO,
+                ExpensesEntry.COLUMN_CATEGORY_ID,
+                ExpensesEntry.COLUMN_PURCHASE_ID,
                 ExpensesEntry.COLUMN_PURCHASE_ID,
         };
 
@@ -154,11 +156,13 @@ public final class MyDbContract {
         @Override
         public Expenses fromCursor(Cursor cursor) {
             return new Expenses(
-                    cursor.getInt(0),
+                    cursor.getLong(0),
                     MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
                     cursor.getInt(4),
                     cursor.getString(5),
-                    cursor.getInt(6)
+                    cursor.getInt(6),
+                    cursor.getInt(7),
+                    cursor.getInt(8)
             );
         }
     }
@@ -201,7 +205,7 @@ public final class MyDbContract {
         @Override
         public IncomeCategory fromCursor(Cursor cursor) {
             return new IncomeCategory(
-                    cursor.getInt(0),
+                    cursor.getLong(0),
                     cursor.getString(1),
                     cursor.getInt(2),
                     cursor.getInt(3),
@@ -210,28 +214,28 @@ public final class MyDbContract {
         }
     }
 
-    public static final class ExpensesCategoryEntry extends BaseCategoryEntry implements TableContract<ExpensesCategory> {
-        public static final String TABLE_NAME = "ExpensesCategoryDb";
+    public static final class PurchaseCategoryEntry extends BaseCategoryEntry implements TableContract<PurchaseCategory> {
+        public static final String TABLE_NAME = "PurchaseCategoryDb";
 
         @Override
         public String getTableName() {
-            return ExpensesCategoryEntry.TABLE_NAME;
+            return PurchaseCategoryEntry.TABLE_NAME;
         }
 
         @Override
         public String getIdColumnName() {
-            return ExpensesCategoryEntry.ID;
+            return PurchaseCategoryEntry.ID;
         }
 
         @Override
         public String[] getColumns() {
-            return ExpensesCategoryEntry.COLUMNS;
+            return PurchaseCategoryEntry.COLUMNS;
         }
 
         @Override
-        public ExpensesCategory fromCursor(Cursor cursor) {
-            return new ExpensesCategory(
-                    cursor.getInt(0),
+        public PurchaseCategory fromCursor(Cursor cursor) {
+            return new PurchaseCategory(
+                    cursor.getLong(0),
                     cursor.getString(1),
                     cursor.getInt(2),
                     cursor.getInt(3),
@@ -263,7 +267,7 @@ public final class MyDbContract {
         };
 
         public static final PaymentMethod DEFAULT_PAYMENT_METHOD = new PaymentMethod(
-                0,
+                (long) 0,
                 "通常支払い",
                 PaymentMethod.ClosingRule.None.getCode(), null,
                 PaymentMethod.PaymentRule.SameDay.getCode(), null,
@@ -289,7 +293,7 @@ public final class MyDbContract {
         @Override
         public PaymentMethod fromCursor(Cursor cursor) {
             return new PaymentMethod(
-                    cursor.getInt(0),
+                    cursor.getLong(0),
                     cursor.getString(1),
                     cursor.getInt(2),
                     cursor.getInt(3),

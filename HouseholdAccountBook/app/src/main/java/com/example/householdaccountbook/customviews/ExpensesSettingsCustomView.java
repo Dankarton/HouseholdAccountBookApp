@@ -36,9 +36,9 @@ public class ExpensesSettingsCustomView extends ConstraintLayout {
         categoryTextView = layout.findViewById(R.id.category_text_view);
         dateTextView = layout.findViewById(R.id.date_text_view);
         memoTextView = layout.findViewById(R.id.memo_text_view);
-        amountTextView = layout.findViewById(R.id.payment_amount_text_view);
+        amountTextView = layout.findViewById(R.id.amount_text_view);
         amountTextView.setTextColor(context.getColor(R.color.expenses_text_color));
-        ImageButton deleteButton = layout.findViewById(R.id.imageButton);
+        ImageButton deleteButton = layout.findViewById(R.id.more_action_button);
         deleteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -68,7 +68,7 @@ public class ExpensesSettingsCustomView extends ConstraintLayout {
     }
     public void setData(Expenses expenses){
         myExpenses = expenses;
-        categoryTextView.setText(myExpenses.getCategoryId());
+        categoryTextView.setText((int) myExpenses.getCategoryId());
         String formattedDate = myExpenses.getYear() + "/" + myExpenses.getMonth() + "/" + myExpenses.getDay();
         dateTextView.setText(formattedDate);
 //        dateTextView.setText(String.valueOf(myExpenses.getPaymentMethodId()));
@@ -84,7 +84,7 @@ public class ExpensesSettingsCustomView extends ConstraintLayout {
 
     public void clickDeleteButton(View view) {
         Log.d("ExpSettingCustomView", "" + myExpenses.getId());
-        MyDbManager.deleteData(myExpenses);
+        MyDbManager.deleteDataSafely(myExpenses);
         this.setVisibility(View.GONE);
 //        String inpText = "Delete";
 //        categoryTextView.setText(inpText);

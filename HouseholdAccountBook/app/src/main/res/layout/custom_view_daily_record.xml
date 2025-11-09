@@ -64,7 +64,7 @@
             android:textSize="18sp"
             android:layout_marginEnd="8dp" />
         <TextView
-            android:id="@+id/payment_amount_text_view"
+            android:id="@+id/amount_text_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -92,15 +92,15 @@
         app:layout_constraintTop_toBottomOf="@+id/date_title">
 
 
-        <LinearLayout
-            android:id="@+id/daily_record_linear_layout"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/daily_record_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/date_title">
-        </LinearLayout>
+        </androidx.recyclerview.widget.RecyclerView>
     </ScrollView>
 
 

@@ -18,10 +18,11 @@ public class DailyBop {
     private int _purchaseAmount;    // 購入金額
     private int _paymentAmount;     // 支払金額
     private final List<Income> _incomeList;
-    private final List<Expenses> _purchaseList;
+    private final List<Purchase> _purchaseList;
     private final List<Expenses> _paymentList;
+    private final List<BOP> _adapterDataList;
 
-    public DailyBop(int year, int month, int date, List<Income> incomeList, List<Expenses> purchaseList, List<Expenses> paymentList) {
+    public DailyBop(int year, int month, int date, List<Income> incomeList, List<Purchase> purchaseList, List<Expenses> paymentList) {
         this.year = year;
         this.month = month;
         this.date = date;
@@ -31,14 +32,21 @@ public class DailyBop {
 
         this._purchaseAmount = 0;
         this._paymentAmount = 0;
-        for (int i = 0; i < this._incomeList.size(); i++) {
-            this._incomeAmount += Math.abs(this._incomeList.get(i).getAmount());
+        this._adapterDataList = new ArrayList<>();
+        for (Income income : this._incomeList) {
+            this._adapterDataList.add(income);
+            this._incomeAmount += Math.abs(income.getAmount());
         }
-        for (int i = 0; i < this._purchaseList.size(); i++) {
-            this._purchaseAmount -= Math.abs(this._purchaseList.get(i).getAmount());
+        for (Purchase purchase : this._purchaseList) {
+            // 購入日と支払日が同じ場合，ダプって表示されるのを防ぐ
+            if (!purchase.isSameDay()) {
+                this._adapterDataList.add(purchase);
+            }
+            this._purchaseAmount -= Math.abs(purchase.getAmount());
         }
-        for (int i = 0; i < this._paymentList.size(); i++) {
-            this._paymentAmount -= Math.abs(this._paymentList.get(i).getAmount());
+        for (Expenses expenses : this._paymentList) {
+            this._adapterDataList.add(expenses);
+            this._paymentAmount -= Math.abs(expenses.getAmount());
         }
     }
     public int getYear() { return this.year; }
@@ -51,22 +59,8 @@ public class DailyBop {
     }
 
     public int getPaymentAmount() { return this._paymentAmount; }
-
-    public List<Income> getIncomeList() {
-        return this._incomeList;
-    }
-
-    public List<Expenses> getPurchaseList() {
-        return this._purchaseList;
-    }
-
+    public List<Income> getIncomeList() { return this._incomeList; }
+    public List<Purchase> getPurchaseList() { return this._purchaseList; }
     public List<Expenses> getPaymentList() { return this._paymentList; }
-
-    public List<BOP> getBopList() {
-        List<BOP> bopList = new ArrayList<>();
-        bopList.addAll(this._incomeList);
-        bopList.addAll(this._paymentList);
-        bopList.addAll(this._purchaseList);
-        return bopList;
-    }
+    public List<BOP> getAdapterDataList() { return this._adapterDataList; }
 }

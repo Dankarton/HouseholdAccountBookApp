@@ -13,9 +13,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.activities.settings.edit.SettingEditExpensesCategoryActivity;
-import com.example.householdaccountbook.activities.settings.edit.SettingEditIncomeCategoryActivity;
+import com.example.householdaccountbook.activities.settings.edit.SettingEditPurchaseCategoryActivity;
+import com.example.householdaccountbook.activities.settings.listing.SettingSelectIncomeCategoryActivity;
 import com.example.householdaccountbook.activities.settings.listing.SettingSelectPaymentMethodActivity;
+import com.example.householdaccountbook.activities.settings.listing.SettingSelectPurchaseCategoryActivity;
 import com.example.householdaccountbook.customviews.SettingMenuButtonView;
 import com.example.householdaccountbook.data.SettingMenuFragmentKind;
 
@@ -60,10 +61,10 @@ public class SettingsMenuFragment extends Fragment implements SettingMenuButtonV
                 context.startActivity(new Intent(context, SettingSelectPaymentMethodActivity.class));
                 break;
             case EXPENSES_CATEGORY_EDIT:
-                context.startActivity(new Intent(context, SettingEditExpensesCategoryActivity.class));
+                context.startActivity(new Intent(context, SettingSelectPurchaseCategoryActivity.class));
                 break;
             case INCOME_CATEGORY_EDIT:
-                context.startActivity(new Intent(context, SettingEditIncomeCategoryActivity.class));
+                context.startActivity(new Intent(context, SettingSelectIncomeCategoryActivity.class));
                 break;
             default:
         }

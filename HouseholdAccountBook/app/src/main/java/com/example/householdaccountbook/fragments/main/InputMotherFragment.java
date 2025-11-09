@@ -12,16 +12,21 @@ import android.view.ViewGroup;
 
 import com.example.householdaccountbook.adapter.InputFragmentPagerAdapter;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.fragments.ExpensesInputFragment;
-import com.example.householdaccountbook.fragments.IncomeInputFragment;
+import com.example.householdaccountbook.db.MyDbManager;
+import com.example.householdaccountbook.fragments.edit.BaseEditFragment;
+import com.example.householdaccountbook.fragments.edit.IncomeEditFragment;
+import com.example.householdaccountbook.fragments.edit.PurchaseEditFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.Calendar;
 
-public class InputMotherFragment extends Fragment implements IncomeInputFragment.InputCompleteListener {
-    ViewPager2 viewPager;
+import myclasses.Income;
+import myclasses.Purchase;
 
+public class InputMotherFragment extends Fragment {
+    ViewPager2 viewPager;
+    TabLayout tabLayout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,19 +40,47 @@ public class InputMotherFragment extends Fragment implements IncomeInputFragment
     }
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        IncomeInputFragment incInpFragment = new IncomeInputFragment();
-        ExpensesInputFragment expInpFragment = new ExpensesInputFragment();
-        InputFragmentPagerAdapter adapter = new InputFragmentPagerAdapter(this, expInpFragment, incInpFragment);
         viewPager = view.findViewById(R.id.input_fragment_view_pager);
+        tabLayout = view.findViewById(R.id.expenses_or_income_tab);
+        makeTabLayoutFragment();
+    }
+    private void makeTabLayoutFragment() {
+        Purchase insPurchaseData = new Purchase(null, Calendar.getInstance(), 0, "", -1, -1, false);
+        Income insIncomeData = new Income(null, Calendar.getInstance(), 0, "", -1);
+
+        PurchaseEditFragment purchaseEditFragment = new PurchaseEditFragment(insPurchaseData);
+        IncomeEditFragment incomeEditFragment = new IncomeEditFragment(insIncomeData);
+        purchaseEditFragment.setListener(new BaseEditFragment.OnInputActionListener<Purchase>() {
+            @Override
+            public void onSaveButtonClicked(Purchase data) {
+
+                MyDbManager.setDataSafely(data);
+                purchaseEditFragment.reset();
+            }
+
+            @Override
+            public void onDeleteButtonClicked(Purchase data) {
+                // 新規登録時は削除ボタンは使わない
+            }
+        });
+        incomeEditFragment.setListener(new BaseEditFragment.OnInputActionListener<Income>() {
+            @Override
+            public void onSaveButtonClicked(Income data) {
+
+                MyDbManager.setDataSafely(data);
+                incomeEditFragment.reset();
+            }
+
+            @Override
+            public void onDeleteButtonClicked(Income data) {
+                // 新規登録時は削除ボタンは使わない
+            }
+        });
+        InputFragmentPagerAdapter adapter = new InputFragmentPagerAdapter(this, purchaseEditFragment, incomeEditFragment);
         viewPager.setAdapter(adapter);
-        TabLayout tabLayout = view.findViewById(R.id.expenses_or_income_tab);
         String[] tabTitleArray = {"支出", "収入"};
         new TabLayoutMediator(tabLayout, viewPager, ((tab, position) -> tab.setText(tabTitleArray[position]))).attach();
         viewPager.setUserInputEnabled(false);
-    }
-    @Override
-    public void onIncomeInputCompleted(int amount, Calendar date, String memo, String category) {
-
     }
 }
 

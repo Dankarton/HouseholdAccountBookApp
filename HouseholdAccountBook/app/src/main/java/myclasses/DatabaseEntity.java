@@ -12,9 +12,9 @@ import java.io.Serializable;
 public interface DatabaseEntity extends Serializable {
     /**
      * データベースのID取得用.新規追加前でIDが割り当てられてない場合はnullを返すようにする
-     * @return Integer: id
+     * @return id
      */
-    Integer getId();
+    Long getId();
     /**
      * データのContentValue取得．IDは除外するように！
      * @return ContentValues

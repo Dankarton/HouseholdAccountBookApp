@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.householdaccountbook.customviews.item.PurchaseItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="48dp">
+    <!-- Settingタブに支出や収入のデータを一覧表示するときに使うアイテム -->
+
+    <!--内容を見やすくするための背景-->
+    <View
+        android:id="@+id/item_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="2dp"
+        android:background="@color/item_background"
+        tools:layout_editor_absoluteX="2dp"
+        tools:layout_editor_absoluteY="2dp">
+    </View>
+    <View
+        android:id="@+id/category_color_dot"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:background="@drawable/circle_dot"
+        android:backgroundTint="#AAAAAA"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toStartOf="@+id/item_background"
+        app:layout_constraintTop_toTopOf="@+id/category_text"
+        app:layout_constraintBottom_toBottomOf="@+id/category_text"
+        />
+
+    <!--カテゴリ欄-->
+    <TextView
+        android:id="@+id/category_text"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="不明"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/item_background"
+        app:layout_constraintStart_toEndOf="@+id/category_color_dot"
+        app:layout_constraintTop_toTopOf="@id/item_background" />
+
+    <!--詳細操作ボタン-->
+    <ImageButton
+        android:id="@+id/more_action_button"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:layout_marginRight="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/category_text"
+        app:layout_constraintEnd_toEndOf="@+id/item_background"
+        app:layout_constraintTop_toTopOf="@+id/category_text"
+        app:srcCompat="@drawable/more_vert_24px" />
+
+    <!--金額欄-->
+    <TextView
+        android:id="@+id/amount_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="end|center_vertical"
+        android:text="\-4,000,000"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/category_text"
+        app:layout_constraintEnd_toStartOf="@+id/more_action_button"
+        app:layout_constraintTop_toTopOf="@+id/category_text" />
+
+    <!--メモ欄-->
+    <TextView
+        android:id="@+id/memo_text_view"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="12dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:text="コンビニエンスストア"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/payment_method_text_view"
+        app:layout_constraintEnd_toStartOf="@+id/amount_text_view"
+        app:layout_constraintStart_toEndOf="@+id/category_text"
+        app:layout_constraintTop_toTopOf="@+id/category_text" />
+    <!--支払い方法欄-->
+    <TextView
+        android:id="@+id/payment_method_text_view"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="12dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:text="通常支払い"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@+id/memo_text_view"
+        app:layout_constraintEnd_toStartOf="@+id/amount_text_view"
+        app:layout_constraintStart_toEndOf="@+id/category_text"
+        app:layout_constraintBottom_toBottomOf="@+id/category_text" />
+
+</com.example.householdaccountbook.customviews.item.PurchaseItemView>

@@ -22,18 +22,18 @@ public abstract class SettingEditBaseActivity<T extends DatabaseEntity, F extend
             public void onSaveButtonClicked(T data) {
                 // IDが無い場合(新規追加の場合)
                 if (data.getId() == null) {
-                    MyDbManager.setData(data);
+                    MyDbManager.setDataSafely(data);
                 }
                 // 編集の場合
                 else {
-                    MyDbManager.upsertDatabase(data);
+                    MyDbManager.upsertDatabaseSafely(data);
                 }
             }
 
             @Override
             public void onDeleteButtonClicked(T data) {
                 if (data.getId() != null) {
-                    MyDbManager.deleteData(data);
+                    MyDbManager.deleteDataSafely(data);
                 }
                 finish();
             }

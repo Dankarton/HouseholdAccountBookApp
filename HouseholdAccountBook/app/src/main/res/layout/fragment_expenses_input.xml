@@ -31,13 +31,13 @@
             android:gravity="center_vertical"
             android:layout_gravity="center_vertical"
             app:layout_constraintBottom_toBottomOf="@+id/exp_static_text"
-            app:layout_constraintEnd_toStartOf="@+id/exp_date_up_button"
-            app:layout_constraintStart_toEndOf="@+id/exp_date_down_button"
+            app:layout_constraintEnd_toStartOf="@+id/date_up_button"
+            app:layout_constraintStart_toEndOf="@+id/date_down_button"
             app:layout_constraintTop_toTopOf="@+id/exp_static_text"
              />
 
         <ImageButton
-            android:id="@+id/exp_date_down_button"
+            android:id="@+id/date_down_button"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:background="@null"
@@ -51,7 +51,7 @@
             app:srcCompat="@drawable/chevron_left_24px" />
 
         <ImageButton
-            android:id="@+id/exp_date_up_button"
+            android:id="@+id/date_up_button"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginEnd="16dp"
@@ -72,12 +72,12 @@
 
             android:text="@string/memo_in_japanese"
             android:textSize="22sp"
-            app:layout_constraintBottom_toBottomOf="@+id/exp_memo_edit_text"
+            app:layout_constraintBottom_toBottomOf="@+id/memo_edit_text"
             app:layout_constraintStart_toStartOf="@+id/exp_static_text"
-            app:layout_constraintTop_toTopOf="@+id/exp_memo_edit_text" />
+            app:layout_constraintTop_toTopOf="@+id/memo_edit_text" />
 
         <EditText
-            android:id="@+id/exp_memo_edit_text"
+            android:id="@+id/memo_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -94,9 +94,9 @@
             android:layout_height="wrap_content"
             android:text="@string/expenses_in_japanese"
             android:textSize="22sp"
-            app:layout_constraintBottom_toBottomOf="@+id/exp_amount_edit_text"
+            app:layout_constraintBottom_toBottomOf="@+id/amount_edit_text"
             app:layout_constraintStart_toStartOf="@+id/exp_static_text2"
-            app:layout_constraintTop_toBottomOf="@+id/exp_memo_edit_text" />
+            app:layout_constraintTop_toBottomOf="@+id/memo_edit_text" />
 
         <TextView
             android:id="@+id/exp_static_text4"
@@ -105,12 +105,12 @@
             android:layout_marginEnd="16dp"
             android:text="@string/yen_in_japanese"
             android:textSize="22sp"
-            app:layout_constraintBottom_toBottomOf="@+id/exp_amount_edit_text"
+            app:layout_constraintBottom_toBottomOf="@+id/amount_edit_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/exp_amount_edit_text" />
+            app:layout_constraintTop_toTopOf="@+id/amount_edit_text" />
 
         <EditText
-            android:id="@+id/exp_amount_edit_text"
+            android:id="@+id/amount_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -118,14 +118,14 @@
             app:layout_constraintEnd_toStartOf="@+id/exp_static_text4"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/exp_static_text3"
-            app:layout_constraintTop_toBottomOf="@+id/exp_memo_edit_text" />
+            app:layout_constraintTop_toBottomOf="@+id/memo_edit_text" />
 
         <Spinner
             android:id="@+id/expenses_category_spinner"
             android:layout_width="200dp"
             android:layout_height="38dp"
             app:layout_constraintStart_toEndOf="@+id/exp_static_text3"
-            app:layout_constraintTop_toBottomOf="@+id/exp_amount_edit_text" />
+            app:layout_constraintTop_toBottomOf="@+id/amount_edit_text" />
 
         <Spinner
             android:id="@+id/payment_method_spinner"

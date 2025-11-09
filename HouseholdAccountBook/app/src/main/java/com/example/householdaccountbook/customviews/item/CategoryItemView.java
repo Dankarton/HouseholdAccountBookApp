@@ -18,10 +18,10 @@ import com.example.householdaccountbook.R;
 import myclasses.BopCategory;
 import myclasses.SelectableItem;
 
-public class CategoryItemView extends ConstraintLayout implements SelectableItem<BopCategory> {
+public class CategoryItemView <T extends BopCategory> extends ConstraintLayout implements SelectableItem<T> {
     View colorDot;
     TextView categoryText;
-    BopCategory bopCategory;
+    T bopCategory;
     boolean isSelected;
     public CategoryItemView(@NonNull Context context) {
         super(context);
@@ -42,7 +42,7 @@ public class CategoryItemView extends ConstraintLayout implements SelectableItem
         this.colorDot = findViewById(R.id.category_color_dot);
         this.categoryText = findViewById(R.id.category_text);
     }
-    public void setData(BopCategory category) {
+    public void setData(T category) {
         this.bopCategory = category;
         Drawable background = colorDot.getBackground();
         if (background instanceof GradientDrawable) {
@@ -62,7 +62,7 @@ public class CategoryItemView extends ConstraintLayout implements SelectableItem
         return this.isSelected;
     }
     @Override
-    public BopCategory getData() {
+    public T getData() {
         return this.bopCategory;
     }
 }

@@ -7,13 +7,13 @@ import com.example.householdaccountbook.db.MyDbContract;
 import java.io.Serializable;
 
 public abstract class BopCategory implements DatabaseEntity, Serializable {
-    private final Integer _id;
+    private final Long _id;
     private final String _name;
     private final int _colorCode;
     private final int _index;
     private final boolean _isDeleted;
 
-    public BopCategory(Integer id, String name, int colorCode, int index, boolean isDeleted) {
+    public BopCategory(Long id, String name, int colorCode, int index, boolean isDeleted) {
         this._id = id;
         this._name = name;
         this._colorCode = colorCode;
@@ -35,7 +35,7 @@ public abstract class BopCategory implements DatabaseEntity, Serializable {
         return values;
     }
     @Override
-    public Integer getId() {
+    public Long getId() {
         return this._id;
     }
     public String getName() {

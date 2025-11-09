@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.fragments;
+package com.example.householdaccountbook.fragments.listing;
 
 import android.content.Context;
 import android.os.Bundle;

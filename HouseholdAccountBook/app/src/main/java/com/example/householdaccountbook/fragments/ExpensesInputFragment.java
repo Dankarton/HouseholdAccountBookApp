@@ -28,7 +28,7 @@ import java.util.Calendar;
 
 import myclasses.BopCategory;
 import myclasses.Expenses;
-import myclasses.ExpensesCategory;
+import myclasses.PurchaseCategory;
 import myclasses.PaymentMethod;
 
 public class ExpensesInputFragment extends Fragment {
@@ -56,10 +56,10 @@ public class ExpensesInputFragment extends Fragment {
         dateTextView = view.findViewById(R.id.exp_date_text);
         categorySpinner = view.findViewById(R.id.expenses_category_spinner);
         paymentMethodSpinner = view.findViewById(R.id.payment_method_spinner);
-        memoEditText = view.findViewById(R.id.exp_memo_edit_text);
-        amountEditText = view.findViewById(R.id.exp_amount_edit_text);
+        memoEditText = view.findViewById(R.id.memo_edit_text);
+        amountEditText = view.findViewById(R.id.amount_edit_text);
         addButton = view.findViewById(R.id.expenses_add_button);
-        ArrayList<ExpensesCategory> categories = MyDbManager.getAll(ExpensesCategory.class);
+        ArrayList<PurchaseCategory> categories = MyDbManager.getAll(PurchaseCategory.class);
         String[] categoryArray = {"食費", "日用品", "通信費", "通販", "グッズ", "サブスク"};
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(
                 view.getContext(),
@@ -83,18 +83,18 @@ public class ExpensesInputFragment extends Fragment {
         paymentMethodSpinner.setAdapter(paymentMethodAdapter);
 
         // テスト中
-        ItemListCustomView<CategoryItemView> itemListCustomView = view.findViewById(R.id.category_list_custom_view);
-        ArrayList<BopCategory> categoryList = new ArrayList<>();
-//        categoryList.add(new BopCategory(1, "食費", Color.parseColor("#FF0000")));
-//        categoryList.add(new BopCategory(2, "燃料", Color.parseColor("#00FF00")));
-//        categoryList.add(new BopCategory(3, "サブスク", Color.parseColor("#0000FF")));
-        ArrayList<CategoryItemView> itemViews = new ArrayList<>();
-        for (int i = 0; i < categoryList.size(); i++) {
-            CategoryItemView tmp = new CategoryItemView(view.getContext());
-            tmp.setData(categoryList.get(i));
-            itemViews.add(tmp);
-        }
-        itemListCustomView.setItem(itemViews);
+//        ItemListCustomView<CategoryItemView, PurchaseCategory> itemListCustomView = view.findViewById(R.id.category_list_custom_view);
+//        ArrayList<BopCategory> categoryList = new ArrayList<>();
+////        categoryList.add(new BopCategory(1, "食費", Color.parseColor("#FF0000")));
+////        categoryList.add(new BopCategory(2, "燃料", Color.parseColor("#00FF00")));
+////        categoryList.add(new BopCategory(3, "サブスク", Color.parseColor("#0000FF")));
+//        ArrayList<CategoryItemView> itemViews = new ArrayList<>();
+//        for (int i = 0; i < categoryList.size(); i++) {
+//            CategoryItemView tmp = new CategoryItemView(view.getContext());
+//            tmp.setData(categoryList.get(i));
+//            itemViews.add(tmp);
+//        }
+//        itemListCustomView.setItem(itemViews);
         //
 
         currentDate = Calendar.getInstance();
@@ -115,7 +115,7 @@ public class ExpensesInputFragment extends Fragment {
     }
 
     private void setDateUpButtonEvent(View view){
-        ImageButton dateUpButton = view.findViewById(R.id.exp_date_up_button);
+        ImageButton dateUpButton = view.findViewById(R.id.date_up_button);
         dateUpButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -126,7 +126,7 @@ public class ExpensesInputFragment extends Fragment {
         });
     }
     private void setDateDownButtonEvent(View view){
-        ImageButton dateUpButton = view.findViewById(R.id.exp_date_down_button);
+        ImageButton dateUpButton = view.findViewById(R.id.date_down_button);
         dateUpButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -151,20 +151,20 @@ public class ExpensesInputFragment extends Fragment {
                 String memo = memoEditText.getText().toString();
                 String category = (String)categorySpinner.getSelectedItem();
                 PaymentMethod paymentMethod = paymentMethodArray[paymentMethodSpinner.getSelectedItemPosition()];
-                Expenses expenses = new Expenses(
-                        null,
-                        MyStdlib.convertToCalendar(year, month, day),
-                        amount,
-                        memo,
-                        category,
-                        paymentMethod.getId(),
-                        paymentMethod.getPaymentDate(MyStdlib.convertToCalendar(year, month, day))
-                );
-                MyDbManager.setData(expenses);
-                if(null != listener) {
-                    listener.onExpensesInputCompleted();
-                }
-                addButton.setEnabled(false);
+//                Expenses expenses = new Expenses(
+//                        null,
+//                        MyStdlib.convertToCalendar(year, month, day),
+//                        amount,
+//                        memo,
+//                        category,
+//                        paymentMethod.getId(),
+//                        paymentMethod.getPaymentDate(MyStdlib.convertToCalendar(year, month, day))
+//                );
+//                MyDbManager.setData(expenses);
+//                if(null != listener) {
+//                    listener.onExpensesInputCompleted();
+//                }
+//                addButton.setEnabled(false);
             }
         });
     }

@@ -13,12 +13,12 @@ import android.widget.EditText;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.customviews.ColorPaletteCustomView;
 
-import myclasses.ExpensesCategory;
+import myclasses.PurchaseCategory;
 
-public class ExpensesCategoryEditFragment extends BaseEditFragment<ExpensesCategory> {
+public class PurchaseCategoryEditFragment extends BaseEditFragment<PurchaseCategory> {
     private EditText nameEdit;
     private ColorPaletteCustomView colorPalette;
-    public ExpensesCategoryEditFragment(@NonNull ExpensesCategory data) {
+    public PurchaseCategoryEditFragment(@NonNull PurchaseCategory data) {
         super(data);
     }
     @Override
@@ -61,7 +61,7 @@ public class ExpensesCategoryEditFragment extends BaseEditFragment<ExpensesCateg
 
         String name = nameEdit.getText().toString();
         int colorInt = colorPalette.getSelectedColor();
-        ExpensesCategory expensesCategory = new ExpensesCategory(
+        PurchaseCategory expensesCategory = new PurchaseCategory(
                 this.databaseEntityData.getId(),
                 name,
                 colorInt,

@@ -34,9 +34,9 @@ public class IncomeSettingsCustomView extends ConstraintLayout {
         categoryTextView = layout.findViewById(R.id.category_text_view);
         dateTextView = layout.findViewById(R.id.date_text_view);
         memoTextView = layout.findViewById(R.id.memo_text_view);
-        amountTextView = layout.findViewById(R.id.payment_amount_text_view);
+        amountTextView = layout.findViewById(R.id.amount_text_view);
         amountTextView.setTextColor(context.getColor(R.color.income_text_color));
-        ImageButton deleteButton = layout.findViewById(R.id.imageButton);
+        ImageButton deleteButton = layout.findViewById(R.id.more_action_button);
         deleteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -66,7 +66,7 @@ public class IncomeSettingsCustomView extends ConstraintLayout {
     }
     public void setData(Income income){
         myIncome = income;
-        categoryTextView.setText(myIncome.getCategoryId());
+        categoryTextView.setText((int) myIncome.getCategoryId());
         String formattedDate = myIncome.getYear() + "/" + myIncome.getMonth() + "/" + myIncome.getDay();
         dateTextView.setText(formattedDate);
         memoTextView.setText(myIncome.getMemo());
@@ -79,7 +79,7 @@ public class IncomeSettingsCustomView extends ConstraintLayout {
 
     public void clickDeleteButton(View view) {
         Log.d("ExpSettingCustomView", "" + myIncome.getId());
-        MyDbManager.deleteData(myIncome);
+        MyDbManager.deleteDataSafely(myIncome);
         this.setVisibility(View.GONE);
 //        String inpText = "Delete";
 //        categoryTextView.setText(inpText);
