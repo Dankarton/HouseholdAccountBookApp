@@ -2,6 +2,7 @@ package com.example.householdaccountbook.adapter;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,24 +17,41 @@ import myclasses.BOP;
 import myclasses.DailyBop;
 
 public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private enum ViewType {
+        DAILY_BRIEF,
+        INCOME,
+        PURCHASE,
+        EXPENSES
+    }
     public interface OnListItemActionListener {
         void OnActionButtonClicked(BOP data);
     }
     private OnListItemActionListener listener;
     private final Context context;
-    private final List<DailyBop> dailyBopList;
+    private final List<Object> itemDataList;
     private final RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
 
-    public TransactionDateAdapter(Context context, List<DailyBop> dataList) {
+    public TransactionDateAdapter(Context context, List<Object> dataList) {
         this.context = context;
-        this.dailyBopList = dataList;
+        this.itemDataList = dataList;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        DailyRecordCustomView view = new DailyRecordCustomView(parent.getContext());
-        return new TransactionViewHolder(view);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == ViewType.DAILY_BRIEF.ordinal()) {
+
+        }
+        else if (viewType == ViewType.INCOME.ordinal()) {
+
+        }
+        else if (viewType == ViewType.PURCHASE.ordinal()) {
+
+        }
+        else {
+
+        }
     }
 
     @Override
@@ -51,27 +69,5 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return this.dailyBopList.size();
     }
     //
-    static class TransactionViewHolder extends RecyclerView.ViewHolder {
-        private final DailyRecordCustomView dailyView;
-        private DailyRecordAdapter subAdapter;
 
-        public TransactionViewHolder(@NonNull View itemView) {
-            super(itemView);
-            this.dailyView = (DailyRecordCustomView) itemView;
-        }
-
-        public void bind(DailyBop dailyData, OnListItemActionListener listener, RecyclerView.RecycledViewPool viewPool) {
-            if (this.subAdapter == null) {
-                subAdapter = new DailyRecordAdapter(itemView.getContext(), dailyData.getAdapterDataList());
-                subAdapter.setListener(new DailyRecordAdapter.OnListItemActionListener() {
-                    @Override
-                    public void onMoreActionButtonClicked(BOP data) {
-                        listener.OnActionButtonClicked(data);
-                    }
-                });
-                this.dailyView.setRecycledViewPool(viewPool);
-            }
-            this.dailyView.bind(dailyData.getYear(), dailyData.getMonth(), dailyData.getDate(), subAdapter);
-        }
-    }
 }
