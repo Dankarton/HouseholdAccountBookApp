@@ -142,6 +142,7 @@ public class MyDbManager {
                 Log.d("MyDbManager.setData", "データの挿入に失敗しました．");
                 return;
             }
+            Log.d("MyDbManager.setDataSafely", "Purchase categoryId: " + ((Purchase) data).getCategoryId() + ", paymentMethodId: " + ((Purchase) data).getPaymentMethodId());
             // Purchaseの子オブジェクトExpensesを生成
             Purchase newPurchase = new Purchase(
                     newId,
@@ -392,8 +393,9 @@ public class MyDbManager {
         ArrayList<Purchase> purchaseList = MyDbManager.getBopDataByDate(Purchase.class, year, month, day);
         ArrayList<Expenses> expensesList = MyDbManager.getBopDataByDate(Expenses.class, year, month, day);
         ArrayList<Income> incomeList = MyDbManager.getBopDataByDate(Income.class, year, month, day);
+        Log.d("MyDbManager.getDailyData", year + "/" + month + "/" + day + ", i_n: " + incomeList.size() + ", p_n: " + purchaseList.size() + ", e_n: " + expensesList.size());
         // 収入も支出もない場合
-        if (purchaseList.isEmpty() && expensesList.isEmpty() && incomeList.isEmpty()) {
+        if ((purchaseList.isEmpty() && expensesList.isEmpty()) && incomeList.isEmpty()) {
             return null;
         }
         return new DailyBop(year, month, day, incomeList, purchaseList, expensesList);

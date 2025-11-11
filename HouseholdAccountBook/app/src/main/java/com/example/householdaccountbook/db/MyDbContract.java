@@ -134,7 +134,7 @@ public final class MyDbContract {
                 ExpensesEntry.COLUMN_AMOUNT,
                 ExpensesEntry.COLUMN_MEMO,
                 ExpensesEntry.COLUMN_CATEGORY_ID,
-                ExpensesEntry.COLUMN_PURCHASE_ID,
+                ExpensesEntry.COLUMN_PAYMENT_METHOD_ID,
                 ExpensesEntry.COLUMN_PURCHASE_ID,
         };
 

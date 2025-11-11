@@ -78,7 +78,7 @@ public class DailyRecordCustomView extends ConstraintLayout {
         this.dateTextView.setText(formattedDate);
     }
 
-    private void setPurchaseAmount(int amount) {
+    private void setPaymentAmount(int amount) {
         this.paymentAmountTextView.setText(String.format(Locale.JAPANESE, "￥%,d", amount));
         if (amount > 0) {
             this.paymentAmountTextView.setTextColor(getContext().getColor(R.color.income_text_color));
@@ -88,7 +88,7 @@ public class DailyRecordCustomView extends ConstraintLayout {
             this.paymentAmountTextView.setTextColor(getContext().getColor(R.color.white));
         }
     }
-    private void setPaymentAmount(int amount) {
+    private void setPurchaseAmount(int amount) {
         this.purchaseAmountTextView.setText(String.format(Locale.JAPANESE, "￥%,d", amount));
         if (amount < 0) {
             this.purchaseAmountTextView.setTextColor(getContext().getColor(R.color.expenses_text_color));

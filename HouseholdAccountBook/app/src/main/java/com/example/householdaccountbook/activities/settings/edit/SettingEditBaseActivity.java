@@ -28,6 +28,7 @@ public abstract class SettingEditBaseActivity<T extends DatabaseEntity, F extend
                 else {
                     MyDbManager.upsertDatabaseSafely(data);
                 }
+                finish();
             }
 
             @Override

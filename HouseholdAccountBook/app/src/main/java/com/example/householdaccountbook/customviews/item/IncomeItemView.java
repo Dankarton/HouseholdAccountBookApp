@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
@@ -43,7 +44,7 @@ public class IncomeItemView extends ConstraintLayout {
     private void init(Context context) {
         View layout = ConstraintLayout.inflate(context, R.layout.item_income, this);
         this.categoryColorDot = layout.findViewById(R.id.category_color_dot);
-        this.categoryTextView = layout.findViewById(R.id.category_text_view);
+        this.categoryTextView = layout.findViewById(R.id.category_text);
         this.memoTextView = layout.findViewById(R.id.memo_text_view);
         this.amountTextView = layout.findViewById(R.id.amount_text_view);
         // 詳細ボタンが押されたことを上位層に伝えるリスナー登録

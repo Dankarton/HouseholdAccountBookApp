@@ -62,6 +62,8 @@ public class CategoryItemView <T extends BopCategory> extends ConstraintLayout i
         return this.isSelected;
     }
     @Override
+    public long getEigenvalue() { return this.bopCategory.getId(); }
+    @Override
     public T getData() {
         return this.bopCategory;
     }

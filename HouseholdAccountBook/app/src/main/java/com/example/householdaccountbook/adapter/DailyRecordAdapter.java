@@ -1,6 +1,7 @@
 package com.example.householdaccountbook.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,12 +49,12 @@ public class DailyRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == ViewType.INCOME.ordinal()) {
-            return new IncomeViewHolder(inflater.inflate(R.layout.item_income, parent, false));
+            return new IncomeViewHolder(new IncomeItemView(parent.getContext()));
         } else if (viewType == ViewType.PURCHASE.ordinal()){
-            return new PurchaseViewHolder(inflater.inflate(R.layout.item_purchase, parent, false));
+            return new PurchaseViewHolder(new PurchaseItemView(parent.getContext()));
         }
         else {
-            return new ExpensesViewHolder(inflater.inflate(R.layout.item_expenses, parent, false));
+            return new ExpensesViewHolder(new ExpensesItemView(parent.getContext()));
         }
     }
 
@@ -75,6 +76,7 @@ public class DailyRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         } else if (data instanceof Expenses) {
             PurchaseCategory category = app.getPurchaseCategoryRepository().getDataById(data.getCategoryId());
+            Log.d("DailyRecordAdapter.onBindViewHolder", "PurchaseCategoryId: " + data.getCategoryId() + ", colorCode: " + category.getColorCode());
             PaymentMethod method = app.getPaymentMethodRepository().getDataById(((Expenses) data).getPaymentMethodId());
             ExpensesViewHolder expensesHolder = (ExpensesViewHolder) holder;
             expensesHolder.bind(category.getColorCode(), category.getName(), data.getMemo(), method.getName(), data.getAmount());

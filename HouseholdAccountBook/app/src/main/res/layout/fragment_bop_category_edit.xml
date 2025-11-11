@@ -28,11 +28,12 @@
         app:layout_constraintStart_toEndOf="@+id/text1"
         app:layout_constraintTop_toTopOf="parent"
         />
+
     <com.example.householdaccountbook.customviews.ColorPaletteCustomView
         android:id="@+id/color_palette"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/name_edit_text"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/name_edit_text" />
 </androidx.constraintlayout.widget.ConstraintLayout>

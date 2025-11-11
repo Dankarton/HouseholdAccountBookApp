@@ -31,36 +31,25 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
     TextView paymentRuleSettingText;
     EditText closingRuleSettingNumEdit;
     EditText paymentRuleSettingNumEdit;
-    Button saveButton;
-    Button deleteButton;
-
-    public PaymentMethodEditFragment() { /*Do nothing*/ }
 
     public PaymentMethodEditFragment(@NonNull PaymentMethod paymentMethodData) {
         super(paymentMethodData);
     }
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.fragment_payment_method_edit, container, false);
-        // Viewオブジェクト取得
-        nameEdit = layout.findViewById(R.id.name_edit_text);
-        closingRuleSpinner = layout.findViewById(R.id.closing_rule_spinner);
-        paymentRuleSpinner = layout.findViewById(R.id.payment_rule_spinner);
-        closingRuleSettingText = layout.findViewById(R.id.closing_rule_setting_text);
-        paymentRuleSettingText = layout.findViewById(R.id.payment_rule_setting_text);
-        closingRuleSettingNumEdit = layout.findViewById(R.id.closing_rule_setting_num_edit);
-        paymentRuleSettingNumEdit = layout.findViewById(R.id.payment_rule_setting_num_edit);
-        saveButton = layout.findViewById(R.id.save_button);
-        deleteButton = layout.findViewById(R.id.delete_button);
-        return layout;
-    }
-
-
+    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); }
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Viewオブジェクト取得
+        nameEdit = view.findViewById(R.id.name_edit_text);
+        closingRuleSpinner = view.findViewById(R.id.closing_rule_spinner);
+        paymentRuleSpinner = view.findViewById(R.id.payment_rule_spinner);
+        closingRuleSettingText = view.findViewById(R.id.closing_rule_setting_text);
+        paymentRuleSettingText = view.findViewById(R.id.payment_rule_setting_text);
+        closingRuleSettingNumEdit = view.findViewById(R.id.closing_rule_setting_num_edit);
+        paymentRuleSettingNumEdit = view.findViewById(R.id.payment_rule_setting_num_edit);
+        saveButton = view.findViewById(R.id.save_button);
+        deleteButton = view.findViewById(R.id.delete_button);
         Context context = view.getContext();
         // 締め日スピナー用Adapter作成
         EnumSpinnerAdapter<PaymentMethod.ClosingRule> closingSpinnerAdapter = new EnumSpinnerAdapter<>(

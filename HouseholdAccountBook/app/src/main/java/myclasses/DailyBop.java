@@ -57,8 +57,8 @@ public class DailyBop {
     public int getPurchaseAmount() {
         return this._purchaseAmount;
     }
-
     public int getPaymentAmount() { return this._paymentAmount; }
+    public int getTotalAmount() { return this._incomeAmount + this._paymentAmount; }
     public List<Income> getIncomeList() { return this._incomeList; }
     public List<Purchase> getPurchaseList() { return this._purchaseList; }
     public List<Expenses> getPaymentList() { return this._paymentList; }

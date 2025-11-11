@@ -41,4 +41,10 @@ public abstract class SettingMotherActivity extends AppCompatActivity {
         transaction.replace(R.id.setting_container, fragment);
         transaction.commit();
     }
+
+    protected void reloadFragment(Fragment fragment) {
+        if (fragment != null) {
+            replaceFragment(fragment);
+        }
+    }
 }

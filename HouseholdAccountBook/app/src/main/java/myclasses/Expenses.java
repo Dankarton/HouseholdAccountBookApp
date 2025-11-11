@@ -31,6 +31,8 @@ public class Expenses extends BOP {
         values.put(MyDbContract.ExpensesEntry.COLUMN_DAY, this.getDay());
         values.put(MyDbContract.ExpensesEntry.COLUMN_AMOUNT, this.getAmount());
         values.put(MyDbContract.ExpensesEntry.COLUMN_MEMO, this.getMemo());
+        values.put(MyDbContract.ExpensesEntry.COLUMN_CATEGORY_ID, this.getCategoryId());
+        values.put(MyDbContract.ExpensesEntry.COLUMN_PAYMENT_METHOD_ID, this.paymentMethodId);
         values.put(MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID, this.purchaseId);
         return values;
     }

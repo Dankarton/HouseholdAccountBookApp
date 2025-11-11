@@ -4,9 +4,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.adapter.DailyRecordAdapter;
 
@@ -25,7 +28,7 @@ public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extend
         <T1> void onItemSelected(T1 itemView);
     }
     private OnItemSelectedListener listener;
-    private LinearLayout listLinearLayout;
+    private GridLayout listLinearLayout;
     private T1 selectedItem = null;
     public ItemListCustomView(Context context) {
         super(context);
@@ -43,9 +46,10 @@ public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extend
     }
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.custom_view_item_list, this, true);
-        listLinearLayout = findViewById(R.id.item_list_linear_layout);
+        listLinearLayout = findViewById(R.id.item_list_grid_layout);
     }
     public void setItem(ArrayList<T1> items) {
+
         for (int i = 0; i < items.size(); i++) {
             T1 item = items.get(i);
             item.setOnClickListener(new OnClickListener() {
@@ -62,6 +66,12 @@ public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extend
             else {
                 item.setSelectedState(false);
             }
+            // GridLayout内のItemのパラメータ設定
+            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+            params.width = 0;   // このリストは列方向に固定数並べるので，GridLayoutが自動で合わせれるよう0にしておく
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;    // 高さ方向はItem固有の高さ
+            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1.0f);
+            item.setLayoutParams(params);
             listLinearLayout.addView(item);
         }
     }

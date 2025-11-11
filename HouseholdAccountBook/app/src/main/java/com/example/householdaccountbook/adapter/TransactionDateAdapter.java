@@ -66,12 +66,12 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 subAdapter.setListener(new DailyRecordAdapter.OnListItemActionListener() {
                     @Override
                     public void onMoreActionButtonClicked(BOP data) {
-                        listener.OnActionButtonClicked(data);
+                        if (listener != null) listener.OnActionButtonClicked(data);
                     }
                 });
                 this.dailyView.setRecycledViewPool(viewPool);
             }
-            this.dailyView.bind(dailyData.getYear(), dailyData.getMonth(), dailyData.getDate(), subAdapter);
+            this.dailyView.bind(dailyData.getDate(), dailyData.getPurchaseAmount(), dailyData.getTotalAmount(), subAdapter);
         }
     }
 }

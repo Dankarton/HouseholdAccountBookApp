@@ -10,24 +10,24 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
         android:text="@string/date_in_japanese"
-        android:textSize="22sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/exp_date_text"
+        app:layout_constraintBottom_toBottomOf="@+id/exp_date_text"/>
 
     <TextView
         android:id="@+id/exp_date_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:layout_gravity="center_vertical"
         android:gravity="center_vertical"
         android:text="年月日()"
-        android:textSize="22sp"
-        app:layout_constraintBottom_toBottomOf="@+id/exp_static_text"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/date_up_button"
-        app:layout_constraintStart_toEndOf="@+id/date_down_button"
-        app:layout_constraintTop_toTopOf="@+id/exp_static_text" />
+        app:layout_constraintStart_toEndOf="@+id/date_down_button" />
 
     <ImageButton
         android:id="@+id/date_down_button"
@@ -40,7 +40,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/exp_date_text"
         app:layout_constraintStart_toEndOf="@+id/exp_static_text"
         app:layout_constraintTop_toTopOf="@+id/exp_date_text"
-        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/chevron_left_24px" />
 
     <ImageButton
@@ -55,16 +54,15 @@
         app:layout_constraintBottom_toBottomOf="@+id/exp_date_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/exp_date_text"
-        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/chevron_right_24px" />
 
     <TextView
         android:id="@+id/exp_static_text2"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
-
         android:text="@string/memo_in_japanese"
-        android:textSize="22sp"
+        android:textSize="16sp"
+        android:gravity="center_vertical"
         app:layout_constraintBottom_toBottomOf="@+id/memo_edit_text"
         app:layout_constraintStart_toStartOf="@+id/exp_static_text"
         app:layout_constraintTop_toTopOf="@+id/memo_edit_text" />
@@ -73,20 +71,23 @@
         android:id="@+id/memo_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:inputType="text"
         android:text="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/exp_static_text2"
-        app:layout_constraintTop_toBottomOf="@+id/exp_static_text" />
+        app:layout_constraintTop_toBottomOf="@+id/exp_date_text" />
 
     <TextView
         android:id="@+id/exp_static_text3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/income_in_japanese"
-        android:textSize="22sp"
+        android:textSize="16sp"
+        android:gravity="center_vertical"
         app:layout_constraintBottom_toBottomOf="@+id/amount_edit_text"
         app:layout_constraintStart_toStartOf="@+id/exp_static_text2"
         app:layout_constraintTop_toBottomOf="@+id/memo_edit_text" />
@@ -97,7 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:text="@string/yen_in_japanese"
-        android:textSize="22sp"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/amount_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/amount_edit_text" />
@@ -106,8 +107,12 @@
         android:id="@+id/amount_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:ems="10"
         android:inputType="numberDecimal"
+        android:gravity="end"
         app:layout_constraintEnd_toStartOf="@+id/exp_static_text4"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/exp_static_text3"

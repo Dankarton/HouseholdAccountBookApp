@@ -5,6 +5,7 @@ import com.example.householdaccountbook.db.MyDbManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import myclasses.DatabaseEntity;
 
@@ -45,6 +46,7 @@ public class DatabaseEntityRepository<T extends DatabaseEntity> {
     public int size() {
         return this.cache.size();
     }
+    public Set<Long> keySet() { return this.cache.keySet(); }
 
     public void clearCache() {
         this.cache.clear();

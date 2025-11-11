@@ -32,7 +32,7 @@ public abstract class BOP implements DatabaseEntity {
         return this.date.get(Calendar.YEAR);
     }
     public int getMonth() {
-        return this.date.get(Calendar.MONTH) + 1;
+        return this.date.get(Calendar.MONTH);
     }
     public int getDay() {
         return this.date.get(Calendar.DATE);

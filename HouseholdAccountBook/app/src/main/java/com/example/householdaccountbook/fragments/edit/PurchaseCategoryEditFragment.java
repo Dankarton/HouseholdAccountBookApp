@@ -48,6 +48,7 @@ public class PurchaseCategoryEditFragment extends BaseEditFragment<PurchaseCateg
                 saveButton.setEnabled(checkInputData());
             }
         });
+        this.nameEdit.setText(this.databaseEntityData.getName());
     }
 
     @Override

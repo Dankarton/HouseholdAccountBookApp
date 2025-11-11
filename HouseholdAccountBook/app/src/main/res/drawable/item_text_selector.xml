@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 選択状態：くり抜き風文字 -->
+    <item android:state_selected="true" android:color="@color/base_background" />
+    <!-- 非選択状態：通常文字色 -->
+    <item android:color="@color/normal_text_color" />
+</selector>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
@@ -29,20 +30,24 @@ public class PurchaseItemView extends ConstraintLayout {
     private OnActionListener listener = null;
 
     public PurchaseItemView(@NonNull Context context) {
+
         super(context);
+        init(context);
     }
 
     public PurchaseItemView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        init(context);
     }
 
     public PurchaseItemView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(context);
     }
     private void init(Context context) {
         View layout = ConstraintLayout.inflate(context, R.layout.item_expenses, this);
         this.categoryColorDot = layout.findViewById(R.id.category_color_dot);
-        this.categoryTextView = layout.findViewById(R.id.category_text_view);
+        this.categoryTextView = layout.findViewById(R.id.category_text);
         this.memoTextView = layout.findViewById(R.id.memo_text_view);
         this.paymentMethodTextView = layout.findViewById(R.id.payment_method_text_view);
         this.amountTextView = layout.findViewById(R.id.amount_text_view);

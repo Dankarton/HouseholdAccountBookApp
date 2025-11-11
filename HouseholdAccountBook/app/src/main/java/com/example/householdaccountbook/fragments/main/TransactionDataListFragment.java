@@ -24,6 +24,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import myclasses.DailyBop;
+import myclasses.Expenses;
+import myclasses.Purchase;
 
 public class TransactionDataListFragment extends Fragment {
     private Context context;
@@ -109,7 +111,7 @@ public class TransactionDataListFragment extends Fragment {
         this.paymentAmountTextView.setText(paymentAmount + "円");
     }
     private void updateDailyListData(List<DailyBop> dailyList) {
-        Log.d("TransactionDataListFragment.updateAmountTextView", "dailyList size: " + dailyList.size());
+//        Log.d("TransactionDataListFragment.updateAmountTextView", "dailyList size: " + dailyList.size());
         if (dailyRecordRecyclerView.getLayoutManager() == null) {
             this.dailyRecordRecyclerView.setLayoutManager(new LinearLayoutManager(this.context));
         }
@@ -117,6 +119,10 @@ public class TransactionDataListFragment extends Fragment {
     }
 
     private List<DailyBop> loadCurrentMonthDailyData(Calendar date) {
+        List<Expenses> expList = MyDbManager.getAll(Expenses.class);
+        for (Expenses exp : expList) {
+            Log.d("TransactionTest", "Expenses: " + exp.getYear() + "/" + exp.getMonth() + "/" + exp.getDay());
+        }
         List<DailyBop> dailyBopList = new ArrayList<>();
         for (int i = 1; i <= date.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
             DailyBop dailyBop = MyDbManager.getDailyData(date.get(Calendar.YEAR), date.get(Calendar.MONTH), i);

@@ -54,7 +54,8 @@ public class PaymentMethodItemView extends ConstraintLayout implements Selectabl
     public boolean isSelected() {
         return this.isSelected;
     }
-
+    @Override
+    public long getEigenvalue() { return this.data.getId(); }
     @Override
     public PaymentMethod getData() {
         return this.data;
