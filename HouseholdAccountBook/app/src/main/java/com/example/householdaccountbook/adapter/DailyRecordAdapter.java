@@ -47,7 +47,6 @@ public class DailyRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == ViewType.INCOME.ordinal()) {
             return new IncomeViewHolder(new IncomeItemView(parent.getContext()));
         } else if (viewType == ViewType.PURCHASE.ordinal()){
@@ -76,7 +75,6 @@ public class DailyRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         } else if (data instanceof Expenses) {
             PurchaseCategory category = app.getPurchaseCategoryRepository().getDataById(data.getCategoryId());
-            Log.d("DailyRecordAdapter.onBindViewHolder", "PurchaseCategoryId: " + data.getCategoryId() + ", colorCode: " + category.getColorCode());
             PaymentMethod method = app.getPaymentMethodRepository().getDataById(((Expenses) data).getPaymentMethodId());
             ExpensesViewHolder expensesHolder = (ExpensesViewHolder) holder;
             expensesHolder.bind(category.getColorCode(), category.getName(), data.getMemo(), method.getName(), data.getAmount());

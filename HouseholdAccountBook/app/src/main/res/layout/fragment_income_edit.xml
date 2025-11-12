@@ -77,6 +77,9 @@
         android:ems="10"
         android:inputType="text"
         android:text="@null"
+        android:textSize="16sp"
+        android:padding="8dp"
+        android:background="@drawable/edit_text_round_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/exp_static_text2"
         app:layout_constraintTop_toBottomOf="@+id/exp_date_text" />
@@ -113,21 +116,33 @@
         android:ems="10"
         android:inputType="numberDecimal"
         android:gravity="end"
+        android:textSize="16sp"
+        android:padding="8dp"
+        android:background="@drawable/edit_text_round_background"
         app:layout_constraintEnd_toStartOf="@+id/exp_static_text4"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/exp_static_text3"
         app:layout_constraintTop_toBottomOf="@+id/memo_edit_text" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:orientation="vertical"
         android:weightSum="3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/amount_edit_text">
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="4dp"
+            android:text="カテゴリ"
+            android:textSize="14sp"
+            />
         <com.example.householdaccountbook.customviews.ItemListCustomView
             android:id="@+id/category_list_custom_view"
             android:layout_width="match_parent"

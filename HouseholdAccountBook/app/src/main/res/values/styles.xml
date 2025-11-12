@@ -2,7 +2,7 @@
 <resources>
     <style name="BottomNavigationViewStyle" parent="Widget.MaterialComponents.BottomNavigationView">
         <!-- 背景色 -->
-        <item name="android:background">#1A1A1A</item>
+        <item name="android:background">@color/bottom_nav_item_background</item>
         <!-- アイコン・テキストの色 -->
         <item name="itemIconTint">@color/bottom_nav_item_color</item>
         <item name="itemTextColor">@color/bottom_nav_item_color</item>
@@ -13,7 +13,7 @@
     </style>
     <style name="NavTabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
         <!-- 背景色 -->
-        <item name="android:background">#1A1A1A</item>
+        <item name="android:background">@color/nav_bar_color</item>
         <!-- アイコン・テキストの色 -->
         <item name="tabTextColor">@color/bottom_nav_item_color</item>
         <item name="tabIconTint">@color/bottom_nav_item_color</item>

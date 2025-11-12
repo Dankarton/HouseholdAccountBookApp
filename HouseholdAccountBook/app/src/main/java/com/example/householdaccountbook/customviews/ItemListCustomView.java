@@ -9,6 +9,8 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.adapter.DailyRecordAdapter;
@@ -23,7 +25,7 @@ import myclasses.SelectableItem;
  * @param <T1> extends View & SelectableItem
  * @param <T2> SelectableItemが持つobject
  */
-public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extends ScrollView {
+public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extends ConstraintLayout {
     public interface OnItemSelectedListener {
         <T1> void onItemSelected(T1 itemView);
     }

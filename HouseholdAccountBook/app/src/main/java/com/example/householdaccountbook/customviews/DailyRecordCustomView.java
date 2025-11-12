@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,16 +19,21 @@ import com.example.householdaccountbook.R;
 import java.util.Locale;
 
 public class DailyRecordCustomView extends ConstraintLayout {
+    public interface onActionListener {
+        void onPullDownClicked(boolean visible);
+    }
     private TextView dateTextView;
     private TextView purchaseAmountTextView;
     private TextView paymentAmountTextView;
     private RecyclerView dailyRecordRecyclerView;
     private ImageView listStateImageView;
+    private onActionListener listener = null;
 
     public DailyRecordCustomView(@NonNull Context context) {
         super(context);
         init(context);
     }
+
     public DailyRecordCustomView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
@@ -49,21 +53,17 @@ public class DailyRecordCustomView extends ConstraintLayout {
         this.dailyRecordRecyclerView = layout.findViewById(R.id.daily_record_recycler_view);
         layout.setOnClickListener(view -> {
             if (dailyRecordRecyclerView.getVisibility() == View.VISIBLE) {
-                dailyRecordRecyclerView.setVisibility(View.GONE);
-                listStateImageView.setImageResource(R.drawable.arrow_drop_down_24px);
+                // リストが表示されてる状態でクリックされたらリストを非表示にする
+                changeDropDownVisible(false);
             } else {
-                dailyRecordRecyclerView.setVisibility(View.VISIBLE);
-                listStateImageView.setImageResource(R.drawable.arrow_drop_up_24px);
+                changeDropDownVisible(true);
             }
         });
         // リストを非表示
-        this.dailyRecordRecyclerView.setVisibility(View.GONE);
-        this.listStateImageView.setImageResource(R.drawable.arrow_drop_down_24px);
+        changeDropDownVisible(false);
     }
 
-    public void bind(int day, int purchaseAmount, int paymentAmount, DailyRecordAdapter adapter) {
-        Log.d("DailyRecordCustomView", "day=" + day + ", purchase=" + purchaseAmount + ", payment=" + paymentAmount + ", adapterCount=" + adapter.getItemCount());
-
+    public void bind(int day, int purchaseAmount, int paymentAmount, DailyRecordAdapter adapter, boolean isDropDownVisible) {
         setDate(day);
         setPurchaseAmount(purchaseAmount);
         setPaymentAmount(paymentAmount);
@@ -71,6 +71,24 @@ public class DailyRecordCustomView extends ConstraintLayout {
             dailyRecordRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
         this.dailyRecordRecyclerView.setAdapter(adapter);
+        changeDropDownVisible(isDropDownVisible);
+    }
+    private void changeDropDownVisible(boolean visible) {
+        if (visible) {
+            this.dailyRecordRecyclerView.setVisibility(View.VISIBLE);
+            this.listStateImageView.setImageResource(R.drawable.arrow_drop_up_24px);
+        }
+        else {
+            dailyRecordRecyclerView.setVisibility(View.GONE);
+            listStateImageView.setImageResource(R.drawable.arrow_drop_down_24px);
+        }
+        if (this.listener != null) this.listener.onPullDownClicked(visible);
+    }
+    public void setListener(onActionListener listener) {
+        this.listener = listener;
+    }
+    public boolean existListener() {
+        return this.listener != null;
     }
 
     private void setDate(int day) {
@@ -88,6 +106,7 @@ public class DailyRecordCustomView extends ConstraintLayout {
             this.paymentAmountTextView.setTextColor(getContext().getColor(R.color.white));
         }
     }
+
     private void setPurchaseAmount(int amount) {
         this.purchaseAmountTextView.setText(String.format(Locale.JAPANESE, "￥%,d", amount));
         if (amount < 0) {

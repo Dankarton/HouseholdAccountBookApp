@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.householdaccountbook.customviews.DailyRecordCustomView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import myclasses.BOP;
@@ -19,14 +20,17 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public interface OnListItemActionListener {
         void OnActionButtonClicked(BOP data);
     }
+
     private OnListItemActionListener listener;
     private final Context context;
-    private final List<DailyBop> dailyBopList;
-    private final RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
+    private final List<DailyItemBinder> binderList;
 
     public TransactionDateAdapter(Context context, List<DailyBop> dataList) {
         this.context = context;
-        this.dailyBopList = dataList;
+        this.binderList = new ArrayList<>();
+        for (DailyBop daily : dataList) {
+            this.binderList.add(new DailyItemBinder(daily));
+        }
     }
 
     @NonNull
@@ -38,9 +42,20 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Log.d("TransactionDateAdapter.onBindViewHolder", "position: " + position);
-        DailyBop daily = this.dailyBopList.get(position);
-        ((TransactionViewHolder) holder).bind(daily, this.listener, this.viewPool);
+        if (this.binderList.get(position).getAdapter() == null) {
+            this.binderList.get(position).setAdapter(makeAdapter(this.binderList.get(position).dailyBop.getAdapterDataList()));
+        }
+        ((TransactionViewHolder) holder).bind(this.binderList.get(position));
+    }
+    private DailyRecordAdapter makeAdapter(List<BOP> dataList) {
+        DailyRecordAdapter adapter = new DailyRecordAdapter(context, dataList);
+        adapter.setListener(new DailyRecordAdapter.OnListItemActionListener() {
+            @Override
+            public void onMoreActionButtonClicked(BOP data) {
+                if (listener != null) listener.OnActionButtonClicked(data);
+            }
+        });
+        return adapter;
     }
     public void setListener(OnListItemActionListener listener) {
         this.listener = listener;
@@ -48,30 +63,42 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public int getItemCount() {
-        return this.dailyBopList.size();
+        return this.binderList.size();
     }
+
     //
     static class TransactionViewHolder extends RecyclerView.ViewHolder {
         private final DailyRecordCustomView dailyView;
-        private DailyRecordAdapter subAdapter;
 
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
             this.dailyView = (DailyRecordCustomView) itemView;
         }
 
-        public void bind(DailyBop dailyData, OnListItemActionListener listener, RecyclerView.RecycledViewPool viewPool) {
-            if (this.subAdapter == null) {
-                subAdapter = new DailyRecordAdapter(itemView.getContext(), dailyData.getAdapterDataList());
-                subAdapter.setListener(new DailyRecordAdapter.OnListItemActionListener() {
-                    @Override
-                    public void onMoreActionButtonClicked(BOP data) {
-                        if (listener != null) listener.OnActionButtonClicked(data);
-                    }
-                });
-                this.dailyView.setRecycledViewPool(viewPool);
-            }
-            this.dailyView.bind(dailyData.getDate(), dailyData.getPurchaseAmount(), dailyData.getTotalAmount(), subAdapter);
+        public void bind(DailyItemBinder binder) {
+            this.dailyView.setListener(binder);
+            this.dailyView.bind(binder.getDate(), binder.getPurchaseAmount(), binder.getTotalAmount(), binder.getAdapter(), binder.isPullDownVisible());
+        }
+    }
+
+    static class DailyItemBinder implements DailyRecordCustomView.onActionListener {
+        private final DailyBop dailyBop;
+        private DailyRecordAdapter adapter = null;
+        private boolean isPullDownVisible = false;
+
+        public DailyItemBinder(DailyBop dailyData) {
+            this.dailyBop = dailyData;
+        }
+        public int getDate() { return this.dailyBop.getDate(); }
+        public int getPurchaseAmount() { return this.dailyBop.getPurchaseAmount(); }
+        public int getTotalAmount() { return this.dailyBop.getTotalAmount(); }
+        public DailyRecordAdapter getAdapter() { return this.adapter; }
+        public boolean isPullDownVisible() { return this.isPullDownVisible; }
+
+        public void setAdapter(DailyRecordAdapter adapter) { this.adapter = adapter; }
+        @Override
+        public void onPullDownClicked(boolean visible) {
+            this.isPullDownVisible = visible;
         }
     }
 }
