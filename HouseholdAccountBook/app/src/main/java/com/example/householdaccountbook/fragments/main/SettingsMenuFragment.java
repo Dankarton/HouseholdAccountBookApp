@@ -55,7 +55,6 @@ public class SettingsMenuFragment extends Fragment implements SettingMenuButtonV
     @Override
     public void onClicked(SettingMenuFragmentKind type) {
         Context context = requireContext();
-        // TODO 10/20 テスト
         switch (type) {
             case PAYMENT_METHOD_EDIT:
                 context.startActivity(new Intent(context, SettingSelectPaymentMethodActivity.class));

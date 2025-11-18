@@ -22,7 +22,7 @@
         android:id="@+id/month_text_view"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="2025年9月"
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="@+id/month_down_button"
@@ -42,181 +42,32 @@
         app:layout_constraintTop_toTopOf="@+id/month_text_view"
         app:srcCompat="@drawable/chevron_right_24px" />
 
-    <LinearLayout
-        android:id="@+id/bop_brief_linear_layout"
+    <com.example.householdaccountbook.customviews.item.MonthlySummaryCustomView
+        android:id="@+id/monthly_summary_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@color/mother_item_background_color"
-        android:orientation="horizontal"
-        android:weightSum="3"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@id/month_text_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/month_text_view">
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="収入"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/income_amount_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="48950円"
-                android:textColor="@color/income_text_color"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#CCCCCC" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="支出"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/purchase_amount_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="1950円"
-                android:textColor="@color/expenses_text_color"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#CCCCCC" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="合計"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/total_amount_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="47000円"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/expenses_brief_linear_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@color/mother_item_background_color"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bop_brief_linear_layout">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="支払"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/payment_amount_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="1950円"
-                android:textColor="@color/expenses_text_color"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#CCCCCC" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="残高"
-                android:textSize="14sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="-円"
-                android:textSize="16sp" />
-        </LinearLayout>
-    </LinearLayout>
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/transaction_list_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:scrollbars="vertical"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/expenses_brief_linear_layout"
+        app:layout_constraintTop_toBottomOf="@+id/monthly_summary_view"
         app:layout_constraintVertical_bias="0.0" />
 
 

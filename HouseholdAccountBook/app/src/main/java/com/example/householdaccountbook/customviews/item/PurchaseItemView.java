@@ -45,7 +45,7 @@ public class PurchaseItemView extends ConstraintLayout {
         init(context);
     }
     private void init(Context context) {
-        View layout = ConstraintLayout.inflate(context, R.layout.item_expenses, this);
+        View layout = ConstraintLayout.inflate(context, R.layout.item_purchase, this);
         this.categoryColorDot = layout.findViewById(R.id.category_color_dot);
         this.categoryTextView = layout.findViewById(R.id.category_text);
         this.memoTextView = layout.findViewById(R.id.memo_text_view);
@@ -67,7 +67,7 @@ public class PurchaseItemView extends ConstraintLayout {
         this.categoryTextView.setText(categoryText);
         this.memoTextView.setText(memoText);
         this.paymentMethodTextView.setText(paymentMethodText);
-        this.amountTextView.setText(String.format(Locale.JAPANESE, "￥%,d", amount));
+        this.amountTextView.setText(String.format(Locale.JAPANESE, "(￥%,d)", amount));
     }
     public void setListener(PurchaseItemView.OnActionListener listener) {
         this.listener = listener;

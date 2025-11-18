@@ -77,7 +77,7 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         public void bind(DailyItemBinder binder) {
             this.dailyView.setListener(binder);
-            this.dailyView.bind(binder.getDate(), binder.getPurchaseAmount(), binder.getTotalAmount(), binder.getAdapter(), binder.isPullDownVisible());
+            this.dailyView.bind(binder.getDate(), binder.getIncomeAmount(), binder.getPurchaseAmount(), binder.getPaymentAmount(), binder.getAdapter(), binder.isPullDownVisible());
         }
     }
 
@@ -90,7 +90,9 @@ public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             this.dailyBop = dailyData;
         }
         public int getDate() { return this.dailyBop.getDate(); }
+        public int getIncomeAmount() { return this.dailyBop.getIncomeAmount(); }
         public int getPurchaseAmount() { return this.dailyBop.getPurchaseAmount(); }
+        public int getPaymentAmount() { return this.dailyBop.getPaymentAmount(); }
         public int getTotalAmount() { return this.dailyBop.getTotalAmount(); }
         public DailyRecordAdapter getAdapter() { return this.adapter; }
         public boolean isPullDownVisible() { return this.isPullDownVisible; }

@@ -125,10 +125,12 @@ public class MyDbManager {
         }
         return db.insert(contract.getTableName(), null, data.getContentValues());
     }
+
     private static <T extends DatabaseEntity> long setData(T data) {
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
         return setData(db, TableContractRegistry.getContract(data.getClass()), data);
     }
+
     public static <T extends DatabaseEntity> void setDataSafely(T data) {
         if (data.getId() != null) {
             throw new IllegalArgumentException(
@@ -136,8 +138,9 @@ public class MyDbManager {
             );
         }
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
+        Long newId = null;
         if (data.getClass() == Purchase.class) {
-            long newId = setData(db, TableContractRegistry.getContract(data.getClass()), data);
+            newId = setData(db, TableContractRegistry.getContract(data.getClass()), data);
             if (newId == -1) {
                 Log.d("MyDbManager.setData", "データの挿入に失敗しました．");
                 return;
@@ -162,10 +165,43 @@ public class MyDbManager {
             for (Expenses exp : newExpList) {
                 setData(db, expContract, exp);
             }
-        }
-        else {
+        } else {
             // それ以外のデータはそのままセット
-            setData(db, TableContractRegistry.getContract(data.getClass()), data);
+            newId = setData(db, TableContractRegistry.getContract(data.getClass()), data);
+        }
+        // 新しく追加されたデータをキャッシュに登録
+        if (data.getClass() == IncomeCategory.class) {
+            IncomeCategory incomeCategory = new IncomeCategory(
+                    newId,
+                    ((IncomeCategory) data).getName(),
+                    ((IncomeCategory) data).getColorCode(),
+                    ((IncomeCategory) data).getIndex(),
+                    ((IncomeCategory) data).isDeleted()
+            );
+            cacheProvider.getIncomeCategoryRepository().updateCache(incomeCategory);
+        }
+        else if (data.getClass() == PurchaseCategory.class) {
+            PurchaseCategory purchaseCategory = new PurchaseCategory(
+                    newId,
+                    ((PurchaseCategory) data).getName(),
+                    ((PurchaseCategory) data).getColorCode(),
+                    ((PurchaseCategory) data).getIndex(),
+                    ((PurchaseCategory) data).isDeleted()
+            );
+            cacheProvider.getPurchaseCategoryRepository().updateCache(purchaseCategory);
+        }
+        else if (data.getClass() == PaymentMethod.class) {
+            PaymentMethod paymentMethod = new PaymentMethod(
+                    newId,
+                    ((PaymentMethod) data).getName(),
+                    ((PaymentMethod) data).getClosingRule().getCode(),
+                    ((PaymentMethod) data).getClosingSettingNum(),
+                    ((PaymentMethod) data).getPaymentRule().getCode(),
+                    ((PaymentMethod) data).getPaymentSettingNum(),
+                    ((PaymentMethod) data).getIndex(),
+                    ((PaymentMethod) data).isDefault()
+            );
+            cacheProvider.getPaymentMethodRepository().updateCache(paymentMethod);
         }
     }
 
@@ -216,7 +252,6 @@ public class MyDbManager {
      * @return boolean 成功するとtrue,失敗するとfalse
      */
     private static <T extends DatabaseEntity> boolean upsertDatabase(T data) {
-
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
         return MyDbManager.upsertDatabase(db, data);
     }
@@ -248,6 +283,16 @@ public class MyDbManager {
         } else {
             // それ以外のデータはただ更新するだけ．
             upsertDatabase(data);
+        }
+        // キャッシュの更新
+        if (data.getClass() == IncomeCategory.class) {
+            cacheProvider.getIncomeCategoryRepository().updateCache((IncomeCategory) data);
+        }
+        else if (data.getClass() == PurchaseCategory.class) {
+            cacheProvider.getPurchaseCategoryRepository().updateCache((PurchaseCategory) data);
+        }
+        else if (data.getClass() == PaymentMethod.class) {
+            cacheProvider.getPaymentMethodRepository().updateCache((PaymentMethod) data);
         }
     }
 
@@ -294,6 +339,16 @@ public class MyDbManager {
 
         } else {
             deleteData(data);
+        }
+        // キャッシュの更新
+        if (data.getClass() == IncomeCategory.class) {
+            cacheProvider.getIncomeCategoryRepository().removeCache((IncomeCategory) data);
+        }
+        else if (data.getClass() == PurchaseCategory.class) {
+            cacheProvider.getPurchaseCategoryRepository().removeCache((PurchaseCategory) data);
+        }
+        else if (data.getClass() == PaymentMethod.class) {
+            cacheProvider.getPaymentMethodRepository().removeCache((PaymentMethod) data);
         }
     }
 
@@ -348,6 +403,38 @@ public class MyDbManager {
     }
 
     /**
+     * Idからデータを取得する関数
+     *
+     * @param clazz クラス
+     * @param id    ID
+     * @param <T>   DatabaseEntity
+     * @return データ
+     */
+    public static <T extends DatabaseEntity> T getDataById(Class<T> clazz, Long id) {
+        if (id == null) {
+            Log.d("MyDbManager.getDataById", "IDがnullです．検索が行えません．" + clazz.getSimpleName());
+            return null;
+        }
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
+        MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
+        Cursor cursor = db.query(
+                contract.getTableName(),
+                contract.getColumns(),
+                contract.getIdColumnName() + " = " + id,
+                null,
+                null,
+                null,
+                null
+        );
+        T data = null;
+        if (cursor.moveToFirst()) {
+            data = contract.fromCursor(cursor);
+        }
+        cursor.close();
+        return data;
+    }
+
+    /**
      * 収支データを日付から取得する関数
      *
      * @param clazz BOPを継承したクラス(Purchase, Expenses, Income)
@@ -393,7 +480,6 @@ public class MyDbManager {
         ArrayList<Purchase> purchaseList = MyDbManager.getBopDataByDate(Purchase.class, year, month, day);
         ArrayList<Expenses> expensesList = MyDbManager.getBopDataByDate(Expenses.class, year, month, day);
         ArrayList<Income> incomeList = MyDbManager.getBopDataByDate(Income.class, year, month, day);
-        Log.d("MyDbManager.getDailyData", year + "/" + month + "/" + day + ", i_n: " + incomeList.size() + ", p_n: " + purchaseList.size() + ", e_n: " + expensesList.size());
         // 収入も支出もない場合
         if ((purchaseList.isEmpty() && expensesList.isEmpty()) && incomeList.isEmpty()) {
             return null;

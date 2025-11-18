@@ -12,10 +12,7 @@
         android:id="@+id/item_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="2dp"
-        android:background="@color/child_item_background_color"
-        tools:layout_editor_absoluteX="2dp"
-        tools:layout_editor_absoluteY="2dp">
+        android:background="@color/mother_item_background_color">
     </View>
     <View
         android:id="@+id/category_color_dot"

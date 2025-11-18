@@ -47,8 +47,8 @@ public class DailyRecordCustomView extends ConstraintLayout {
     public void init(Context context) {
         View layout = ConstraintLayout.inflate(context, R.layout.custom_view_daily_record, this);
         this.dateTextView = layout.findViewById(R.id.date_title);
-        this.purchaseAmountTextView = layout.findViewById(R.id.purchase_amount_text_view);
-        this.paymentAmountTextView = layout.findViewById(R.id.amount_text_view);
+        this.purchaseAmountTextView = layout.findViewById(R.id.income_amount_text);
+        this.paymentAmountTextView = layout.findViewById(R.id.expenses_amount_text);
         this.listStateImageView = layout.findViewById(R.id.list_sate_view);
         this.dailyRecordRecyclerView = layout.findViewById(R.id.daily_record_recycler_view);
         layout.setOnClickListener(view -> {
@@ -63,9 +63,9 @@ public class DailyRecordCustomView extends ConstraintLayout {
         changeDropDownVisible(false);
     }
 
-    public void bind(int day, int purchaseAmount, int paymentAmount, DailyRecordAdapter adapter, boolean isDropDownVisible) {
+    public void bind(int day, int incomeAmount, int purchaseAmount, int paymentAmount, DailyRecordAdapter adapter, boolean isDropDownVisible) {
         setDate(day);
-        setPurchaseAmount(purchaseAmount);
+        setIncomeAmount(incomeAmount);
         setPaymentAmount(paymentAmount);
         if (dailyRecordRecyclerView.getLayoutManager() == null) {
             dailyRecordRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -103,17 +103,21 @@ public class DailyRecordCustomView extends ConstraintLayout {
         } else if (amount < 0) {
             this.paymentAmountTextView.setTextColor(getContext().getColor(R.color.expenses_text_color));
         } else {
-            this.paymentAmountTextView.setTextColor(getContext().getColor(R.color.white));
+            this.paymentAmountTextView.setTextColor(getContext().getColor(R.color.idle_text_color));
         }
     }
 
-    private void setPurchaseAmount(int amount) {
+    private void setIncomeAmount(int amount) {
+        String formalText = "";
         this.purchaseAmountTextView.setText(String.format(Locale.JAPANESE, "￥%,d", amount));
-        if (amount < 0) {
-            this.purchaseAmountTextView.setTextColor(getContext().getColor(R.color.expenses_text_color));
+        if (amount > 0) {
+            this.purchaseAmountTextView.setTextColor(getContext().getColor(R.color.income_text_color));
+            formalText = String.format(Locale.JAPANESE, "￥+%,d", amount);
         } else {
-            this.purchaseAmountTextView.setTextColor(getContext().getColor(R.color.white));
+            this.purchaseAmountTextView.setTextColor(getContext().getColor(R.color.idle_text_color));
+            formalText = String.format(Locale.JAPANESE, "￥%,d", amount);
         }
+        this.purchaseAmountTextView.setText(formalText);
     }
 
     public void setRecycledViewPool(RecyclerView.RecycledViewPool viewPool) {
