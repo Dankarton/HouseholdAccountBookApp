@@ -44,7 +44,7 @@ public class DailyRecordCustomView extends ConstraintLayout {
         init(context);
     }
 
-    public void init(Context context) {
+    private void init(Context context) {
         View layout = ConstraintLayout.inflate(context, R.layout.custom_view_daily_record, this);
         this.dateTextView = layout.findViewById(R.id.date_title);
         this.purchaseAmountTextView = layout.findViewById(R.id.income_amount_text);

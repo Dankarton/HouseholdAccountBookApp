@@ -11,7 +11,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.fragments.main.ChartFragment;
+import com.example.householdaccountbook.fragments.chart.BaseChartFragment;
+import com.example.householdaccountbook.fragments.main.ChartMotherFragment;
 import com.example.householdaccountbook.fragments.main.InputMotherFragment;
 import com.example.householdaccountbook.fragments.main.SettingsMenuFragment;
 import com.example.householdaccountbook.fragments.main.TransactionDataListFragment;
@@ -45,13 +46,13 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(new InputMotherFragment());
                     return true;
                 }
-                else if (item.getItemId() == R.id.navigation_calendar) {
+                else if (item.getItemId() == R.id.navigation_data) {
 //                    replaceFragment(new CalendarFragment());
                     replaceFragment(new TransactionDataListFragment());
                     return true;
                 }
-                else if (item.getItemId() == R.id.navigation_data) {
-                    replaceFragment(new ChartFragment());
+                else if (item.getItemId() == R.id.navigation_chart) {
+                    replaceFragment(new ChartMotherFragment());
 //                    dateTextView.setText("Data");
                     return true;
                 }

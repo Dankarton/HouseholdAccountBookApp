@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.householdaccountbook.adapter.InputFragmentPagerAdapter;
+import com.example.householdaccountbook.adapter.FragmentPagerAdapter;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.fragments.edit.BaseEditFragment;
@@ -76,10 +76,14 @@ public class InputMotherFragment extends Fragment {
                 // 新規登録時は削除ボタンは使わない
             }
         });
-        InputFragmentPagerAdapter adapter = new InputFragmentPagerAdapter(this, purchaseEditFragment, incomeEditFragment);
+        FragmentPagerAdapter adapter = new FragmentPagerAdapter(
+                this,
+                new Fragment[]{ purchaseEditFragment, incomeEditFragment },
+                new String[] { "支出", "収入" }
+        );
         viewPager.setAdapter(adapter);
-        String[] tabTitleArray = {"支出", "収入"};
-        new TabLayoutMediator(tabLayout, viewPager, ((tab, position) -> tab.setText(tabTitleArray[position]))).attach();
+        new TabLayoutMediator(tabLayout, viewPager, ((tab, position) -> tab.setText(adapter.getPageTitle(position)))).attach();
+        // 入力中に遷移するのがメンドいのでスワイプでの移動を禁止
         viewPager.setUserInputEnabled(false);
     }
 }

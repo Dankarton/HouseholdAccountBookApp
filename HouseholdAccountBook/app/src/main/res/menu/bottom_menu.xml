@@ -7,15 +7,15 @@
         android:icon="@drawable/edit_24px"
         android:title="@string/input" />
     <item
-        android:id="@+id/navigation_calendar"
-        android:enabled="true"
-        android:icon="@drawable/calendar_month_24px"
-        android:title="@string/calendar" />
-    <item
         android:id="@+id/navigation_data"
         android:enabled="true"
-        android:icon="@drawable/data_usage_24px"
+        android:icon="@drawable/calendar_month_24px"
         android:title="@string/data" />
+    <item
+        android:id="@+id/navigation_chart"
+        android:enabled="true"
+        android:icon="@drawable/data_usage_24px"
+        android:title="@string/chart" />
     <item
         android:id="@+id/navigation_settings"
         android:enabled="true"

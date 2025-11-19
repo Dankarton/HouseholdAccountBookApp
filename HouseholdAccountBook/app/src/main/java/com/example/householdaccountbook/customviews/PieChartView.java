@@ -48,7 +48,7 @@ public class PieChartView extends View {
         this.centerTextPaint.setTextAlign(Paint.Align.CENTER);
         this.centerTextPaint.setTextSize(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP,
-                14,
+                18,
                 getResources().getDisplayMetrics()
         ));
         // 真ん中を塗りつぶしてドーナッツ型にするためのペイント
@@ -73,7 +73,7 @@ public class PieChartView extends View {
         this.labelTextStrokePaint.setAntiAlias(true);
         this.labelTextStrokePaint.setColor(context.getColor(R.color.base_background));
         this.labelTextStrokePaint.setStyle(Paint.Style.STROKE);
-        this.labelTextStrokePaint.setStrokeWidth(3f);
+        this.labelTextStrokePaint.setStrokeWidth(4f);
         this.labelTextStrokePaint.setTextAlign(Paint.Align.CENTER);
         this.labelTextStrokePaint.setTextSize(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP,
