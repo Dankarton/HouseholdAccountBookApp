@@ -20,4 +20,9 @@ public class SettingEditIncomeCategoryActivity extends SettingEditBaseActivity<I
     protected Class<IncomeCategory> getEntityClass() {
         return IncomeCategory.class;
     }
+
+    @Override
+    protected String setTitleText() {
+        return "収入カテゴリ追加・編集";
+    }
 }

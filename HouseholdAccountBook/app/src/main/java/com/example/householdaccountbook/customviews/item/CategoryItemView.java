@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -16,7 +15,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.example.householdaccountbook.R;
 
 import myclasses.BopCategory;
-import myclasses.SelectableItem;
 
 public class CategoryItemView <T extends BopCategory> extends ConstraintLayout implements SelectableItem<T> {
     View colorDot;

@@ -11,6 +11,7 @@ import com.example.householdaccountbook.repository.CacheProvider;
 import java.util.ArrayList;
 
 import myclasses.BOP;
+import myclasses.BopCategory;
 import myclasses.DailyBop;
 import myclasses.Expenses;
 import myclasses.PurchaseCategory;
@@ -146,7 +147,10 @@ public class MyDbManager {
                 return;
             }
             Log.d("MyDbManager.setDataSafely", "Purchase categoryId: " + ((Purchase) data).getCategoryId() + ", paymentMethodId: " + ((Purchase) data).getPaymentMethodId());
-            // Purchaseの子オブジェクトExpensesを生成
+            //
+            // Purchaseの子オブジェクトExpensesを生成する処理
+            //
+            // Dbに登録されたIDデータを新たに含んだPurchase
             Purchase newPurchase = new Purchase(
                     newId,
                     ((Purchase) data).getDate(),
@@ -154,12 +158,12 @@ public class MyDbManager {
                     ((Purchase) data).getMemo(),
                     ((Purchase) data).getCategoryId(),
                     ((Purchase) data).getPaymentMethodId(),
-                    ((Purchase) data).isSameDay()
+                    ((Purchase) data).getPaymentTiming()
             );
+            // キャッシュから支払い方法を取得してExpensesを生成
             ArrayList<Expenses> newExpList = cacheProvider.getPaymentMethodRepository()
                     .getDataById(newPurchase.getPaymentMethodId())
                     .makeExpenses(newPurchase);
-            // Purchaseセット
             // Expensesリストセット
             MyDbContract.TableContract<Expenses> expContract = TableContractRegistry.getContract(Expenses.class);
             for (Expenses exp : newExpList) {
@@ -179,8 +183,7 @@ public class MyDbManager {
                     ((IncomeCategory) data).isDeleted()
             );
             cacheProvider.getIncomeCategoryRepository().updateCache(incomeCategory);
-        }
-        else if (data.getClass() == PurchaseCategory.class) {
+        } else if (data.getClass() == PurchaseCategory.class) {
             PurchaseCategory purchaseCategory = new PurchaseCategory(
                     newId,
                     ((PurchaseCategory) data).getName(),
@@ -189,8 +192,7 @@ public class MyDbManager {
                     ((PurchaseCategory) data).isDeleted()
             );
             cacheProvider.getPurchaseCategoryRepository().updateCache(purchaseCategory);
-        }
-        else if (data.getClass() == PaymentMethod.class) {
+        } else if (data.getClass() == PaymentMethod.class) {
             PaymentMethod paymentMethod = new PaymentMethod(
                     newId,
                     ((PaymentMethod) data).getName(),
@@ -287,11 +289,9 @@ public class MyDbManager {
         // キャッシュの更新
         if (data.getClass() == IncomeCategory.class) {
             cacheProvider.getIncomeCategoryRepository().updateCache((IncomeCategory) data);
-        }
-        else if (data.getClass() == PurchaseCategory.class) {
+        } else if (data.getClass() == PurchaseCategory.class) {
             cacheProvider.getPurchaseCategoryRepository().updateCache((PurchaseCategory) data);
-        }
-        else if (data.getClass() == PaymentMethod.class) {
+        } else if (data.getClass() == PaymentMethod.class) {
             cacheProvider.getPaymentMethodRepository().updateCache((PaymentMethod) data);
         }
     }
@@ -313,28 +313,12 @@ public class MyDbManager {
             deleteData(data);
         } else if (data.getClass() == PurchaseCategory.class) {
             // カテゴリは過去の購入日などが参照する可能性があるため見かけ上の削除
-            PurchaseCategory beforeCategory = (PurchaseCategory) data;
-            upsertDatabase(
-                    new PurchaseCategory(
-                            beforeCategory.getId(),
-                            beforeCategory.getName(),
-                            beforeCategory.getColorCode(),
-                            beforeCategory.getIndex(),
-                            true
-                    )
-            );
+            ((PurchaseCategory) data).setIsDeleted(true);
+            upsertDatabase(data);
         } else if (data.getClass() == IncomeCategory.class) {
             // カテゴリは過去の購入日などが参照する可能性があるため見かけ上の削除
-            IncomeCategory beforeCategory = (IncomeCategory) data;
-            upsertDatabase(
-                    new PurchaseCategory(
-                            beforeCategory.getId(),
-                            beforeCategory.getName(),
-                            beforeCategory.getColorCode(),
-                            beforeCategory.getIndex(),
-                            true
-                    )
-            );
+            ((IncomeCategory) data).setIsDeleted(true);
+            upsertDatabase(data);
         } else if (data.getClass() == PaymentMethod.class) {
 
         } else {
@@ -342,13 +326,14 @@ public class MyDbManager {
         }
         // キャッシュの更新
         if (data.getClass() == IncomeCategory.class) {
+            // 支払い方法はデータ本体ごと消えるので削除
             cacheProvider.getIncomeCategoryRepository().removeCache((IncomeCategory) data);
-        }
-        else if (data.getClass() == PurchaseCategory.class) {
-            cacheProvider.getPurchaseCategoryRepository().removeCache((PurchaseCategory) data);
-        }
-        else if (data.getClass() == PaymentMethod.class) {
-            cacheProvider.getPaymentMethodRepository().removeCache((PaymentMethod) data);
+        } else if (data.getClass() == PurchaseCategory.class) {
+            // カテゴリはデータ本体は削除されないのでキャッシュに行う操作はデータ更新になる
+            cacheProvider.getPurchaseCategoryRepository().updateCache((PurchaseCategory) data);
+        } else if (data.getClass() == PaymentMethod.class) {
+            // カテゴリはデータ本体は削除されないのでキャッシュに行う操作はデータ更新になる
+            cacheProvider.getPaymentMethodRepository().updateCache((PaymentMethod) data);
         }
     }
 
@@ -488,6 +473,22 @@ public class MyDbManager {
     }
 
     /**
+     * アプリのデータ構造を考慮して全てのデータを取得する
+     *
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T extends DatabaseEntity> ArrayList<T> getAllSafely(Class<T> clazz) {
+        if (clazz == PurchaseCategory.class || clazz == IncomeCategory.class) {
+            String selection = MyDbContract.BaseCategoryEntry.COLUMN_IS_DELETED + " = 0";
+            return getData(clazz, selection, null);
+        } else {
+            return getAll(clazz);
+        }
+    }
+
+    /**
      * 全てのデータ取得 (TableContractインターフェース利用)
      *
      * @param clazz データクラス
@@ -506,6 +507,38 @@ public class MyDbManager {
                 null,
                 null,
                 null
+        );
+        if (cursor.moveToFirst()) {
+            do {
+                result.add(contract.fromCursor(cursor));
+            } while (cursor.moveToNext());
+        }
+        ;
+        cursor.close();
+        return result;
+    }
+
+    /**
+     * 詳細な指定を出来るようにしたデータ取得関数
+     *
+     * @param clazz
+     * @param selection
+     * @param orderBy
+     * @param <T>
+     * @return
+     */
+    private static <T extends DatabaseEntity> ArrayList<T> getData(Class<T> clazz, String selection, String orderBy) {
+        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
+        MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
+        ArrayList<T> result = new ArrayList<>();
+        Cursor cursor = db.query(
+                contract.getTableName(),
+                contract.getColumns(),
+                selection,
+                null,
+                null,
+                null,
+                orderBy
         );
         if (cursor.moveToFirst()) {
             do {

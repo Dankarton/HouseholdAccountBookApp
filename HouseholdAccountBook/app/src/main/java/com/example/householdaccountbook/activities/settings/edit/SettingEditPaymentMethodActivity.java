@@ -17,4 +17,8 @@ public class SettingEditPaymentMethodActivity extends SettingEditBaseActivity<Pa
     protected Class<PaymentMethod> getEntityClass() {
         return PaymentMethod.class;
     }
+    @Override
+    protected String setTitleText() {
+        return "支払い方法追加・編集";
+    }
 }

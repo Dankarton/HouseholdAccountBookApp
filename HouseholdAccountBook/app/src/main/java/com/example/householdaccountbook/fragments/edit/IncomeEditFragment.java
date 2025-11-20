@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,24 +14,22 @@ import androidx.annotation.NonNull;
 
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.customviews.ItemListCustomView;
+import com.example.householdaccountbook.customviews.SelectableListCustomView;
 import com.example.householdaccountbook.customviews.item.CategoryItemView;
 import com.example.householdaccountbook.db.MyDbManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import myclasses.BopCategory;
 import myclasses.Income;
 import myclasses.IncomeCategory;
-import myclasses.PurchaseCategory;
 
 public class IncomeEditFragment extends BaseEditFragment<Income> {
     TextView dateTextView;
     Calendar currentDate;
     EditText memoEditText;
     EditText amountEditText;
-    ItemListCustomView<CategoryItemView<IncomeCategory>, IncomeCategory> categoryList;
+    SelectableListCustomView<CategoryItemView<IncomeCategory>, IncomeCategory> categoryList;
 
     public IncomeEditFragment(@NonNull Income data) {
         super(data);
@@ -49,10 +46,12 @@ public class IncomeEditFragment extends BaseEditFragment<Income> {
         this.memoEditText = view.findViewById(R.id.memo_edit_text);
         this.amountEditText = view.findViewById(R.id.amount_edit_text);
         this.categoryList = view.findViewById(R.id.category_list_custom_view);
+
+        this.categoryList.setColumnCount(3);
         //
         // カテゴリーリストにItemViewを挿入する操作
         //
-        ArrayList<IncomeCategory> categoryList = MyDbManager.getAll(IncomeCategory.class);
+        ArrayList<IncomeCategory> categoryList = MyDbManager.getAllSafely(IncomeCategory.class);
         ArrayList<CategoryItemView<IncomeCategory>> categoryItemViews = new ArrayList<>();
         for (IncomeCategory category : categoryList) {
             CategoryItemView<IncomeCategory> tmp = new CategoryItemView<>(context);
@@ -106,8 +105,8 @@ public class IncomeEditFragment extends BaseEditFragment<Income> {
         };
         this.memoEditText.addTextChangedListener(watcher);
         this.amountEditText.addTextChangedListener(watcher);
-        // カテゴリー，支払い方法のアイテムリストの選択アイテムが変更された時のイベント
-        ItemListCustomView.OnItemSelectedListener itemListListener = new ItemListCustomView.OnItemSelectedListener() {
+        // カテゴリーのアイテムリストの選択アイテムが変更された時のイベント
+        SelectableListCustomView.OnItemSelectedListener itemListListener = new SelectableListCustomView.OnItemSelectedListener() {
             @Override
             public <T1> void onItemSelected(T1 itemView) {
                 saveButton.setEnabled(checkInputData());
@@ -117,7 +116,6 @@ public class IncomeEditFragment extends BaseEditFragment<Income> {
         //
         // 初期値設定
         //
-
         this.memoEditText.setText(this.databaseEntityData.getMemo());
         if (this.databaseEntityData.getAmount() == 0) {
             this.amountEditText.setText("");
@@ -152,10 +150,10 @@ public class IncomeEditFragment extends BaseEditFragment<Income> {
     }
 
     private boolean checkInputData() {
-        boolean isMemoValid = !this.memoEditText.getText().toString().isEmpty();
+//        boolean isMemoValid = !this.memoEditText.getText().toString().isEmpty();
         boolean isAmountValid = MyStdlib.canConvertToInteger(this.amountEditText.getText().toString());
         boolean isCategoryValid = this.categoryList.getSelectedItem() != null;
-        return isMemoValid && isAmountValid && isCategoryValid;
+        return isAmountValid && isCategoryValid;
     }
 
     @Override

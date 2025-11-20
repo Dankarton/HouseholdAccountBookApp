@@ -1,4 +1,4 @@
-package myclasses;
+package com.example.householdaccountbook.customviews.item;
 
 public interface SelectableItem<T> {
     void setSelectedState(boolean selected);

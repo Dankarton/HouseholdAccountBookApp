@@ -6,18 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.adapter.DailyRecordAdapter;
 
 import java.util.ArrayList;
 
-import myclasses.SelectableItem;
+import com.example.householdaccountbook.customviews.item.SelectableItem;
 
 /**
  * SelectableItemを継承したCustomView用の選択可能なリスト
@@ -25,30 +21,38 @@ import myclasses.SelectableItem;
  * @param <T1> extends View & SelectableItem
  * @param <T2> SelectableItemが持つobject
  */
-public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extends ConstraintLayout {
+public class SelectableListCustomView<T1 extends View & SelectableItem<T2>, T2> extends ConstraintLayout {
     public interface OnItemSelectedListener {
         <T1> void onItemSelected(T1 itemView);
     }
     private OnItemSelectedListener listener;
     private GridLayout listLinearLayout;
     private T1 selectedItem = null;
-    public ItemListCustomView(Context context) {
+    private int columnCount = 1;
+    public SelectableListCustomView(Context context) {
         super(context);
         init(context);
     }
 
-    public ItemListCustomView(Context context, AttributeSet attrs) {
+    public SelectableListCustomView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public ItemListCustomView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SelectableListCustomView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.custom_view_item_list, this, true);
-        listLinearLayout = findViewById(R.id.item_list_grid_layout);
+        this.listLinearLayout = findViewById(R.id.item_list_grid_layout);
+        this.listLinearLayout.setColumnCount(this.columnCount);
+    }
+    public void setColumnCount(int columnCount) {
+        this.columnCount = columnCount;
+        this.listLinearLayout.setColumnCount(this.columnCount);
+        this.listLinearLayout.requestLayout();
+        this.listLinearLayout.invalidate();
     }
     public void setItem(ArrayList<T1> items) {
 
@@ -77,6 +81,11 @@ public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extend
             listLinearLayout.addView(item);
         }
     }
+
+    /**
+     * アイテムを選択状態にする
+     * @param selectableItem 選択されたアイテム
+     */
     private void selectItem(T1 selectableItem) {
         if (this.selectedItem != null) {
             selectedItem.setSelectedState(false);
@@ -84,6 +93,9 @@ public class ItemListCustomView<T1 extends View & SelectableItem<T2>, T2> extend
         selectableItem.setSelectedState(true);
         this.selectedItem = selectableItem;
     }
+    /**
+     * 選択解除
+     */
     public void deselect() {
         if (this.selectedItem != null) {
             selectedItem.setSelectedState(false);

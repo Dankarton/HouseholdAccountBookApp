@@ -99,8 +99,6 @@ public class DailyRecordCustomView extends ConstraintLayout {
     private void setPaymentAmount(int amount) {
         this.paymentAmountTextView.setText(String.format(Locale.JAPANESE, "￥%,d", amount));
         if (amount > 0) {
-            this.paymentAmountTextView.setTextColor(getContext().getColor(R.color.income_text_color));
-        } else if (amount < 0) {
             this.paymentAmountTextView.setTextColor(getContext().getColor(R.color.expenses_text_color));
         } else {
             this.paymentAmountTextView.setTextColor(getContext().getColor(R.color.idle_text_color));

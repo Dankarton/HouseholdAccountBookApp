@@ -76,6 +76,7 @@
         android:ems="10"
         android:inputType="text"
         android:textSize="16sp"
+        android:hint="メモを追加"
         android:text="@null"
         android:background="@drawable/edit_text_round_background"
         android:padding="8dp"
@@ -113,7 +114,7 @@
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:inputType="numberDecimal"
-        android:gravity="end"
+        android:gravity="start"
         android:textSize="16sp"
         android:padding="8dp"
         android:background="@drawable/edit_text_round_background"
@@ -148,7 +149,7 @@
 
         </LinearLayout>
 
-        <com.example.householdaccountbook.customviews.ItemListCustomView
+        <com.example.householdaccountbook.customviews.SelectableListCustomView
             android:id="@+id/category_list_custom_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -163,7 +164,7 @@
             android:text="支払い方法"
             android:textSize="14sp"
             />
-        <com.example.householdaccountbook.customviews.ItemListCustomView
+        <com.example.householdaccountbook.customviews.SelectableListCustomView
             android:id="@+id/payment_method_list_custom_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"

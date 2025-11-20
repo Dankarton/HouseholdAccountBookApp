@@ -45,7 +45,7 @@ public class InputMotherFragment extends Fragment {
         makeTabLayoutFragment();
     }
     private void makeTabLayoutFragment() {
-        Purchase insPurchaseData = new Purchase(null, Calendar.getInstance(), 0, "", -1, -1, false);
+        Purchase insPurchaseData = new Purchase(null, Calendar.getInstance(), 0, "", -1, -1, Purchase.PaymentTiming.NEXT_MONTH);
         Income insIncomeData = new Income(null, Calendar.getInstance(), 0, "", -1);
 
         PurchaseEditFragment purchaseEditFragment = new PurchaseEditFragment(insPurchaseData);

@@ -17,6 +17,7 @@ public class DailyBop {
     private int _incomeAmount;
     private int _purchaseAmount;    // 購入金額
     private int _paymentAmount;     // 支払金額
+    private int _nextMonthPaymentAmount; // 翌月以降の支払金額
     private final List<Income> _incomeList;
     private final List<Purchase> _purchaseList;
     private final List<Expenses> _paymentList;
@@ -32,21 +33,25 @@ public class DailyBop {
 
         this._purchaseAmount = 0;
         this._paymentAmount = 0;
+        this._nextMonthPaymentAmount = 0;
         this._adapterDataList = new ArrayList<>();
         for (Income income : this._incomeList) {
             this._adapterDataList.add(income);
             this._incomeAmount += Math.abs(income.getAmount());
         }
         for (Purchase purchase : this._purchaseList) {
-            // 購入日と支払日が同じ場合，ダプって表示されるのを防ぐ
-            if (!purchase.isSameDay()) {
+            // 購入日と支払日が同じ場合，ダプって表示されるのを防ぐためリストには追加しない
+            if (purchase.getPaymentTiming() != Purchase.PaymentTiming.SAME_DAY) {
                 this._adapterDataList.add(purchase);
             }
-            this._purchaseAmount -= Math.abs(purchase.getAmount());
+            this._purchaseAmount += Math.abs(purchase.getAmount());
+            if (purchase.getPaymentTiming() == Purchase.PaymentTiming.NEXT_MONTH) {
+                this._nextMonthPaymentAmount += Math.abs(purchase.getAmount());
+            }
         }
         for (Expenses expenses : this._paymentList) {
             this._adapterDataList.add(expenses);
-            this._paymentAmount -= Math.abs(expenses.getAmount());
+            this._paymentAmount += Math.abs(expenses.getAmount());
         }
     }
     public int getYear() { return this.year; }
@@ -57,6 +62,7 @@ public class DailyBop {
     public int getPurchaseAmount() {
         return this._purchaseAmount;
     }
+    public int get_nextMonthPaymentAmount() { return this._nextMonthPaymentAmount; }
     public int getPaymentAmount() { return this._paymentAmount; }
     public int getTotalAmount() { return this._incomeAmount + this._paymentAmount; }
     public List<Income> getIncomeList() { return this._incomeList; }

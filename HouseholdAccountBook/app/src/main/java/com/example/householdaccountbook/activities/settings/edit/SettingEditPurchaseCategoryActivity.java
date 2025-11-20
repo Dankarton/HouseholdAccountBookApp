@@ -19,4 +19,8 @@ public class SettingEditPurchaseCategoryActivity extends SettingEditBaseActivity
     protected Class<PurchaseCategory> getEntityClass() {
         return PurchaseCategory.class;
     }
+    @Override
+    protected String setTitleText() {
+        return "支出カテゴリ追加・編集";
+    }
 }

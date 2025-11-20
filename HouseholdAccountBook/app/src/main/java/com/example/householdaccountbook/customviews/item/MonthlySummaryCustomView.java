@@ -50,7 +50,7 @@ public class MonthlySummaryCustomView extends ConstraintLayout {
         this.nextMonthExpensesAmountText = layout.findViewById(R.id.next_mounth_expenses_amount_text);
     }
 
-    public void set(int incomeAmount, int purchaseAmount, int expensesAmount) {
+    public void set(int incomeAmount, int purchaseAmount, int expensesAmount, int nextMonthPaymentAmount) {
         // 収入金額
         this.incomeAmountText.setText(String.format(Locale.JAPANESE, "￥%,d", incomeAmount));
         setColorByAmount(this.incomeAmountText, incomeAmount);
@@ -74,10 +74,13 @@ public class MonthlySummaryCustomView extends ConstraintLayout {
         this.incomeAndExpensesTotalText.setText(String.format(Locale.JAPANESE, "￥%,d", paymentTotal));
         setColorByAmount(this.incomeAndExpensesTotalText, paymentTotal);
         // 翌月以降の支払い
-        int nextPaymentAmount = expensesAmount - purchaseAmount;
-        this.nextMonthExpensesAmountText.setText(String.format(Locale.JAPANESE, "￥%,d", nextPaymentAmount));
-        setColorByAmount(this.nextMonthExpensesAmountText, nextPaymentAmount);
-
+        this.nextMonthExpensesAmountText.setText(String.format(Locale.JAPANESE, "￥%,d", nextMonthPaymentAmount));
+        if (nextMonthPaymentAmount == 0) {
+            this.nextMonthExpensesAmountText.setTextColor(this.context.getColor(R.color.idle_text_color));
+        }
+        else {
+            this.nextMonthExpensesAmountText.setTextColor(this.context.getColor(R.color.normal_text_color));
+        }
     }
     public void setColorByAmount(TextView view, int amount) {
         if (amount > 0) {

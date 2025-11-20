@@ -19,4 +19,8 @@ public class SettingEditIncomeActivity extends SettingEditBaseActivity<Income, I
     protected Class<Income> getEntityClass() {
         return Income.class;
     }
+    @Override
+    protected String setTitleText() {
+        return "収入データ編集";
+    }
 }

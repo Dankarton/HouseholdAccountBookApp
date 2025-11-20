@@ -114,12 +114,14 @@ public class TransactionDataListFragment extends Fragment {
         int incomeAmount = 0;
         int purchaseAmount = 0;
         int paymentAmount = 0;
+        int nextPaymentAmount = 0;
         for (DailyBop daily : dailyList) {
             incomeAmount += daily.getIncomeAmount();
             purchaseAmount += Math.abs(daily.getPurchaseAmount());
             paymentAmount += Math.abs(daily.getPaymentAmount());
+            nextPaymentAmount += daily.get_nextMonthPaymentAmount();
         }
-        this.summaryView.set(incomeAmount, purchaseAmount, paymentAmount);
+        this.summaryView.set(incomeAmount, purchaseAmount, paymentAmount, nextPaymentAmount);
     }
 
     /**

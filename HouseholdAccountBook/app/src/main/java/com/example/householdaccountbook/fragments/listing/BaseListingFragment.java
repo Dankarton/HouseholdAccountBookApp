@@ -13,7 +13,7 @@ import com.example.householdaccountbook.R;
 import java.util.ArrayList;
 
 import myclasses.DatabaseEntity;
-import myclasses.SelectableItem;
+import com.example.householdaccountbook.customviews.item.SelectableItem;
 
 public class BaseListingFragment <T1 extends View & SelectableItem<T2>, T2 extends DatabaseEntity> extends Fragment {
     public interface OnInputActionListener {

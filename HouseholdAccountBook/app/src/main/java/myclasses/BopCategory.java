@@ -11,7 +11,7 @@ public abstract class BopCategory implements DatabaseEntity, Serializable {
     private final String _name;
     private final int _colorCode;
     private final int _index;
-    private final boolean _isDeleted;
+    private boolean _isDeleted;
 
     public BopCategory(Long id, String name, int colorCode, int index, boolean isDeleted) {
         this._id = id;
@@ -52,4 +52,6 @@ public abstract class BopCategory implements DatabaseEntity, Serializable {
     public ContentValues getContentValues() {
         return getContentValuesWithoutId();
     }
+
+    public void setIsDeleted(boolean isDeleted) { this._isDeleted = isDeleted; }
 }

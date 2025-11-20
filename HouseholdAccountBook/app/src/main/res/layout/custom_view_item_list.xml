@@ -18,6 +18,7 @@
             android:layout_height="wrap_content"
             android:columnCount="3"
             android:orientation="horizontal"
+            android:clipToOutline="true"
             android:padding="4dp">
 
         </GridLayout>

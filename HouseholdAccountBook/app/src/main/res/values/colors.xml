@@ -18,5 +18,6 @@
     <color name="positive_item_color">#34b3f1</color>
     <color name="normal_item_color">#CCCCCC</color>
     <color name="negative_item_color">#EE5B11</color>
+    <color name="ripple_color">#333333</color>
     //#34b3f1
 </resources>

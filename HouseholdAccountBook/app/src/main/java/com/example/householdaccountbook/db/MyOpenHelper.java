@@ -17,7 +17,7 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.PurchaseEntry.COLUMN_MEMO + " TEXT," +
                     MyDbContract.PurchaseEntry.COLUMN_CATEGORY_ID + " INTEGER," +
                     MyDbContract.PurchaseEntry.COLUMN_PAYMENT_METHOD_ID + " INTEGER," +
-                    MyDbContract.PurchaseEntry.COLUMN_IS_SAME_DAY + " INTEGER)";
+                    MyDbContract.PurchaseEntry.COLUMN_PAYMENT_TIMING_CODE + " INTEGER)";
     private static final String EXPENSES_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.ExpensesEntry.TABLE_NAME + " (" +
                     MyDbContract.ExpensesEntry.ID + " INTEGER PRIMARY KEY," +
@@ -41,14 +41,14 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     private static final String PURCHASE_CATEGORY_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.PurchaseCategoryEntry.TABLE_NAME + " (" +
                     MyDbContract.PurchaseCategoryEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    MyDbContract.PurchaseCategoryEntry.COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                    MyDbContract.PurchaseCategoryEntry.COLUMN_NAME + " TEXT NOT NULL," +
                     MyDbContract.PurchaseCategoryEntry.COLUMN_COLOR + " TEXT NOT NULL," +
                     MyDbContract.PurchaseCategoryEntry.COLUMN_INDEX + " INTEGER," +
                     MyDbContract.PurchaseCategoryEntry.COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";
     private static final String INCOME_CATEGORY_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.IncomeCategoryEntry.TABLE_NAME + " (" +
                     MyDbContract.IncomeCategoryEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    MyDbContract.IncomeCategoryEntry.COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                    MyDbContract.IncomeCategoryEntry.COLUMN_NAME + " TEXT NOT NULL," +
                     MyDbContract.IncomeCategoryEntry.COLUMN_COLOR + " TEXT NOT NULL," +
                     MyDbContract.IncomeCategoryEntry.COLUMN_INDEX + " INTEGER," +
                     MyDbContract.IncomeCategoryEntry.COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";

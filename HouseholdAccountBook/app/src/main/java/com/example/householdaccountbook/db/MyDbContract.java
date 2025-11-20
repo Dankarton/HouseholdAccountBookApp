@@ -1,6 +1,7 @@
 package com.example.householdaccountbook.db;
 
 import android.database.Cursor;
+import android.graphics.Color;
 
 import com.example.householdaccountbook.MyStdlib;
 
@@ -79,7 +80,7 @@ public final class MyDbContract {
     public static final class PurchaseEntry extends BaseBopEntry implements TableContract<Purchase> {
         public static final String TABLE_NAME = "PurchaseDb";
         public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id";
-        public static final String COLUMN_IS_SAME_DAY = "is_same_day";
+        public static final String COLUMN_PAYMENT_TIMING_CODE = "payment_timing_code";
         public static final String[] COLUMNS = {
                 PurchaseEntry.ID,
                 PurchaseEntry.COLUMN_YEAR,
@@ -89,7 +90,7 @@ public final class MyDbContract {
                 PurchaseEntry.COLUMN_MEMO,
                 PurchaseEntry.COLUMN_CATEGORY_ID,
                 PurchaseEntry.COLUMN_PAYMENT_METHOD_ID,
-                PurchaseEntry.COLUMN_IS_SAME_DAY
+                PurchaseEntry.COLUMN_PAYMENT_TIMING_CODE
         };
 
         @Override
@@ -116,7 +117,7 @@ public final class MyDbContract {
                     cursor.getString(5),
                     cursor.getInt(6),
                     cursor.getInt(7),
-                    cursor.getInt(8) == 1
+                    Purchase.PaymentTiming.fromCode(cursor.getInt(8))
             );
         }
     }
@@ -212,6 +213,13 @@ public final class MyDbContract {
                     cursor.getInt(4) == 1
             );
         }
+
+        public static IncomeCategory[] PRE_DATA_LIST = {
+                new IncomeCategory(null, "給料", Color.parseColor("#009944"), 0, false),
+                new IncomeCategory(null, "アルバイト", Color.parseColor("#9DC93A"), 1, false),
+                new IncomeCategory(null, "お小遣い", Color.parseColor("#FFF100"), 2, false),
+                new IncomeCategory(null, "ボーナス", Color.parseColor("#ef845c"), 3, false)
+        };
     }
 
     public static final class PurchaseCategoryEntry extends BaseCategoryEntry implements TableContract<PurchaseCategory> {
@@ -242,6 +250,23 @@ public final class MyDbContract {
                     cursor.getInt(4) == 1
             );
         }
+
+        public static PurchaseCategory[] PRE_DATA_LIST = {
+                new PurchaseCategory(null, "食費", Color.parseColor("#f39800"), 0, false),
+                new PurchaseCategory(null, "日用品費", Color.parseColor("#009944"), 1, false),
+                new PurchaseCategory(null, "被服費", Color.parseColor("#0068B7"), 2, false),
+                new PurchaseCategory(null, "美容費", Color.parseColor("#E5004F"), 3, false),
+                new PurchaseCategory(null, "交際費", Color.parseColor("#FFF100"), 4, false),
+                new PurchaseCategory(null, "趣味費", Color.parseColor("#36318F"), 5, false),
+                new PurchaseCategory(null, "交通費", Color.parseColor("#a44a0a"), 6, false),
+                new PurchaseCategory(null, "教育費", Color.parseColor("#e60012"), 7, false),
+                new PurchaseCategory(null, "医療費", Color.parseColor("#B6D56A"), 8, false),
+                new PurchaseCategory(null, "住居費", Color.parseColor("#EB6EA5"), 9, false),
+                new PurchaseCategory(null, "水道光熱費", Color.parseColor("#00B9EF"), 10, false),
+                new PurchaseCategory(null, "通信費", Color.parseColor("#d1d1d1"), 11, false),
+                new PurchaseCategory(null, "保険料", Color.parseColor("#e8a06c"), 12, false),
+                new PurchaseCategory(null, "雑費", Color.parseColor("#5a5a5a"), 13, false),
+        };
     }
 
     public static final class PaymentMethodEntry implements TableContract<PaymentMethod> {

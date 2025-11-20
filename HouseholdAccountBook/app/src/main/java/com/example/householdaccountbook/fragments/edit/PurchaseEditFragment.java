@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,14 +15,13 @@ import androidx.annotation.NonNull;
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.customviews.item.CategoryItemView;
-import com.example.householdaccountbook.customviews.ItemListCustomView;
+import com.example.householdaccountbook.customviews.SelectableListCustomView;
 import com.example.householdaccountbook.customviews.item.PaymentMethodItemView;
 import com.example.householdaccountbook.db.MyDbManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import myclasses.BopCategory;
 import myclasses.Purchase;
 import myclasses.PurchaseCategory;
 import myclasses.PaymentMethod;
@@ -33,8 +31,8 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
     Calendar currentDate;
     EditText memoEditText;
     EditText amountEditText;
-    ItemListCustomView<CategoryItemView<PurchaseCategory>, PurchaseCategory> categoryList;
-    ItemListCustomView<PaymentMethodItemView, PaymentMethod> paymentMethodList;
+    SelectableListCustomView<CategoryItemView<PurchaseCategory>, PurchaseCategory> categoryList;
+    SelectableListCustomView<PaymentMethodItemView, PaymentMethod> paymentMethodList;
 
     public PurchaseEditFragment(@NonNull Purchase data) {
         super(data);
@@ -53,10 +51,13 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
         this.amountEditText = view.findViewById(R.id.amount_edit_text);
         this.categoryList = view.findViewById(R.id.category_list_custom_view);
         this.paymentMethodList = view.findViewById(R.id.payment_method_list_custom_view);
+
+        this.categoryList.setColumnCount(3);
+        this.paymentMethodList.setColumnCount(2);
         //
         // カテゴリーリストにItemViewを挿入する操作
         //
-        ArrayList<PurchaseCategory> categoryList = MyDbManager.getAll(PurchaseCategory.class);
+        ArrayList<PurchaseCategory> categoryList = MyDbManager.getAllSafely(PurchaseCategory.class);
         ArrayList<CategoryItemView<PurchaseCategory>> categoryItemViews = new ArrayList<>();
         for (PurchaseCategory category : categoryList) {
             CategoryItemView<PurchaseCategory> tmp = new CategoryItemView<>(context);
@@ -71,7 +72,7 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
         //
         // 支払い方法リストにItemViewを挿入する操作
         //
-        ArrayList<PaymentMethod> paymentMethodList = MyDbManager.getAll(PaymentMethod.class);
+        ArrayList<PaymentMethod> paymentMethodList = MyDbManager.getAllSafely(PaymentMethod.class);
         ArrayList<PaymentMethodItemView> methodItemView = new ArrayList<>();
         for (PaymentMethod method : paymentMethodList) {
             PaymentMethodItemView tmp = new PaymentMethodItemView(context);
@@ -126,7 +127,7 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
         this.memoEditText.addTextChangedListener(watcher);
         this.amountEditText.addTextChangedListener(watcher);
         // カテゴリー，支払い方法のアイテムリストの選択アイテムが変更された時のイベント
-        ItemListCustomView.OnItemSelectedListener itemListListener = new ItemListCustomView.OnItemSelectedListener() {
+        SelectableListCustomView.OnItemSelectedListener itemListListener = new SelectableListCustomView.OnItemSelectedListener() {
             @Override
             public <T1> void onItemSelected(T1 itemView) {
                 saveButton.setEnabled(checkInputData());
@@ -161,7 +162,8 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
     protected void onSaveClicked() {
         int amount = Integer.parseInt(this.amountEditText.getText().toString());
         PaymentMethod method = this.paymentMethodList.getSelectedItem().getData();
-        boolean isSameDay = MyStdlib.isSameDay(this.currentDate, method.getPaymentDate(this.currentDate));
+        // TODO
+        Purchase.PaymentTiming timing = Purchase.PaymentTiming.calcPaymentTiming(this.currentDate, method.getPaymentDate(this.currentDate));
         Purchase newPurchase = new Purchase(
                 this.databaseEntityData.getId(),
                 this.currentDate,
@@ -169,17 +171,17 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
                 this.memoEditText.getText().toString(),
                 this.categoryList.getSelectedItem().getData().getId(),
                 method.getId(),
-                isSameDay
+                timing
         );
         if (this.listener != null) this.listener.onSaveButtonClicked(newPurchase);
     }
 
     private boolean checkInputData() {
-        boolean isMemoValid = !this.memoEditText.getText().toString().isEmpty();
+//        boolean isMemoValid = !this.memoEditText.getText().toString().isEmpty();
         boolean isAmountValid = MyStdlib.canConvertToInteger(this.amountEditText.getText().toString());
         boolean isCategoryValid = this.categoryList.getSelectedItem() != null;
         boolean isMethodValid = this.paymentMethodList.getSelectedItem() != null;
-        return isMemoValid && isAmountValid && isCategoryValid && isMethodValid;
+        return isAmountValid && isCategoryValid && isMethodValid;
     }
 
     @Override

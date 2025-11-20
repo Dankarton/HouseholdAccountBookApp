@@ -3,6 +3,7 @@ package com.example.householdaccountbook.activities.settings;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,14 +16,18 @@ import com.example.householdaccountbook.R;
  *
  */
 public abstract class SettingMotherActivity extends AppCompatActivity {
+    private TextView titleText;
     protected abstract Fragment init();
+    protected abstract String setTitleText();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_setting);
+        this.titleText = findViewById(R.id.title_text);
         setBackButtonEvent(findViewById(R.id.back_button));
         Fragment fragment = init();
+        this.titleText.setText(setTitleText());
         if (fragment != null) {
             replaceFragment(fragment);
         }

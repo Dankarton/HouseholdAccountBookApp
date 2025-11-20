@@ -22,7 +22,7 @@ public class SettingSelectIncomeCategoryActivity extends SettingMotherActivity {
     @Override
     protected Fragment init() {
         ArrayList<CategoryItemView<IncomeCategory>> itemViewList = new ArrayList<>();
-        for (IncomeCategory data : MyDbManager.getAll(IncomeCategory.class)) {
+        for (IncomeCategory data : MyDbManager.getAllSafely(IncomeCategory.class)) {
             CategoryItemView<IncomeCategory> item = new CategoryItemView<>(this);
             item.setData(data);
             item.setSelectedState(false);
@@ -50,9 +50,18 @@ public class SettingSelectIncomeCategoryActivity extends SettingMotherActivity {
         });
         return fragment;
     }
+    @Override
+    protected String setTitleText() {
+        return "収入カテゴリ";
+    }
     private void startEditActivity(IncomeCategory data) {
         Intent intent = new Intent(this, SettingEditIncomeCategoryActivity.class);
         intent.putExtra("IncomeCategory", data);
         startActivity(intent);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.reloadFragment(init());
     }
 }

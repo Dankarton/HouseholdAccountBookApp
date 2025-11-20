@@ -2,13 +2,13 @@
     <string name="app_name">HouseholdAccountBook</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="input">input</string>
-    <string name="data">data</string>
-    <string name="chart">chart</string>
+    <string name="input">入力</string>
+    <string name="data">データ</string>
+    <string name="chart">グラフ</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="settings">settings</string>
+    <string name="settings">設定</string>
     <string name="date_in_japanese">日付</string>
     <string name="memo_in_japanese">メモ</string>
     <string name="expenses_in_japanese">支出</string>

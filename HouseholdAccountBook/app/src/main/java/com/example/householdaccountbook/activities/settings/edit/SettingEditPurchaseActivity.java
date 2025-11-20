@@ -19,4 +19,8 @@ public class SettingEditPurchaseActivity extends SettingEditBaseActivity<Purchas
     protected Class<Purchase> getEntityClass() {
         return Purchase.class;
     }
+    @Override
+    protected String setTitleText() {
+        return "支出データ編集";
+    }
 }

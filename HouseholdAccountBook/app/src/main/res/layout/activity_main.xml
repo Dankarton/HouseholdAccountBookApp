@@ -19,14 +19,15 @@
             android:id="@+id/toolbar_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/edit_24px"
+            android:background="@drawable/edit_24px"
             android:layout_gravity="start|center_vertical"/>
         <TextView
+            android:id="@+id/toolbar_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:layout_marginStart="16dp"
-            android:text="家計簿"
+            android:paddingStart="16dp"
+            android:text="入力"
             android:textSize="18sp"
             android:layout_gravity="start"/>
     </com.google.android.material.appbar.MaterialToolbar>

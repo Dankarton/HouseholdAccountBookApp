@@ -19,7 +19,7 @@ public class SettingSelectPurchaseCategoryActivity extends SettingMotherActivity
     protected Fragment init() {
         // カテゴリーリスト作成
         ArrayList<CategoryItemView<PurchaseCategory>> categoryViewList = new ArrayList<>();
-        for (PurchaseCategory data : MyDbManager.getAll(PurchaseCategory.class)) {
+        for (PurchaseCategory data : MyDbManager.getAllSafely(PurchaseCategory.class)) {
             CategoryItemView<PurchaseCategory> item = new CategoryItemView<>(this);
             item.setData(data);
             item.setSelectedState(false);
@@ -47,9 +47,20 @@ public class SettingSelectPurchaseCategoryActivity extends SettingMotherActivity
         return fragment;
     }
 
+    @Override
+    protected String setTitleText() {
+        return "支出カテゴリ";
+    }
+
     private void startEditActivity(PurchaseCategory data) {
         Intent intent = new Intent(this, SettingEditPurchaseCategoryActivity.class);
         intent.putExtra("PurchaseCategory", data);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.reloadFragment(init());
     }
 }

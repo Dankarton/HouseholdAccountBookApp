@@ -69,7 +69,7 @@
     <TextView
         android:id="@+id/memo_text_view"
         android:layout_width="0dp"
-        android:layout_height="20dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:ellipsize="end"
         android:gravity="center_vertical"

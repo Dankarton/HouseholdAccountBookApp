@@ -30,7 +30,7 @@ public class SettingSelectPaymentMethodActivity extends SettingMotherActivity {
     @NonNull
     private BaseListingFragment<PaymentMethodItemView, PaymentMethod> getPaymentMethodListingFragment() {
         ArrayList<PaymentMethodItemView> methodViewList = new ArrayList<>();
-        for (PaymentMethod data : MyDbManager.getAll(PaymentMethod.class)) {
+        for (PaymentMethod data : MyDbManager.getAllSafely(PaymentMethod.class)) {
             PaymentMethodItemView item = new PaymentMethodItemView(this);
             item.setData(data);
             item.setSelectedState(false);
@@ -67,8 +67,12 @@ public class SettingSelectPaymentMethodActivity extends SettingMotherActivity {
         startActivity(intent);
     }
     @Override
+    protected String setTitleText() {
+        return "支払い方法";
+    }
+    @Override
     protected void onResume() {
         super.onResume();
-        this.reloadFragment(getPaymentMethodListingFragment());
+        this.reloadFragment(init());
     }
 }

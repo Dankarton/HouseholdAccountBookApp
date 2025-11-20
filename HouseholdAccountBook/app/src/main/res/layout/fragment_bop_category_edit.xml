@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/text1"
         android:layout_width="wrap_content"
@@ -12,10 +12,10 @@
         android:layout_marginStart="16dp"
         android:text="名称"
         android:textSize="22sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/name_edit_text"
         app:layout_constraintBottom_toBottomOf="@+id/name_edit_text"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/name_edit_text" />
+
     <EditText
         android:id="@+id/name_edit_text"
         android:layout_width="0dp"
@@ -26,14 +26,20 @@
         android:text="カテゴリ"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/text1"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.example.householdaccountbook.customviews.ColorPaletteCustomView
+    <com.example.householdaccountbook.customviews.SelectableListCustomView
         android:id="@+id/color_palette"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name_edit_text" />
+    <!--    <com.example.householdaccountbook.customviews.ColorPaletteCustomView-->
+    <!--        android:id="@+id/color_palette"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/name_edit_text" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

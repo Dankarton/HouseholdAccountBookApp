@@ -79,7 +79,7 @@ public class PaymentMethodListingFragment extends Fragment {
     public void reload() {
         this.itemList.removeAllViews();
         Context context = requireContext();
-        ArrayList<PaymentMethod> methods = MyDbManager.getAll(PaymentMethod.class);
+        ArrayList<PaymentMethod> methods = MyDbManager.getAllSafely(PaymentMethod.class);
         this.paymentMethodDataNum = methods.size();
         for (PaymentMethod method : methods) {
             this.itemList.addView(createPaymentMethodItemView(context, method));
