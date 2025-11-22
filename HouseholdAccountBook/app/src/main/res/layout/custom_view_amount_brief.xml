@@ -231,6 +231,7 @@
                 android:text="残高" />
 
             <TextView
+                android:id="@+id/balance_amount_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"

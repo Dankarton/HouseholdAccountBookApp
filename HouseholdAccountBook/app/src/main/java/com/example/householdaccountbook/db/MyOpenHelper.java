@@ -62,6 +62,11 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.PaymentMethodEntry.COLUMN_PAYMENT_SETTING_NUM + " INTEGER," +
                     MyDbContract.PaymentMethodEntry.COLUMN_INDEX + " INTEGER," +
                     MyDbContract.PaymentMethodEntry.COLUMN_IS_DEFAULT + " INTEGER NOT NULL DEFAULT 0)";
+    private static final String BALANCE_DELTA_SQL_CREATE_ENTRIES =
+            "CREATE TABLE " + MyDbContract.MonthlyBalanceDeltaEntry.TABLE_NAME + " (" +
+                    MyDbContract.MonthlyBalanceDeltaEntry.ID + " INTEGER PRIMARY KEY," +
+                    MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " INTEGER," +
+                    MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_DELTA_AMOUNT + " INTEGER)";
     private static final String INCOME_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + MyDbContract.IncomeEntry.TABLE_NAME;
     private static final String EXPENSES_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + MyDbContract.ExpensesEntry.TABLE_NAME;
     private static final String PAYMENT_METHOD_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + MyDbContract.PaymentMethodEntry.TABLE_NAME;
@@ -78,6 +83,7 @@ public class MyOpenHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(PURCHASE_CATEGORY_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(INCOME_CATEGORY_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(PAYMENT_METHOD_SQL_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL(BALANCE_DELTA_SQL_CREATE_ENTRIES);
         // 支払いテーブルに
 
     }

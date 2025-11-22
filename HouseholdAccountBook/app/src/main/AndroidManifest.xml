@@ -40,6 +40,9 @@
             android:name=".activities.settings.listing.SettingSelectPurchaseCategoryActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.settings.SettingBalanceEditActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.settings.SettingMotherActivity"
             android:exported="false" />
         <activity

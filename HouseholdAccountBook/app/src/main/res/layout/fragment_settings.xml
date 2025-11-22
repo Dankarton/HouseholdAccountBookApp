@@ -15,6 +15,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
                 android:id="@+id/expenses_list_linearlayout"
                 android:layout_width="match_parent"
@@ -25,35 +26,40 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-            <com.example.householdaccountbook.customviews.SettingMenuButtonView
-                android:id="@+id/expenses_category_edit_menu_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:titleText="支出カテゴリ追加・編集"
-                />
-            <com.example.householdaccountbook.customviews.SettingMenuButtonView
-                android:id="@+id/income_category_edit_menu_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:titleText="収入カテゴリ追加・編集"/>
-            <com.example.householdaccountbook.customviews.SettingMenuButtonView
-                android:id="@+id/payment_method_edit_menu_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:titleText="支払方法追加・編集"/>
+                <com.example.householdaccountbook.customviews.SettingMenuButtonView
+                    android:id="@+id/balance_edit_menu_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:titleText="残高設定" />
+
+                <com.example.householdaccountbook.customviews.SettingMenuButtonView
+                    android:id="@+id/expenses_category_edit_menu_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:titleText="支出カテゴリ追加・編集" />
+
+                <com.example.householdaccountbook.customviews.SettingMenuButtonView
+                    android:id="@+id/income_category_edit_menu_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:titleText="収入カテゴリ追加・編集" />
+
+                <com.example.householdaccountbook.customviews.SettingMenuButtonView
+                    android:id="@+id/payment_method_edit_menu_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:titleText="支払方法追加・編集" />
             </LinearLayout>
         </ScrollView>
 
 
-
         <!--        <TextView-->
-<!--            android:id="@+id/textView2"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="this is setting fragment."-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
-
+        <!--            android:id="@+id/textView2"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="this is setting fragment."-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent" />-->
 
 
         <!--        <com.example.householdaccountbook.MyButtonsView-->

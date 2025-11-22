@@ -5,8 +5,11 @@ import android.graphics.Color;
 
 import com.example.householdaccountbook.MyStdlib;
 
+import java.util.Calendar;
+
 import myclasses.DatabaseEntity;
 import myclasses.Expenses;
+import myclasses.MonthlyBalanceDelta;
 import myclasses.PurchaseCategory;
 import myclasses.Income;
 import myclasses.IncomeCategory;
@@ -326,6 +329,41 @@ public final class MyDbContract {
                     cursor.getInt(5),
                     cursor.getInt(6),
                     cursor.getInt(7) == 1
+            );
+        }
+    }
+    public static final class MonthlyBalanceDeltaEntry implements TableContract<MonthlyBalanceDelta> {
+        public static final String TABLE_NAME = "MonthlyBalanceDeltaDb";
+        public static final String ID = "_id";
+        public static final String COLUMN_YEAR_MONTH_KEY = "year_month_key";
+        public static final String COLUMN_DELTA_AMOUNT = "delta_amount";
+
+        public static final String[] COLUMNS = {
+                MonthlyBalanceDeltaEntry.ID,
+                MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY,
+                MonthlyBalanceDeltaEntry.COLUMN_DELTA_AMOUNT
+        };
+        @Override
+        public String getTableName() {
+            return MonthlyBalanceDeltaEntry.TABLE_NAME;
+        }
+
+        @Override
+        public String getIdColumnName() {
+            return MonthlyBalanceDeltaEntry.ID;
+        }
+
+        @Override
+        public String[] getColumns() {
+            return MonthlyBalanceDeltaEntry.COLUMNS;
+        }
+
+        @Override
+        public MonthlyBalanceDelta fromCursor(Cursor cursor) {
+            return new MonthlyBalanceDelta(
+                    cursor.getLong(0),
+                    cursor.getInt(1),
+                    cursor.getInt(2)
             );
         }
     }

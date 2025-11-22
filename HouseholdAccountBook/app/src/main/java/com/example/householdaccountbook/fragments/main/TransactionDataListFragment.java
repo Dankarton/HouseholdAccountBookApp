@@ -1,8 +1,10 @@
 package com.example.householdaccountbook.fragments.main;
 
-import android.annotation.SuppressLint;
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.householdaccountbook.activities.settings.edit.SettingEditIncomeActivity;
-import com.example.householdaccountbook.activities.settings.edit.SettingEditIncomeCategoryActivity;
 import com.example.householdaccountbook.activities.settings.edit.SettingEditPurchaseActivity;
 import com.example.householdaccountbook.customviews.item.MonthlySummaryCustomView;
 import com.example.householdaccountbook.db.MyDbManager;
@@ -32,6 +33,7 @@ import myclasses.BOP;
 import myclasses.DailyBop;
 import myclasses.Expenses;
 import myclasses.Income;
+import myclasses.MonthlyBalanceDelta;
 import myclasses.Purchase;
 
 public class TransactionDataListFragment extends Fragment {
@@ -86,8 +88,18 @@ public class TransactionDataListFragment extends Fragment {
      */
     private void updateFragment() {
         List<DailyBop> dataList = loadCurrentMonthDailyData(this.currentDate);
+        MonthlyBalanceDelta balanceDelta = MyDbManager.getLatestMonthlyDeltaUpTo(this.currentDate);
+        int deltaAmount = 0;
+        int initialBalanceAmount = 0;
+        if (balanceDelta != null) {
+            deltaAmount = balanceDelta.getDeltaAmount();
+        }
+        SharedPreferences preferences = this.context.getSharedPreferences("app_prefs", MODE_PRIVATE);
+        if (preferences.contains("initial_balance")) {
+            initialBalanceAmount = preferences.getInt("initial_balance", 0);
+        }
         updateMonthTextView();
-        updateAmountTextViews(dataList);
+        updateAmountTextViews(dataList, deltaAmount + initialBalanceAmount);
         updateDailyListData(dataList);
     }
 
@@ -109,7 +121,7 @@ public class TransactionDataListFragment extends Fragment {
      * ひと月の全体結果を更新
      * @param dailyList
      */
-    private void updateAmountTextViews(List<DailyBop> dailyList) {
+    private void updateAmountTextViews(List<DailyBop> dailyList, int balanceAmount) {
 
         int incomeAmount = 0;
         int purchaseAmount = 0;
@@ -121,7 +133,7 @@ public class TransactionDataListFragment extends Fragment {
             paymentAmount += Math.abs(daily.getPaymentAmount());
             nextPaymentAmount += daily.get_nextMonthPaymentAmount();
         }
-        this.summaryView.set(incomeAmount, purchaseAmount, paymentAmount, nextPaymentAmount);
+        this.summaryView.set(incomeAmount, purchaseAmount, paymentAmount, nextPaymentAmount, balanceAmount);
     }
 
     /**

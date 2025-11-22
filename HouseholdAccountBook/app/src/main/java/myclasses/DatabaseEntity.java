@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * データベース操作時に使うインターフェース
- * --※※※--新しく実装したクラスがあったらDatabaseEntityKindに必ず登録するように--※※※--
+ * --※※※--新しく実装したクラスがあったらTableContractRegistryに必ず登録するように--※※※--
  */
 public interface DatabaseEntity extends Serializable {
     /**

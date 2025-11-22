@@ -6,11 +6,16 @@ import java.util.Map;
 import myclasses.DatabaseEntity;
 import myclasses.Expenses;
 import myclasses.Income;
+import myclasses.MonthlyBalanceDelta;
 import myclasses.Purchase;
 import myclasses.PurchaseCategory;
 import myclasses.IncomeCategory;
 import myclasses.PaymentMethod;
 
+/**
+ * DatabaseEntityを実装したクラスとEntryの対応表管理クラス
+ * ここに登録することでクラスの型を意識せずにMyDbManagerでデータベースの操作を行えるようになる．
+ */
 public final class TableContractRegistry {
     private static final Map<Class<? extends DatabaseEntity>, MyDbContract.TableContract<? extends DatabaseEntity>> KINDS_MAP = new HashMap<>();
 
@@ -21,6 +26,7 @@ public final class TableContractRegistry {
         KINDS_MAP.put(PurchaseCategory.class, new MyDbContract.PurchaseCategoryEntry());
         KINDS_MAP.put(IncomeCategory.class, new MyDbContract.IncomeCategoryEntry());
         KINDS_MAP.put(PaymentMethod.class, new MyDbContract.PaymentMethodEntry());
+        KINDS_MAP.put(MonthlyBalanceDelta.class, new MyDbContract.MonthlyBalanceDeltaEntry());
     }
 
     @SuppressWarnings("unchecked")
@@ -30,7 +36,7 @@ public final class TableContractRegistry {
              return value;
          }
          else {
-             throw new IllegalArgumentException("登録されていないクラスです: " + clazz.getSimpleName());
+             throw new IllegalArgumentException("DatabaseEntityを実装したクラスはTableContractRegistryに登録してください．未登録クラス: " + clazz.getSimpleName());
          }
     }
 }

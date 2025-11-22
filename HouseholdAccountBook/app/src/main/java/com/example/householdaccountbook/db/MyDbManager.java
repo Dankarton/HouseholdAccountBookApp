@@ -9,11 +9,12 @@ import android.util.Log;
 import com.example.householdaccountbook.repository.CacheProvider;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import myclasses.BOP;
-import myclasses.BopCategory;
 import myclasses.DailyBop;
 import myclasses.Expenses;
+import myclasses.MonthlyBalanceDelta;
 import myclasses.PurchaseCategory;
 import myclasses.Income;
 import myclasses.IncomeCategory;
@@ -132,6 +133,12 @@ public class MyDbManager {
         return setData(db, TableContractRegistry.getContract(data.getClass()), data);
     }
 
+    /**
+     * アプリ内のデータ構造を考慮して新規データを追加する関数
+     *
+     * @param data データ
+     * @param <T>  DatabaseEntity
+     */
     public static <T extends DatabaseEntity> void setDataSafely(T data) {
         if (data.getId() != null) {
             throw new IllegalArgumentException(
@@ -165,15 +172,23 @@ public class MyDbManager {
                     .getDataById(newPurchase.getPaymentMethodId())
                     .makeExpenses(newPurchase);
             // Expensesリストセット
-            MyDbContract.TableContract<Expenses> expContract = TableContractRegistry.getContract(Expenses.class);
             for (Expenses exp : newExpList) {
-                setData(db, expContract, exp);
+                setDataSafely(exp);
             }
+        } else if (data.getClass() == Income.class) {
+            setData(data);
+            updateMonthlyBalanceDelta(((Income) data).getDate(), Math.abs(((Income) data).getAmount()));
+        } else if (data.getClass() == Expenses.class) {
+            Log.d("setDataSafely", "amount: " + ((Expenses) data).getAmount());
+            setData(data);
+            updateMonthlyBalanceDelta(((Expenses) data).getDate(), -1 * Math.abs(((Expenses) data).getAmount()));
         } else {
             // それ以外のデータはそのままセット
             newId = setData(db, TableContractRegistry.getContract(data.getClass()), data);
         }
+        //
         // 新しく追加されたデータをキャッシュに登録
+        //
         if (data.getClass() == IncomeCategory.class) {
             IncomeCategory incomeCategory = new IncomeCategory(
                     newId,
@@ -280,8 +295,32 @@ public class MyDbManager {
             upsertDatabase(data);
             // Expenses挿入
             for (Expenses exp : newExpList) {
-                setData(exp);
+                setDataSafely(exp);
             }
+        } else if (data.getClass() == Income.class) {
+            // 過去の収入データを取得
+            Income beforeIncome = getDataById(Income.class, data.getId());
+            int deltaAmount;
+            if (beforeIncome != null) {
+                // 過去のデータとの変更差分
+                deltaAmount = ((Income) data).getAmount() - beforeIncome.getAmount();
+            } else {
+                // 過去データが無かった時
+                deltaAmount = ((Income) data).getAmount();
+            }
+            upsertDatabase(data);
+            updateMonthlyBalanceDelta(((Income) data).getDate(), deltaAmount);
+
+        } else if (data.getClass() == Expenses.class) {
+            Expenses beforeExpenses = getDataById(Expenses.class, data.getId());
+            int deltaAmount;
+            if (beforeExpenses != null) {
+                deltaAmount = Math.abs(((Expenses) data).getAmount()) - Math.abs(beforeExpenses.getAmount());
+            } else {
+                deltaAmount = ((Expenses) data).getAmount();
+            }
+            upsertDatabase(data);
+            updateMonthlyBalanceDelta(((Expenses) data).getDate(), -1 * deltaAmount);
         } else {
             // それ以外のデータはただ更新するだけ．
             upsertDatabase(data);
@@ -305,11 +344,16 @@ public class MyDbManager {
     public static <T extends DatabaseEntity> void deleteDataSafely(T data) {
         if (data.getClass() == Purchase.class) {
             // 購入日に付随する全ての支払日も削除
-            deleteData(
-                    MyDbContract.ExpensesEntry.TABLE_NAME,
+            ArrayList<Expenses> deleteExpDataList = getData(
+                    Expenses.class,
                     MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID + " = ?",
-                    new String[]{String.valueOf(data.getId())}
+                    new String[]{String.valueOf(data.getId())},
+                    null, null, null, null
             );
+            // 支払の削除は残高差分が変動するため，deleteDataSafelyを使ってデータの依存関係を維持して削除
+            for (Expenses exp : deleteExpDataList) {
+                deleteDataSafely(exp);
+            }
             deleteData(data);
         } else if (data.getClass() == PurchaseCategory.class) {
             // カテゴリは過去の購入日などが参照する可能性があるため見かけ上の削除
@@ -319,8 +363,14 @@ public class MyDbManager {
             // カテゴリは過去の購入日などが参照する可能性があるため見かけ上の削除
             ((IncomeCategory) data).setIsDeleted(true);
             upsertDatabase(data);
-        } else if (data.getClass() == PaymentMethod.class) {
-
+        } else if (data.getClass() == Income.class) {
+            // 収入のデータが削除されると，残高差分はマイナス側に移動させる．
+            updateMonthlyBalanceDelta(((Income) data).getDate(), -1 * Math.abs(((Income) data).getAmount()));
+            deleteData(data);
+        } else if (data.getClass() == Expenses.class) {
+            // 支出のデータが削除されると，残高差分はプラス側に移動させる．
+            updateMonthlyBalanceDelta(((Expenses) data).getDate(), Math.abs(((Expenses) data).getAmount()));
+            deleteData(data);
         } else {
             deleteData(data);
         }
@@ -368,22 +418,6 @@ public class MyDbManager {
         );
         if (deletedRowNum == 0) {
             Log.d("MyDbManager.deleteData", "削除されたデータが0件です．Class: " + classKind.getClass().getSimpleName() + "，id: " + id);
-        }
-    }
-
-    /**
-     * データ削除(低レベル操作，依存関係などを無視して指定されたデータを削除する)
-     * アプリケーションのデータ構造を維持したまま削除するなら deleteDataSafely を使うように!
-     *
-     * @param tableName   テーブル名
-     * @param whereClause where句
-     * @param whereArgs   args
-     */
-    private static void deleteData(String tableName, String whereClause, String[] whereArgs) {
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
-        int deletedRowNum = db.delete(tableName, whereClause, whereArgs);
-        if (deletedRowNum == 0) {
-            Log.d("MyDbManager.deleteData", "削除されたデータが0件です．TableName: " + tableName);
         }
     }
 
@@ -461,6 +495,29 @@ public class MyDbManager {
         return bopDataList;
     }
 
+    /**
+     * 過去からdateまでの中で最も新しい残高差分のデータを返す関数．
+     * @param date
+     * @return
+     */
+    public static MonthlyBalanceDelta getLatestMonthlyDeltaUpTo(Calendar date) {
+        ArrayList<MonthlyBalanceDelta> dataList = getData(
+                MonthlyBalanceDelta.class,
+                MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " <= ?",
+                new String[]{String.valueOf(MonthlyBalanceDelta.makeYearMonthKey(date))},
+                null,
+                null,
+                MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " DESC",
+                "1"
+                );
+        if (dataList.isEmpty()) {
+            return null;
+        }
+        else {
+            return dataList.get(0);
+        }
+    }
+
     public static DailyBop getDailyData(int year, int month, int day) {
         ArrayList<Purchase> purchaseList = MyDbManager.getBopDataByDate(Purchase.class, year, month, day);
         ArrayList<Expenses> expensesList = MyDbManager.getBopDataByDate(Expenses.class, year, month, day);
@@ -475,14 +532,15 @@ public class MyDbManager {
     /**
      * アプリのデータ構造を考慮して全てのデータを取得する
      *
-     * @param clazz
-     * @param <T>
-     * @return
+     * @param clazz クラス
+     * @param <T>   DatabaseEntityを実装したクラス
+     * @return リスト
      */
     public static <T extends DatabaseEntity> ArrayList<T> getAllSafely(Class<T> clazz) {
         if (clazz == PurchaseCategory.class || clazz == IncomeCategory.class) {
-            String selection = MyDbContract.BaseCategoryEntry.COLUMN_IS_DELETED + " = 0";
-            return getData(clazz, selection, null);
+            // 論理削除されてないデータだけを取得
+            String selection = MyDbContract.BaseCategoryEntry.COLUMN_IS_DELETED + " = ?";
+            return getData(clazz, selection, new String[]{"0"}, null, null, null, null);
         } else {
             return getAll(clazz);
         }
@@ -521,13 +579,15 @@ public class MyDbManager {
     /**
      * 詳細な指定を出来るようにしたデータ取得関数
      *
-     * @param clazz
-     * @param selection
-     * @param orderBy
-     * @param <T>
-     * @return
+     * @param clazz     クラス
+     * @param selection 　SELECT句
+     * @param orderBy   ORDER句
+     * @param <T>       DatabaseEntity
+     * @return ArrayList
      */
-    private static <T extends DatabaseEntity> ArrayList<T> getData(Class<T> clazz, String selection, String orderBy) {
+    private static <T extends DatabaseEntity> ArrayList<T> getData(Class<T> clazz, String selection,
+                                                                   String[] selectionArgs, String groupBy,
+                                                                   String having, String orderBy, String limit) {
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
         MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
         ArrayList<T> result = new ArrayList<>();
@@ -535,10 +595,11 @@ public class MyDbManager {
                 contract.getTableName(),
                 contract.getColumns(),
                 selection,
-                null,
-                null,
-                null,
-                orderBy
+                selectionArgs,
+                groupBy,
+                having,
+                orderBy,
+                limit
         );
         if (cursor.moveToFirst()) {
             do {
@@ -548,6 +609,64 @@ public class MyDbManager {
         ;
         cursor.close();
         return result;
+    }
+
+    /**
+     * 残高差分データを更新する関数
+     *
+     * @param date   収支の変更があった日付
+     * @param amount 変更分の金額
+     */
+    private static void updateMonthlyBalanceDelta(Calendar date, int amount) {
+        int targetYearMonthKey = MonthlyBalanceDelta.makeYearMonthKey(date);
+        // 対象年月のデータを取得
+        String targetSelection = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " = ?";
+        ArrayList<MonthlyBalanceDelta> targetDateData = getData(
+                MonthlyBalanceDelta.class,
+                targetSelection,
+                new String[]{String.valueOf(targetYearMonthKey)},
+                null, null, null, null
+        );
+        if (targetDateData.isEmpty()) {
+            // 対象年月にデータが無いときは新規作成．
+            //
+            // 前の月の残高差分のデータを基に対象年月の残高差分を算出
+            //
+            // 対象年月よりも前の年月で最も近いデータを一つだけ取得
+            String beforeMonthSelection = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " < ?";
+            String orderBy = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " DESC";
+            ArrayList<MonthlyBalanceDelta> beforeDateData = getData(
+                    MonthlyBalanceDelta.class,
+                    beforeMonthSelection,
+                    new String[]{String.valueOf(targetYearMonthKey)},
+                    null, null, orderBy, "1"
+            );
+            if (beforeDateData.isEmpty()) {
+                // 対象年月よりも前にデータが無いときは，対象年月がrootとする．
+                setData(new MonthlyBalanceDelta(null, targetYearMonthKey, amount));
+            } else {
+                // 前の月の月からamount分変更することで対象年月の残高差分になる
+                int deltaAmount = beforeDateData.get(0).getDeltaAmount() + amount;
+                setData(new MonthlyBalanceDelta(null, targetYearMonthKey, deltaAmount));
+            }
+        } else {
+            // 対象年月に残高差分のデータがすでにあった場合は，amount分金額を増減させる．
+            MonthlyBalanceDelta buf = targetDateData.get(0);
+            buf.setDeltaAmount(buf.getDeltaAmount() + amount);
+            upsertDatabase(buf);
+        }
+        // 残高差分の金額が変わると後の月も影響を受けるので，対象年月よりも後の年月を全て取得
+        String afterSelection = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " > ?";
+        ArrayList<MonthlyBalanceDelta> afterDateData = getData(
+                MonthlyBalanceDelta.class,
+                afterSelection,
+                new String[]{String.valueOf(targetYearMonthKey)},
+                null, null, null, null
+        );
+        for (MonthlyBalanceDelta data : afterDateData) {
+            data.setDeltaAmount(data.getDeltaAmount() + amount);
+            upsertDatabase(data);
+        }
     }
 
     /**

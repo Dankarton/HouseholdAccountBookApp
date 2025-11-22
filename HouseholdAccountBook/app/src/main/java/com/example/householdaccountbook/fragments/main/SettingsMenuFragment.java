@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.householdaccountbook.R;
+import com.example.householdaccountbook.activities.settings.SettingBalanceEditActivity;
 import com.example.householdaccountbook.activities.settings.edit.SettingEditPurchaseCategoryActivity;
 import com.example.householdaccountbook.activities.settings.listing.SettingSelectIncomeCategoryActivity;
 import com.example.householdaccountbook.activities.settings.listing.SettingSelectPaymentMethodActivity;
@@ -35,10 +36,15 @@ public class SettingsMenuFragment extends Fragment implements SettingMenuButtonV
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false);
     }
+
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         linearLayout = view.findViewById(R.id.expenses_list_linearlayout);
+
+        SettingMenuButtonView balanceEdit = view.findViewById(R.id.balance_edit_menu_button);
+        balanceEdit.setDestination(SettingMenuFragmentKind.BALANCE_EDIT);
+        balanceEdit.setListener(this);
 
         SettingMenuButtonView paymentEdit = view.findViewById(R.id.payment_method_edit_menu_button);
         paymentEdit.setDestination(SettingMenuFragmentKind.PAYMENT_METHOD_EDIT);
@@ -52,10 +58,14 @@ public class SettingsMenuFragment extends Fragment implements SettingMenuButtonV
         incCategoryEdit.setDestination(SettingMenuFragmentKind.INCOME_CATEGORY_EDIT);
         incCategoryEdit.setListener(this);
     }
+
     @Override
     public void onClicked(SettingMenuFragmentKind type) {
         Context context = requireContext();
         switch (type) {
+            case BALANCE_EDIT:
+                context.startActivity(new Intent(context, SettingBalanceEditActivity.class));
+                break;
             case PAYMENT_METHOD_EDIT:
                 context.startActivity(new Intent(context, SettingSelectPaymentMethodActivity.class));
                 break;
