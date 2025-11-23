@@ -14,6 +14,8 @@ import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
 import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 import com.example.householdaccountbook.myclasses.dbentity.Purchase;
 
+import java.util.ArrayList;
+
 public final class MyDbContract {
     public interface TableContract<T extends DatabaseEntity> {
         String getTableName();
@@ -294,12 +296,22 @@ public final class MyDbContract {
 
         public static final PaymentMethod DEFAULT_PAYMENT_METHOD = new PaymentMethod(
                 (long) 0,
-                "通常支払い",
+                "現金",
                 PaymentMethod.ClosingRule.None.getCode(), null,
                 PaymentMethod.PaymentRule.SameDay.getCode(), null,
                 0,
                 true
         );
+        public static final PaymentMethod[] PRE_DATA_LIST = {
+                new PaymentMethod(
+                        null,
+                        "クレジットカード",
+                        PaymentMethod.ClosingRule.EndOfMonth.getCode(), null,
+                        PaymentMethod.PaymentRule.FixedDay.getCode(), 27,
+                        1,
+                        false
+                )
+        };
 
         @Override
         public String getTableName() {
@@ -330,6 +342,7 @@ public final class MyDbContract {
             );
         }
     }
+
     public static final class MonthlyBalanceDeltaEntry implements TableContract<MonthlyBalanceDelta> {
         public static final String TABLE_NAME = "MonthlyBalanceDeltaDb";
         public static final String ID = "_id";
@@ -341,6 +354,7 @@ public final class MyDbContract {
                 MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY,
                 MonthlyBalanceDeltaEntry.COLUMN_DELTA_AMOUNT
         };
+
         @Override
         public String getTableName() {
             return MonthlyBalanceDeltaEntry.TABLE_NAME;

@@ -50,6 +50,9 @@ public class HouseHoldApp extends Application implements CacheProvider {
             MyDbManager.setDataSafely(ic);
         }
         MyDbManager.upsertDatabaseSafely(MyDbContract.PaymentMethodEntry.DEFAULT_PAYMENT_METHOD);
+        for (PaymentMethod pm : MyDbContract.PaymentMethodEntry.PRE_DATA_LIST) {
+            MyDbManager.setDataSafely(pm);
+        }
     }
     public DatabaseEntityRepository<IncomeCategory> getIncomeCategoryRepository() {
         return this.incomeCategoryRepository;

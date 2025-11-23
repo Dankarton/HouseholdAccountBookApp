@@ -14,6 +14,7 @@ import com.example.householdaccountbook.customviews.item.PurchaseItemView;
 
 import java.util.List;
 
+import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.myclasses.dbentity.BOP;
 import com.example.householdaccountbook.myclasses.dbentity.Expenses;
 import com.example.householdaccountbook.myclasses.dbentity.Income;
@@ -57,22 +58,21 @@ public class DailyRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         BOP data = this.bopDataList.get(position);
-        HouseHoldApp app = (HouseHoldApp) this.context.getApplicationContext();
         if (data instanceof Income) {
-            IncomeCategory category = app.getIncomeCategoryRepository().getDataById(data.getCategoryId());
+            IncomeCategory category = MyDbManager.getDataById(IncomeCategory.class, data.getCategoryId());
             IncomeViewHolder incomeHolder = (IncomeViewHolder) holder;
             incomeHolder.bind(category.getColorCode(), category.getName(), data.getMemo(), data.getAmount());
             incomeHolder.setListener(this.listener, (Income) data);
         } else if (data instanceof Purchase) {
-            PurchaseCategory category = app.getPurchaseCategoryRepository().getDataById(data.getCategoryId());
-            PaymentMethod method = app.getPaymentMethodRepository().getDataById(((Purchase) data).getPaymentMethodId());
+            PurchaseCategory category = MyDbManager.getDataById(PurchaseCategory.class, data.getCategoryId());
+            PaymentMethod method = MyDbManager.getDataById(PaymentMethod.class, ((Purchase) data).getPaymentMethodId());
             PurchaseViewHolder purchaseHolder = (PurchaseViewHolder) holder;
             purchaseHolder.bind(category.getColorCode(), category.getName(), data.getMemo(), method.getName(), data.getAmount());
             purchaseHolder.setListener(this.listener, (Purchase) data);
 
         } else if (data instanceof Expenses) {
-            PurchaseCategory category = app.getPurchaseCategoryRepository().getDataById(data.getCategoryId());
-            PaymentMethod method = app.getPaymentMethodRepository().getDataById(((Expenses) data).getPaymentMethodId());
+            PurchaseCategory category = MyDbManager.getDataById(PurchaseCategory.class, data.getCategoryId());
+            PaymentMethod method = MyDbManager.getDataById(PaymentMethod.class, ((Expenses) data).getPaymentMethodId());
             ExpensesViewHolder expensesHolder = (ExpensesViewHolder) holder;
             expensesHolder.bind(category.getColorCode(), category.getName(), data.getMemo(), method.getName(), data.getAmount());
             expensesHolder.setListener(this.listener, (Expenses) data);

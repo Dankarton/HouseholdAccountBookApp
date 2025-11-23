@@ -61,8 +61,11 @@ public class MonthlySummaryCustomView extends ConstraintLayout {
         if (purchaseAmount > 0) {
             this.purchaseAmountText.setTextColor(this.context.getColor(R.color.purchase_text_color));
         }
-        else {
+        else if (purchaseAmount < 0) {
             this.purchaseAmountText.setTextColor(this.context.getColor(R.color.normal_text_color));
+        }
+        else {
+            this.purchaseAmountText.setTextColor(this.context.getColor(R.color.idle_text_color));
         }
         // 支払金額
         this.expensesAmountText.setText(String.format(Locale.JAPANESE, "￥%,d", expensesAmount));
@@ -83,7 +86,14 @@ public class MonthlySummaryCustomView extends ConstraintLayout {
         else {
             this.nextMonthExpensesAmountText.setTextColor(this.context.getColor(R.color.normal_text_color));
         }
+        // 残高
         this.balanceAmountText.setText(String.format(Locale.JAPANESE, "￥%,d", balanceAmount));
+        if (balanceAmount > 0) {
+            this.balanceAmountText.setTextColor(this.context.getColor(R.color.normal_text_color));
+        }
+        else {
+            this.balanceAmountText.setTextColor(this.context.getColor(R.color.idle_text_color));
+        }
     }
     public void setColorByAmount(TextView view, int amount) {
         if (amount > 0) {
@@ -93,7 +103,7 @@ public class MonthlySummaryCustomView extends ConstraintLayout {
             view.setTextColor(this.context.getColor(R.color.expenses_text_color));
         }
         else {
-            view.setTextColor(this.context.getColor(R.color.normal_text_color));
+            view.setTextColor(this.context.getColor(R.color.idle_text_color));
         }
     }
 }
