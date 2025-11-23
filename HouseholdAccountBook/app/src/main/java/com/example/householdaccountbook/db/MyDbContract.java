@@ -5,16 +5,14 @@ import android.graphics.Color;
 
 import com.example.householdaccountbook.MyStdlib;
 
-import java.util.Calendar;
-
-import myclasses.DatabaseEntity;
-import myclasses.Expenses;
-import myclasses.MonthlyBalanceDelta;
-import myclasses.PurchaseCategory;
-import myclasses.Income;
-import myclasses.IncomeCategory;
-import myclasses.PaymentMethod;
-import myclasses.Purchase;
+import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
+import com.example.householdaccountbook.myclasses.dbentity.Expenses;
+import com.example.householdaccountbook.myclasses.dbentity.MonthlyBalanceDelta;
+import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.myclasses.dbentity.Income;
+import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.Purchase;
 
 public final class MyDbContract {
     public interface TableContract<T extends DatabaseEntity> {

@@ -1,4 +1,4 @@
-package strategy.closingstrategy;
+package com.example.householdaccountbook.strategy.closingstrategy;
 
 import java.util.Calendar;
 

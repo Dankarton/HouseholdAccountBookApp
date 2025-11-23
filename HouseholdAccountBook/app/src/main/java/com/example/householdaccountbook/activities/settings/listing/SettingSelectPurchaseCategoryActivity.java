@@ -12,7 +12,7 @@ import com.example.householdaccountbook.fragments.listing.BaseListingFragment;
 
 import java.util.ArrayList;
 
-import myclasses.PurchaseCategory;
+import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
 
 public class SettingSelectPurchaseCategoryActivity extends SettingMotherActivity {
     @Override

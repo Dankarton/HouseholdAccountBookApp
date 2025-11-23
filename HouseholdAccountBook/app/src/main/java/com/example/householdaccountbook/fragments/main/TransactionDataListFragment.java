@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,12 +28,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import myclasses.BOP;
-import myclasses.DailyBop;
-import myclasses.Expenses;
-import myclasses.Income;
-import myclasses.MonthlyBalanceDelta;
-import myclasses.Purchase;
+import com.example.householdaccountbook.myclasses.dbentity.BOP;
+import com.example.householdaccountbook.myclasses.DailyBop;
+import com.example.householdaccountbook.myclasses.dbentity.Expenses;
+import com.example.householdaccountbook.myclasses.dbentity.Income;
+import com.example.householdaccountbook.myclasses.dbentity.MonthlyBalanceDelta;
+import com.example.householdaccountbook.myclasses.dbentity.Purchase;
 
 public class TransactionDataListFragment extends Fragment {
     private Context context;

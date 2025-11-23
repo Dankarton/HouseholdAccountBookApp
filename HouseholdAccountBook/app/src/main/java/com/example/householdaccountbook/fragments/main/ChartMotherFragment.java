@@ -15,11 +15,11 @@ import com.example.householdaccountbook.fragments.chart.BaseChartFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import myclasses.Expenses;
-import myclasses.Income;
-import myclasses.IncomeCategory;
-import myclasses.Purchase;
-import myclasses.PurchaseCategory;
+import com.example.householdaccountbook.myclasses.dbentity.Expenses;
+import com.example.householdaccountbook.myclasses.dbentity.Income;
+import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.myclasses.dbentity.Purchase;
+import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
 
 public class ChartMotherFragment extends Fragment {
     ViewPager2 viewPager;

@@ -3,14 +3,14 @@ package com.example.householdaccountbook.db;
 import java.util.HashMap;
 import java.util.Map;
 
-import myclasses.DatabaseEntity;
-import myclasses.Expenses;
-import myclasses.Income;
-import myclasses.MonthlyBalanceDelta;
-import myclasses.Purchase;
-import myclasses.PurchaseCategory;
-import myclasses.IncomeCategory;
-import myclasses.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
+import com.example.householdaccountbook.myclasses.dbentity.Expenses;
+import com.example.householdaccountbook.myclasses.dbentity.Income;
+import com.example.householdaccountbook.myclasses.dbentity.MonthlyBalanceDelta;
+import com.example.householdaccountbook.myclasses.dbentity.Purchase;
+import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 
 /**
  * DatabaseEntityを実装したクラスとEntryの対応表管理クラス

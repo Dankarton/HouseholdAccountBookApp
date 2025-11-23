@@ -1,8 +1,6 @@
 package com.example.householdaccountbook.adapter;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -10,20 +8,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.householdaccountbook.HouseHoldApp;
-import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.customviews.item.ExpensesItemView;
 import com.example.householdaccountbook.customviews.item.IncomeItemView;
 import com.example.householdaccountbook.customviews.item.PurchaseItemView;
 
 import java.util.List;
 
-import myclasses.BOP;
-import myclasses.Expenses;
-import myclasses.Income;
-import myclasses.IncomeCategory;
-import myclasses.PaymentMethod;
-import myclasses.Purchase;
-import myclasses.PurchaseCategory;
+import com.example.householdaccountbook.myclasses.dbentity.BOP;
+import com.example.householdaccountbook.myclasses.dbentity.Expenses;
+import com.example.householdaccountbook.myclasses.dbentity.Income;
+import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.Purchase;
+import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
 
 public class DailyRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private enum ViewType {

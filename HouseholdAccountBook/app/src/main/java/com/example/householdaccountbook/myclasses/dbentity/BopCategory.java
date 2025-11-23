@@ -1,20 +1,17 @@
-package myclasses;
+package com.example.householdaccountbook.myclasses.dbentity;
 
 import android.content.ContentValues;
 
 import com.example.householdaccountbook.db.MyDbContract;
 
-import java.io.Serializable;
-
-public abstract class BopCategory implements DatabaseEntity, Serializable {
-    private final Long _id;
+public abstract class BopCategory extends DatabaseEntity {
     private final String _name;
     private final int _colorCode;
     private final int _index;
     private boolean _isDeleted;
 
     public BopCategory(Long id, String name, int colorCode, int index, boolean isDeleted) {
-        this._id = id;
+        super(id);
         this._name = name;
         this._colorCode = colorCode;
         this._index = index;
@@ -34,10 +31,6 @@ public abstract class BopCategory implements DatabaseEntity, Serializable {
         values.put(MyDbContract.BaseCategoryEntry.COLUMN_IS_DELETED, isDeletedInteger);
         return values;
     }
-    @Override
-    public Long getId() {
-        return this._id;
-    }
     public String getName() {
         return this._name;
     }
@@ -48,10 +41,21 @@ public abstract class BopCategory implements DatabaseEntity, Serializable {
         return this._index;
     }
     public boolean isDeleted() { return this._isDeleted; }
+
     @Override
     public ContentValues getContentValues() {
         return getContentValuesWithoutId();
     }
 
     public void setIsDeleted(boolean isDeleted) { this._isDeleted = isDeleted; }
+
+    @Override
+    public DeleteType getDeleteType() {
+        return DeleteType.LOGICAL;
+    }
+
+    @Override
+    public void onBeforeDelete() {
+        this._isDeleted = true;
+    }
 }

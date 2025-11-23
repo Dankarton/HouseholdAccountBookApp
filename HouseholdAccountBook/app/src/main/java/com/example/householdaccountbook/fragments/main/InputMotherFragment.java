@@ -21,8 +21,8 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.Calendar;
 
-import myclasses.Income;
-import myclasses.Purchase;
+import com.example.householdaccountbook.myclasses.dbentity.Income;
+import com.example.householdaccountbook.myclasses.dbentity.Purchase;
 
 public class InputMotherFragment extends Fragment {
     ViewPager2 viewPager;

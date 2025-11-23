@@ -11,18 +11,16 @@ import androidx.annotation.Nullable;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.customviews.ColorPaletteCustomView;
 import com.example.householdaccountbook.customviews.SelectableListCustomView;
 import com.example.householdaccountbook.customviews.item.ColorItemView;
 
 import java.util.ArrayList;
 
-import myclasses.IncomeCategory;
+import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
 
 public class IncomeCategoryEditFragment extends BaseEditFragment<IncomeCategory> {
     private EditText nameEdit;

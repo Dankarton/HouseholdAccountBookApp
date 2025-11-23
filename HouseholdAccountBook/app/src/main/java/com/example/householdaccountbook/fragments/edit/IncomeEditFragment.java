@@ -21,8 +21,8 @@ import com.example.householdaccountbook.db.MyDbManager;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import myclasses.Income;
-import myclasses.IncomeCategory;
+import com.example.householdaccountbook.myclasses.dbentity.Income;
+import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
 
 public class IncomeEditFragment extends BaseEditFragment<Income> {
     TextView dateTextView;

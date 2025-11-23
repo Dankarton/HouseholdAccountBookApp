@@ -2,7 +2,7 @@ package com.example.householdaccountbook.activities.settings.edit;
 
 import com.example.householdaccountbook.fragments.edit.PaymentMethodEditFragment;
 
-import myclasses.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 
 public class SettingEditPaymentMethodActivity extends SettingEditBaseActivity<PaymentMethod, PaymentMethodEditFragment> {
     @Override

@@ -10,11 +10,10 @@ import com.example.householdaccountbook.activities.settings.edit.SettingEditPaym
 import com.example.householdaccountbook.customviews.item.PaymentMethodItemView;
 import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.fragments.listing.BaseListingFragment;
-import com.example.householdaccountbook.fragments.listing.PaymentMethodListingFragment;
 
 import java.util.ArrayList;
 
-import myclasses.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 
 public class SettingSelectPaymentMethodActivity extends SettingMotherActivity {
     @Override

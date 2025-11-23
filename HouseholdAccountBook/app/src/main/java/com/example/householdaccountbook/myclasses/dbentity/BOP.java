@@ -1,4 +1,4 @@
-package myclasses;
+package com.example.householdaccountbook.myclasses.dbentity;
 
 import java.util.Calendar;
 
@@ -6,23 +6,18 @@ import java.util.Calendar;
  BalanceOfPaymentsクラス
  支出と収支の親クラス
  */
-public abstract class BOP implements DatabaseEntity {
-    private final Long id;   // データベース用ID
+public abstract class BOP extends DatabaseEntity {
     private final Calendar date;
     private final int amount;
     private final String memo;
     private final long categoryId;
 
     BOP(Long id, Calendar date, int amount, String memo, long categoryId) {
-        this.id = id;
+        super(id);
         this.date = date;
         this.amount = amount;
         this.memo = memo;
         this.categoryId = categoryId;
-    }
-    @Override
-    public Long getId() {
-        return id;
     }
 
     public Calendar getDate() {

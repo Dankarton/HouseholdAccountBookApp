@@ -1,4 +1,4 @@
-package strategy.paymentstrategy;
+package com.example.householdaccountbook.strategy.paymentstrategy;
 
 import java.util.Calendar;
 

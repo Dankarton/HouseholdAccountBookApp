@@ -12,7 +12,7 @@ import android.widget.FrameLayout;
 
 import com.example.householdaccountbook.R;
 
-import myclasses.DatabaseEntity;
+import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
 
 public abstract class BaseEditFragment<T extends DatabaseEntity> extends Fragment {
     public interface OnInputActionListener<T extends DatabaseEntity> {

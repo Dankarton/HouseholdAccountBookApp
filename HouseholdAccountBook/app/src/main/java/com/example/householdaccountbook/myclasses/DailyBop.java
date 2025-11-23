@@ -1,7 +1,9 @@
-package myclasses;
+package com.example.householdaccountbook.myclasses;
 
-import android.os.Debug;
-import android.util.Log;
+import com.example.householdaccountbook.myclasses.dbentity.BOP;
+import com.example.householdaccountbook.myclasses.dbentity.Expenses;
+import com.example.householdaccountbook.myclasses.dbentity.Income;
+import com.example.householdaccountbook.myclasses.dbentity.Purchase;
 
 import java.util.ArrayList;
 import java.util.List;

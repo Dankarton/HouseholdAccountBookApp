@@ -1,4 +1,4 @@
-package myclasses;
+package com.example.householdaccountbook.myclasses.dbentity;
 
 import android.content.ContentValues;
 
@@ -6,20 +6,15 @@ import com.example.householdaccountbook.db.MyDbContract;
 
 import java.util.Calendar;
 
-public class MonthlyBalanceDelta implements DatabaseEntity {
+public class MonthlyBalanceDelta extends DatabaseEntity {
 
-    Long id;
     int yearMonthKey;
     int deltaAmount;
 
     public MonthlyBalanceDelta(Long id, int yearMonthKey, int deltaAmount) {
-        this.id = id;
+        super(id);
         this.yearMonthKey = yearMonthKey;
         this.deltaAmount = deltaAmount;
-    }
-    @Override
-    public Long getId() {
-        return this.id;
     }
 
     @Override

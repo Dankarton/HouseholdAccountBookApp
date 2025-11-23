@@ -22,9 +22,9 @@ import com.example.householdaccountbook.db.MyDbManager;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import myclasses.Purchase;
-import myclasses.PurchaseCategory;
-import myclasses.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.Purchase;
+import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 
 public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
     TextView dateTextView;

@@ -1,7 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -10,8 +8,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.householdaccountbook"
-//        minSdk = 27
-        minSdk = 33
+        minSdk = 27
+//        minSdk = 33
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"

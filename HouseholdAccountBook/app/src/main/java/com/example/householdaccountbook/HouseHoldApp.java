@@ -2,16 +2,15 @@ package com.example.householdaccountbook;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.example.householdaccountbook.db.MyDbContract;
 import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.repository.CacheProvider;
 import com.example.householdaccountbook.repository.DatabaseEntityRepository;
 
-import myclasses.IncomeCategory;
-import myclasses.PaymentMethod;
-import myclasses.PurchaseCategory;
+import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
 
 public class HouseHoldApp extends Application implements CacheProvider {
     private DatabaseEntityRepository<IncomeCategory> incomeCategoryRepository;
@@ -42,7 +41,6 @@ public class HouseHoldApp extends Application implements CacheProvider {
             insertPreData();
             preferences.edit().putBoolean("is_first_launch", false).apply();
         }
-        MyDbManager.ensureDefaultPayments();
     }
     private void insertPreData() {
         for (PurchaseCategory pc : MyDbContract.PurchaseCategoryEntry.PRE_DATA_LIST) {

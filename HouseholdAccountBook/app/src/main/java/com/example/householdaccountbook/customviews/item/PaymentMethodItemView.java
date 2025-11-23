@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
 
-import myclasses.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 
 public class PaymentMethodItemView extends ConstraintLayout implements SelectableItem<PaymentMethod> {
     boolean isSelected;

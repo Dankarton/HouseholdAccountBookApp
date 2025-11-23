@@ -1,9 +1,9 @@
-package myclasses;
+package com.example.householdaccountbook.myclasses.dbentity;
 
 import android.content.ContentValues;
 
 import com.example.householdaccountbook.db.MyDbContract;
-import com.example.householdaccountbook.MyStdlib;
+import com.example.householdaccountbook.db.MyDbManager;
 
 import java.util.Calendar;
 
@@ -16,9 +16,11 @@ public class Expenses extends BOP {
         this.paymentMethodId = paymentMethodId;
         this.purchaseId = purchaseId;
     }
+
     public long getPaymentMethodId() {
         return this.paymentMethodId;
     }
+
     public long getPurchaseId() {
         return this.purchaseId;
     }
@@ -35,5 +37,21 @@ public class Expenses extends BOP {
         values.put(MyDbContract.ExpensesEntry.COLUMN_PAYMENT_METHOD_ID, this.paymentMethodId);
         values.put(MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID, this.purchaseId);
         return values;
+    }
+
+    @Override
+    public void onAfterInsert(long newId) {
+        super.onAfterInsert(newId);
+        MyDbManager.updateMonthlyBalanceDelta(this.getDate(), -1 * Math.abs(this.getAmount()));
+    }
+
+    @Override
+    public void onAfterUpdate(DatabaseEntity before) {
+        MyDbManager.updateMonthlyBalanceDelta(((Expenses) before).getDate(), Math.abs(((Expenses) before).getAmount()));
+        MyDbManager.updateMonthlyBalanceDelta(this.getDate(), -1 * Math.abs(this.getAmount()));
+    }
+    @Override
+    public void onAfterDelete() {
+        MyDbManager.updateMonthlyBalanceDelta(this.getDate(), Math.abs(this.getAmount()));
     }
 }

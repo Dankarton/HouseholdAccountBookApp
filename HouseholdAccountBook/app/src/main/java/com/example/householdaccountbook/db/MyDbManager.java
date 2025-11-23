@@ -3,24 +3,27 @@ package com.example.householdaccountbook.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.householdaccountbook.repository.CacheProvider;
+import com.example.householdaccountbook.repository.DatabaseEntityRepository;
+import com.example.householdaccountbook.repository.DbEntityRepositoryRegistry;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import myclasses.BOP;
-import myclasses.DailyBop;
-import myclasses.Expenses;
-import myclasses.MonthlyBalanceDelta;
-import myclasses.PurchaseCategory;
-import myclasses.Income;
-import myclasses.IncomeCategory;
-import myclasses.PaymentMethod;
-import myclasses.DatabaseEntity;
-import myclasses.Purchase;
+import com.example.householdaccountbook.myclasses.dbentity.BOP;
+import com.example.householdaccountbook.myclasses.DailyBop;
+import com.example.householdaccountbook.myclasses.dbentity.Expenses;
+import com.example.householdaccountbook.myclasses.dbentity.MonthlyBalanceDelta;
+import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.myclasses.dbentity.Income;
+import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
+import com.example.householdaccountbook.myclasses.dbentity.Purchase;
 
 public class MyDbManager {
     // フィールド
@@ -108,7 +111,7 @@ public class MyDbManager {
         for (int i = 1; i < newlyList.size(); i++) {
             // 先頭はデフォルトの支払が来るためindexを+1してる
             newlyList.get(i).setIndex(i + 1);
-            upsertDatabase(db, newlyList.get(i));
+            upsertDatabase(newlyList.get(i));
         }
     }
 
@@ -125,7 +128,13 @@ public class MyDbManager {
                     "データにIDが設定されています．既存データを謝って登録している可能性があります: id = " + data.getId()
             );
         }
-        return db.insert(contract.getTableName(), null, data.getContentValues());
+        long newId = db.insert(contract.getTableName(), null, data.getContentValues());
+        if (newId == -1) {
+            throw new SQLException("データの挿入に失敗しました");
+        }
+        else {
+            return newId;
+        }
     }
 
     private static <T extends DatabaseEntity> long setData(T data) {
@@ -145,80 +154,13 @@ public class MyDbManager {
                     "データにIDが設定されています．既存データを謝って登録している可能性があります: id = " + data.getId()
             );
         }
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
-        Long newId = null;
-        if (data.getClass() == Purchase.class) {
-            newId = setData(db, TableContractRegistry.getContract(data.getClass()), data);
-            if (newId == -1) {
-                Log.d("MyDbManager.setData", "データの挿入に失敗しました．");
-                return;
-            }
-            Log.d("MyDbManager.setDataSafely", "Purchase categoryId: " + ((Purchase) data).getCategoryId() + ", paymentMethodId: " + ((Purchase) data).getPaymentMethodId());
-            //
-            // Purchaseの子オブジェクトExpensesを生成する処理
-            //
-            // Dbに登録されたIDデータを新たに含んだPurchase
-            Purchase newPurchase = new Purchase(
-                    newId,
-                    ((Purchase) data).getDate(),
-                    ((Purchase) data).getAmount(),
-                    ((Purchase) data).getMemo(),
-                    ((Purchase) data).getCategoryId(),
-                    ((Purchase) data).getPaymentMethodId(),
-                    ((Purchase) data).getPaymentTiming()
-            );
-            // キャッシュから支払い方法を取得してExpensesを生成
-            ArrayList<Expenses> newExpList = cacheProvider.getPaymentMethodRepository()
-                    .getDataById(newPurchase.getPaymentMethodId())
-                    .makeExpenses(newPurchase);
-            // Expensesリストセット
-            for (Expenses exp : newExpList) {
-                setDataSafely(exp);
-            }
-        } else if (data.getClass() == Income.class) {
-            setData(data);
-            updateMonthlyBalanceDelta(((Income) data).getDate(), Math.abs(((Income) data).getAmount()));
-        } else if (data.getClass() == Expenses.class) {
-            Log.d("setDataSafely", "amount: " + ((Expenses) data).getAmount());
-            setData(data);
-            updateMonthlyBalanceDelta(((Expenses) data).getDate(), -1 * Math.abs(((Expenses) data).getAmount()));
+        data.onBeforeInsert();
+        long newId = setData(data);
+        if (newId == -1) {
+            Log.d("MyDbManager.setDataSafely", "挿入失敗");
         } else {
-            // それ以外のデータはそのままセット
-            newId = setData(db, TableContractRegistry.getContract(data.getClass()), data);
-        }
-        //
-        // 新しく追加されたデータをキャッシュに登録
-        //
-        if (data.getClass() == IncomeCategory.class) {
-            IncomeCategory incomeCategory = new IncomeCategory(
-                    newId,
-                    ((IncomeCategory) data).getName(),
-                    ((IncomeCategory) data).getColorCode(),
-                    ((IncomeCategory) data).getIndex(),
-                    ((IncomeCategory) data).isDeleted()
-            );
-            cacheProvider.getIncomeCategoryRepository().updateCache(incomeCategory);
-        } else if (data.getClass() == PurchaseCategory.class) {
-            PurchaseCategory purchaseCategory = new PurchaseCategory(
-                    newId,
-                    ((PurchaseCategory) data).getName(),
-                    ((PurchaseCategory) data).getColorCode(),
-                    ((PurchaseCategory) data).getIndex(),
-                    ((PurchaseCategory) data).isDeleted()
-            );
-            cacheProvider.getPurchaseCategoryRepository().updateCache(purchaseCategory);
-        } else if (data.getClass() == PaymentMethod.class) {
-            PaymentMethod paymentMethod = new PaymentMethod(
-                    newId,
-                    ((PaymentMethod) data).getName(),
-                    ((PaymentMethod) data).getClosingRule().getCode(),
-                    ((PaymentMethod) data).getClosingSettingNum(),
-                    ((PaymentMethod) data).getPaymentRule().getCode(),
-                    ((PaymentMethod) data).getPaymentSettingNum(),
-                    ((PaymentMethod) data).getIndex(),
-                    ((PaymentMethod) data).isDefault()
-            );
-            cacheProvider.getPaymentMethodRepository().updateCache(paymentMethod);
+            Log.d("MyDbManager.setDataSafely", "挿入成功 id: " + newId);
+            data.onAfterInsert(newId);
         }
     }
 
@@ -228,36 +170,32 @@ public class MyDbManager {
      * @param db   SQLiteDatabase
      * @param data データクラス
      * @param <T>  DatabaseEntityを継承したデータクラス
-     * @return boolean 成功するとtrue，失敗するとfalse
      */
-    private static <T extends DatabaseEntity> boolean upsertDatabase(SQLiteDatabase db, T data) {
+    private static <T extends DatabaseEntity> void upsertDatabase(SQLiteDatabase db, MyDbContract.TableContract<T> contract, T data) {
         Long id = data.getId();
         if (id == null) {
-            Log.e("MyDbManager", "upsertDatabase: idがnullのため更新・挿入を中止しました．");
-            return false;
+            throw new IllegalArgumentException("DatabaseEntityのidがnullです．upsert関数にはidが必要です．");
         }
-        // dataのクラスから対応するTableContractを取得
-        final MyDbContract.TableContract<T> tableContract = TableContractRegistry.getContract(data.getClass());
-        final String tableName = tableContract.getTableName();
+        // IDをContentValueに追加する
+        final String tableName = contract.getTableName();
         ContentValues dataValues = data.getContentValues();
-        dataValues.put(tableContract.getIdColumnName(), data.getId());
+        dataValues.put(contract.getIdColumnName(), data.getId());
         // アップデート
         int updatedRows = db.update(
                 tableName,
                 dataValues,
-                tableContract.getIdColumnName() + " = ?",
+                contract.getIdColumnName() + " = ?",
                 new String[]{String.valueOf(id)}
         );
         // アップデートに成功したら終了
-        if (updatedRows > 0) return true;
+        if (updatedRows > 0) return;
         // データが存在しない場合，挿入に切り替え
         long result = db.insert(tableName, null, dataValues);
         if (result == -1) {
             // 挿入にも失敗した場合
-            Log.e("MyDbManager", "upsertDatabase: insertに失敗しました．(" + tableName + ")");
-            return false;
+            throw new SQLException("upsertDatabase: insertに失敗しました．(" + tableName + ")");
         } else {
-            return true;
+            return;
         }
     }
 
@@ -266,11 +204,12 @@ public class MyDbManager {
      *
      * @param data データ
      * @param <T>  DatabaseEntityを継承したデータクラス
-     * @return boolean 成功するとtrue,失敗するとfalse
      */
-    private static <T extends DatabaseEntity> boolean upsertDatabase(T data) {
+    private static <T extends DatabaseEntity> void upsertDatabase(T data) {
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
-        return MyDbManager.upsertDatabase(db, data);
+        // dataのクラスから対応するTableContractを取得
+        final MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(data.getClass());
+        MyDbManager.upsertDatabase(db, contract, data);
     }
 
     /**
@@ -284,55 +223,13 @@ public class MyDbManager {
             Log.e("MyDbManager", "upsertDatabase: idがnullのため更新・挿入を中止しました．");
             return;
         }
-        if (data.getClass() == Purchase.class) {
-            // Purchaseに付随するExpensesデータも削除する必要があるので，Purchase諸々，一度すべて削除
-            deleteDataSafely(data);
-            // Purchaseの子オブジェクトExpensesを生成
-            ArrayList<Expenses> newExpList = cacheProvider.getPaymentMethodRepository()
-                    .getDataById(((Purchase) data).getPaymentMethodId())
-                    .makeExpenses((Purchase) data);
-            // Purchase挿入
-            upsertDatabase(data);
-            // Expenses挿入
-            for (Expenses exp : newExpList) {
-                setDataSafely(exp);
-            }
-        } else if (data.getClass() == Income.class) {
-            // 過去の収入データを取得
-            Income beforeIncome = getDataById(Income.class, data.getId());
-            int deltaAmount;
-            if (beforeIncome != null) {
-                // 過去のデータとの変更差分
-                deltaAmount = ((Income) data).getAmount() - beforeIncome.getAmount();
-            } else {
-                // 過去データが無かった時
-                deltaAmount = ((Income) data).getAmount();
-            }
-            upsertDatabase(data);
-            updateMonthlyBalanceDelta(((Income) data).getDate(), deltaAmount);
+        // dataは必ず<T extends DatabaseEntity>の範疇であることが確定してるので警告は無視できる(はず)
+        @SuppressWarnings("unchecked")
+        T beforeData = getDataById((Class<T>) data.getClass(), data.getId());
 
-        } else if (data.getClass() == Expenses.class) {
-            Expenses beforeExpenses = getDataById(Expenses.class, data.getId());
-            int deltaAmount;
-            if (beforeExpenses != null) {
-                deltaAmount = Math.abs(((Expenses) data).getAmount()) - Math.abs(beforeExpenses.getAmount());
-            } else {
-                deltaAmount = ((Expenses) data).getAmount();
-            }
-            upsertDatabase(data);
-            updateMonthlyBalanceDelta(((Expenses) data).getDate(), -1 * deltaAmount);
-        } else {
-            // それ以外のデータはただ更新するだけ．
-            upsertDatabase(data);
-        }
-        // キャッシュの更新
-        if (data.getClass() == IncomeCategory.class) {
-            cacheProvider.getIncomeCategoryRepository().updateCache((IncomeCategory) data);
-        } else if (data.getClass() == PurchaseCategory.class) {
-            cacheProvider.getPurchaseCategoryRepository().updateCache((PurchaseCategory) data);
-        } else if (data.getClass() == PaymentMethod.class) {
-            cacheProvider.getPaymentMethodRepository().updateCache((PaymentMethod) data);
-        }
+        data.onBeforeUpdate();
+        upsertDatabase(data);
+        data.onAfterUpdate(beforeData);
     }
 
     /**
@@ -342,49 +239,19 @@ public class MyDbManager {
      * @param data <T extends DatabaseEntity>
      */
     public static <T extends DatabaseEntity> void deleteDataSafely(T data) {
-        if (data.getClass() == Purchase.class) {
-            // 購入日に付随する全ての支払日も削除
-            ArrayList<Expenses> deleteExpDataList = getData(
-                    Expenses.class,
-                    MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID + " = ?",
-                    new String[]{String.valueOf(data.getId())},
-                    null, null, null, null
-            );
-            // 支払の削除は残高差分が変動するため，deleteDataSafelyを使ってデータの依存関係を維持して削除
-            for (Expenses exp : deleteExpDataList) {
-                deleteDataSafely(exp);
-            }
-            deleteData(data);
-        } else if (data.getClass() == PurchaseCategory.class) {
-            // カテゴリは過去の購入日などが参照する可能性があるため見かけ上の削除
-            ((PurchaseCategory) data).setIsDeleted(true);
-            upsertDatabase(data);
-        } else if (data.getClass() == IncomeCategory.class) {
-            // カテゴリは過去の購入日などが参照する可能性があるため見かけ上の削除
-            ((IncomeCategory) data).setIsDeleted(true);
-            upsertDatabase(data);
-        } else if (data.getClass() == Income.class) {
-            // 収入のデータが削除されると，残高差分はマイナス側に移動させる．
-            updateMonthlyBalanceDelta(((Income) data).getDate(), -1 * Math.abs(((Income) data).getAmount()));
-            deleteData(data);
-        } else if (data.getClass() == Expenses.class) {
-            // 支出のデータが削除されると，残高差分はプラス側に移動させる．
-            updateMonthlyBalanceDelta(((Expenses) data).getDate(), Math.abs(((Expenses) data).getAmount()));
-            deleteData(data);
-        } else {
-            deleteData(data);
+
+        data.onBeforeDelete();
+
+        switch (data.getDeleteType()) {
+            case HARD:
+                deleteData(data);
+                break;
+            case LOGICAL:
+                upsertDatabase(data);
+                break;
         }
-        // キャッシュの更新
-        if (data.getClass() == IncomeCategory.class) {
-            // 支払い方法はデータ本体ごと消えるので削除
-            cacheProvider.getIncomeCategoryRepository().removeCache((IncomeCategory) data);
-        } else if (data.getClass() == PurchaseCategory.class) {
-            // カテゴリはデータ本体は削除されないのでキャッシュに行う操作はデータ更新になる
-            cacheProvider.getPurchaseCategoryRepository().updateCache((PurchaseCategory) data);
-        } else if (data.getClass() == PaymentMethod.class) {
-            // カテゴリはデータ本体は削除されないのでキャッシュに行う操作はデータ更新になる
-            cacheProvider.getPaymentMethodRepository().updateCache((PaymentMethod) data);
-        }
+
+        data.onAfterDelete();
     }
 
     /**
@@ -429,11 +296,17 @@ public class MyDbManager {
      * @param <T>   DatabaseEntity
      * @return データ
      */
-    public static <T extends DatabaseEntity> T getDataById(Class<T> clazz, Long id) {
-        if (id == null) {
-            Log.d("MyDbManager.getDataById", "IDがnullです．検索が行えません．" + clazz.getSimpleName());
-            return null;
+    public static <T extends DatabaseEntity> T getDataById(Class<T> clazz, long id) {
+        T data = null;
+        DatabaseEntityRepository<T> cash = DbEntityRepositoryRegistry.getRepository(clazz);
+        if (cash != null) {
+            // キャッシュが用意されてるエンティティならキャッシュから取得
+            data = cash.getDataById(id);
+            if (data != null) {
+                return data;
+            }
         }
+        // キャッシュが用意されていない，もしくはキャッシュにデータが無かったらデータベースを検索
         SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
         MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
         Cursor cursor = db.query(
@@ -445,11 +318,14 @@ public class MyDbManager {
                 null,
                 null
         );
-        T data = null;
         if (cursor.moveToFirst()) {
             data = contract.fromCursor(cursor);
         }
         cursor.close();
+        if (data != null && cash != null) {
+            // キャッシュに無かったデータを登録
+            cash.updateCache(data);
+        }
         return data;
     }
 
@@ -496,9 +372,25 @@ public class MyDbManager {
     }
 
     /**
+     * Purchaseの子Expensesを全て取得
+     *
+     * @param purchase 親Purchase
+     * @return ArrayList
+     */
+    public static ArrayList<Expenses> getChildExpensesList(Purchase purchase) {
+        return getData(
+                Expenses.class,
+                MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID + " = ?",
+                new String[]{String.valueOf(purchase.getId())},
+                null, null, null, null
+        );
+    }
+
+    /**
      * 過去からdateまでの中で最も新しい残高差分のデータを返す関数．
-     * @param date
-     * @return
+     *
+     * @param date 日付
+     * @return 残高差分
      */
     public static MonthlyBalanceDelta getLatestMonthlyDeltaUpTo(Calendar date) {
         ArrayList<MonthlyBalanceDelta> dataList = getData(
@@ -509,11 +401,10 @@ public class MyDbManager {
                 null,
                 MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " DESC",
                 "1"
-                );
+        );
         if (dataList.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return dataList.get(0);
         }
     }
@@ -617,7 +508,7 @@ public class MyDbManager {
      * @param date   収支の変更があった日付
      * @param amount 変更分の金額
      */
-    private static void updateMonthlyBalanceDelta(Calendar date, int amount) {
+    public static void updateMonthlyBalanceDelta(Calendar date, int amount) {
         int targetYearMonthKey = MonthlyBalanceDelta.makeYearMonthKey(date);
         // 対象年月のデータを取得
         String targetSelection = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " = ?";

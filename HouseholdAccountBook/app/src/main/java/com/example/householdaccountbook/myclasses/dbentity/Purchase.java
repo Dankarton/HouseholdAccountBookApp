@@ -1,9 +1,11 @@
-package myclasses;
+package com.example.householdaccountbook.myclasses.dbentity;
 
 import android.content.ContentValues;
 
 import com.example.householdaccountbook.db.MyDbContract;
+import com.example.householdaccountbook.db.MyDbManager;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class Purchase extends BOP {
@@ -76,5 +78,35 @@ public class Purchase extends BOP {
         values.put(MyDbContract.PurchaseEntry.COLUMN_PAYMENT_METHOD_ID, this.paymentMethodId);
         values.put(MyDbContract.PurchaseEntry.COLUMN_PAYMENT_TIMING_CODE, this.paymentTiming.getCode());
         return values;
+    }
+    @Override
+    public void onAfterInsert(long newId) {
+        super.onAfterInsert(newId);
+        ArrayList<Expenses> newExpList = MyDbManager.getDataById(PaymentMethod.class, this.paymentMethodId).makeExpenses(this);
+        for (Expenses exp: newExpList) {
+            MyDbManager.setDataSafely(exp);
+        }
+    }
+    @Override
+    public void onAfterUpdate(DatabaseEntity before) {
+        // 自身に連なっていたExpensesを全て削除
+        ArrayList<Expenses> oldExpList = MyDbManager.getChildExpensesList(this);
+        for (Expenses exp : oldExpList) {
+            MyDbManager.deleteDataSafely(exp);
+        }
+        // 更新されたデータを基に作成されたExpensesを全て挿入
+        ArrayList<Expenses> newExpList = MyDbManager.getDataById(PaymentMethod.class, this.paymentMethodId).makeExpenses(this);
+        for(Expenses exp: newExpList) {
+            MyDbManager.setDataSafely(exp);
+        }
+    }
+
+    @Override
+    public void onAfterDelete() {
+        // 自身に連なっていたExpensesを全て削除
+        ArrayList<Expenses> oldExpList = MyDbManager.getChildExpensesList(this);
+        for (Expenses exp : oldExpList) {
+            MyDbManager.deleteDataSafely(exp);
+        }
     }
 }

@@ -1,28 +1,30 @@
-package myclasses;
+package com.example.householdaccountbook.myclasses.dbentity;
 
 import android.content.ContentValues;
 
 import androidx.annotation.NonNull;
 
 import com.example.householdaccountbook.db.MyDbContract;
+import com.example.householdaccountbook.repository.DatabaseEntityRepository;
+import com.example.householdaccountbook.repository.DbEntityRepositoryRegistry;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import strategy.closingstrategy.ClosingStrategy;
-import strategy.closingstrategy.EndOfMonthClosingRule;
-import strategy.closingstrategy.FixedDayClosingRule;
-import strategy.closingstrategy.NoneClosingRule;
-import strategy.paymentstrategy.AfterClosingPaymentRule;
-import strategy.paymentstrategy.EndOfMonthPaymentRule;
-import strategy.paymentstrategy.FixedDayPaymentRule;
-import strategy.paymentstrategy.PaymentStrategy;
-import strategy.paymentstrategy.SameDayPaymentRule;
+import com.example.householdaccountbook.strategy.closingstrategy.ClosingStrategy;
+import com.example.householdaccountbook.strategy.closingstrategy.EndOfMonthClosingRule;
+import com.example.householdaccountbook.strategy.closingstrategy.FixedDayClosingRule;
+import com.example.householdaccountbook.strategy.closingstrategy.NoneClosingRule;
+import com.example.householdaccountbook.strategy.paymentstrategy.AfterClosingPaymentRule;
+import com.example.householdaccountbook.strategy.paymentstrategy.EndOfMonthPaymentRule;
+import com.example.householdaccountbook.strategy.paymentstrategy.FixedDayPaymentRule;
+import com.example.householdaccountbook.strategy.paymentstrategy.PaymentStrategy;
+import com.example.householdaccountbook.strategy.paymentstrategy.SameDayPaymentRule;
 
 /**
  * 支払方法クラス
  */
-public class PaymentMethod implements DatabaseEntity {
+public class PaymentMethod extends DatabaseEntity {
     public enum ClosingRule {
         FixedDay(0, "毎月指定日", true, "日付(日)") {
             @Override
@@ -135,7 +137,7 @@ public class PaymentMethod implements DatabaseEntity {
         }
         public abstract PaymentStrategy getStrategy(Integer settingNum);
     }
-    private final Long id;
+
     private final String name;
     private final ClosingRule closingRule;
     private final Integer closingSettingNum;
@@ -145,7 +147,7 @@ public class PaymentMethod implements DatabaseEntity {
     private final boolean isDefault;
 
     public PaymentMethod() {
-        this.id = null;
+        super(null);
         this.name = "";
         this.closingRule = ClosingRule.fromCode(0);
         this.closingSettingNum = null;
@@ -163,7 +165,7 @@ public class PaymentMethod implements DatabaseEntity {
      * @param isDefault デフォルトで用意されている支払方法かどうか
      */
     public PaymentMethod(Long id, String name, int closingRuleCode, Integer closingSettingNum, int paymentRuleCode, Integer paymentSettingNum, int index, boolean isDefault) {
-        this.id = id;
+        super(id);
         this.name = name;
         this.closingRule = ClosingRule.fromCode(closingRuleCode);
         this.closingSettingNum = closingSettingNum;
@@ -245,10 +247,6 @@ public class PaymentMethod implements DatabaseEntity {
         ));
         return result;
     }
-    @Override
-    public Long getId() {
-        return this.id;
-    }
     public String getName() {
         return this.name;
     }
@@ -270,5 +268,32 @@ public class PaymentMethod implements DatabaseEntity {
     @Override
     public ContentValues getContentValues() {
         return this.getContentValuesWithoutId();
+    }
+
+    @Override
+    public void onAfterInsert(long newId) {
+        super.onAfterInsert(newId);
+        DatabaseEntityRepository<PaymentMethod> repository = DbEntityRepositoryRegistry.getRepository(PaymentMethod.class);
+        if (repository != null) {
+            repository.updateCache(this);
+        }
+    }
+
+    @Override
+    public void onAfterUpdate( DatabaseEntity before) {
+        super.onAfterUpdate(before);
+        DatabaseEntityRepository<PaymentMethod> repository = DbEntityRepositoryRegistry.getRepository(PaymentMethod.class);
+        if (repository != null) {
+            repository.updateCache(this);
+        }
+    }
+
+    @Override
+    public void onAfterDelete() {
+        super.onAfterDelete();
+        DatabaseEntityRepository<PaymentMethod> repository = DbEntityRepositoryRegistry.getRepository(PaymentMethod.class);
+        if (repository != null) {
+            repository.removeCache(this);
+        }
     }
 }

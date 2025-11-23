@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import myclasses.BOP;
-import myclasses.BopCategory;
-import myclasses.IncomeCategory;
-import myclasses.PurchaseCategory;
+import com.example.householdaccountbook.myclasses.dbentity.BOP;
+import com.example.householdaccountbook.myclasses.dbentity.BopCategory;
+import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
 
 public class BaseChartFragment<T1 extends BOP, T2 extends BopCategory> extends Fragment {
     private final Class<T1> bopClazz;

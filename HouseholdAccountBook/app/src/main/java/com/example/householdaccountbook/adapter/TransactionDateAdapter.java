@@ -1,7 +1,6 @@
 package com.example.householdaccountbook.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,8 +12,8 @@ import com.example.householdaccountbook.customviews.DailyRecordCustomView;
 import java.util.ArrayList;
 import java.util.List;
 
-import myclasses.BOP;
-import myclasses.DailyBop;
+import com.example.householdaccountbook.myclasses.dbentity.BOP;
+import com.example.householdaccountbook.myclasses.DailyBop;
 
 public class TransactionDateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public interface OnListItemActionListener {

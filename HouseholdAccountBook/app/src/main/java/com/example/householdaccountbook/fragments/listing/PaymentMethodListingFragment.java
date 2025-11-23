@@ -18,7 +18,7 @@ import com.example.householdaccountbook.customviews.item.PaymentMethodItemView;
 
 import java.util.ArrayList;
 
-import myclasses.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 
 public class PaymentMethodListingFragment extends Fragment {
     public interface OnInputEventListener {
