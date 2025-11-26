@@ -17,8 +17,30 @@
 - **カテゴリ・支払方法の管理**    
   設定画面で支出・収入カテゴリや支払方法の追加・編集・削除が可能です．  
 - **初期残高の設定**  
-  初期残高を設定することで，正確な残高計算を行えるようになります．  
+  初期残高を設定することで，正確な残高計算を行えるようになります．
 
+## 画面遷移構成
+<pre>
+MainActivity --- 4つの子Fragmentを下タブで切り替え  
+    ┣━ InputMotherFragment --- 2の子Fragmentを上タブで切り替え  
+    ┃   ┣━ PurchaseEditFragment --- 支出入力画面  
+    ┃   ┗━ IncomeEditFragment --- 収入入力画面  
+    ┣━ TransactionDataListFragment --- 月次データ一覧表示画面   
+    ┣━ ChartMotherFragment --- 月次データ円グラフ表示画面  
+    ┗━ SettingsMenuFragment --- 設定画面  
+         ┣━ SettingMotherAcvitity  
+         ┃    ┗━ BalanceEditFragment  
+         ┃         ┗━ SettingBalanceEditActivity  
+         ┣━ SettingSelectPurchaseCategoryActivity  
+         ┃    ┗━ BaseListingFragment --- 一覧表示されている支出カテゴリをタップすることで編集画面に遷移  
+         ┃         ┗━ SettingEditPurchaseCategoryActivity  
+         ┣━ SettinbSelectIncomeCategoryActivity  
+         ┃    ┗━ BaseListingFragment --- 一覧表示されている収入カテゴリをタップ編集画面に遷移  
+         ┃         ┗━ SettingEditIncomeCategoryActivity  
+         ┗━ SettincSlectPaymentMethodActivity  
+              ┗━ BaseListingFragment --- 一覧表示されている支払方法をタップすることで編集画面に遷移  
+                   ┗━ SettingBalanceEditActivity  
+</pre>
   
 ## 開発環境
 - Android Studio
