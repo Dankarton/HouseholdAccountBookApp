@@ -7,12 +7,14 @@ import com.example.householdaccountbook.MyStdlib;
 
 import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
 import com.example.householdaccountbook.myclasses.dbentity.Expenses;
+import com.example.householdaccountbook.myclasses.dbentity.MoneyMovements;
 import com.example.householdaccountbook.myclasses.dbentity.MonthlyBalanceDelta;
 import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
 import com.example.householdaccountbook.myclasses.dbentity.Income;
 import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
 import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 import com.example.householdaccountbook.myclasses.dbentity.Purchase;
+import com.example.householdaccountbook.myclasses.dbentity.Wallet;
 
 import java.util.ArrayList;
 
@@ -43,6 +45,8 @@ public final class MyDbContract {
 
     public static final class IncomeEntry extends BaseBopEntry implements TableContract<Income> {
         public static final String TABLE_NAME = "IncomeDb";
+        public static final String COLUMN_WALLET_ID = "wallet_id";
+
         public static final String[] COLUMNS = {
                 IncomeEntry.ID,             // 0
                 IncomeEntry.COLUMN_YEAR,    // 1
@@ -50,7 +54,8 @@ public final class MyDbContract {
                 IncomeEntry.COLUMN_DAY,     // 3
                 IncomeEntry.COLUMN_AMOUNT,  // 4
                 IncomeEntry.COLUMN_MEMO,    // 5
-                IncomeEntry.COLUMN_CATEGORY_ID // 6
+                IncomeEntry.COLUMN_CATEGORY_ID, // 6
+                IncomeEntry.COLUMN_WALLET_ID
         };
 
         @Override
@@ -75,7 +80,8 @@ public final class MyDbContract {
                     MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
                     cursor.getInt(4),
                     cursor.getString(5),
-                    cursor.getInt(6)
+                    cursor.getInt(6),
+                    cursor.getLong(7)
             );
         }
     }
@@ -93,7 +99,6 @@ public final class MyDbContract {
                 PurchaseEntry.COLUMN_MEMO,
                 PurchaseEntry.COLUMN_CATEGORY_ID,
                 PurchaseEntry.COLUMN_PAYMENT_METHOD_ID,
-                PurchaseEntry.COLUMN_PAYMENT_TIMING_CODE
         };
 
         @Override
@@ -119,8 +124,7 @@ public final class MyDbContract {
                     cursor.getInt(4),
                     cursor.getString(5),
                     cursor.getInt(6),
-                    cursor.getInt(7),
-                    Purchase.PaymentTiming.fromCode(cursor.getInt(8))
+                    cursor.getInt(7)
             );
         }
     }
@@ -170,7 +174,53 @@ public final class MyDbContract {
             );
         }
     }
+    public static final class MoneyMovementsEntry extends BaseBopEntry implements TableContract<MoneyMovements> {
+        private MoneyMovementsEntry() { /*インスタンス防止*/ }
 
+        public static final String TABLE_NAME = "MoneyMovementsDb";
+        public static final String COLUMN_FROM_WALLET_ID = "from_wallet_id";
+        public static final String COLUMN_TO_WALLET_ID = "to_wallet_id";
+
+        public static final String[] COLUMNS = {
+                MoneyMovementsEntry.ID,
+                MoneyMovementsEntry.COLUMN_YEAR,
+                MoneyMovementsEntry.COLUMN_MONTH,
+                MoneyMovementsEntry.COLUMN_DAY,
+                MoneyMovementsEntry.COLUMN_AMOUNT,
+                MoneyMovementsEntry.COLUMN_MEMO,
+                MoneyMovementsEntry.COLUMN_CATEGORY_ID,
+                MoneyMovementsEntry.COLUMN_FROM_WALLET_ID,
+                MoneyMovementsEntry.COLUMN_TO_WALLET_ID
+        };
+
+
+        @Override
+        public String getTableName() {
+            return MoneyMovementsEntry.TABLE_NAME;
+        }
+
+        @Override
+        public String getIdColumnName() {
+            return MoneyMovementsEntry.ID;
+        }
+
+        @Override
+        public String[] getColumns() {
+            return MoneyMovementsEntry.COLUMNS;
+        }
+
+        @Override
+        public MoneyMovements fromCursor(Cursor cursor) {
+            return new MoneyMovements(
+                    cursor.getLong(0),
+                    MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
+                    cursor.getInt(4),
+                    cursor.getString(5),
+                    cursor.getLong(6),
+                    cursor.getLong(7)
+                    );
+        }
+    }
     public static abstract class BaseCategoryEntry {
         private BaseCategoryEntry() { /*インスタンス化防止*/ }
 
@@ -339,6 +389,43 @@ public final class MyDbContract {
                     cursor.getInt(5),
                     cursor.getInt(6),
                     cursor.getInt(7) == 1
+            );
+        }
+    }
+    public static final class WalletEntry implements TableContract<Wallet> {
+        public static final String TABLE_NAME = "WalletDb";
+        public static final String ID = "_id";
+        public static final String COLUMN_NAME = "name";
+        public static final String COLUMN_INIT_AMOUNT = "init_amount";
+        public static final String COLUMN_DISPLAY_INDEX = "display_index";
+        public static final String[] COLUMNS = {
+                WalletEntry.ID,
+                WalletEntry.COLUMN_NAME,
+                WalletEntry.COLUMN_INIT_AMOUNT,
+                WalletEntry.COLUMN_DISPLAY_INDEX
+        };
+        @Override
+        public String getTableName() {
+            return WalletEntry.TABLE_NAME;
+        }
+
+        @Override
+        public String getIdColumnName() {
+            return WalletEntry.ID;
+        }
+
+        @Override
+        public String[] getColumns() {
+            return WalletEntry.COLUMNS;
+        }
+
+        @Override
+        public Wallet fromCursor(Cursor cursor) {
+            return new Wallet(
+                    cursor.getLong(0),
+                    cursor.getString(1),
+                    cursor.getInt(2),
+                    cursor.getInt(3)
             );
         }
     }

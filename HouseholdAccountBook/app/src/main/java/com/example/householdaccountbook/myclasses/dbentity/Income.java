@@ -8,11 +8,13 @@ import com.example.householdaccountbook.db.MyDbManager;
 import java.util.Calendar;
 
 public class Income extends BOP {
-    public Income(Long id, Calendar date, int amount, String memo, long categoryId) {
+    private long walletId;
+    public Income(Long id, Calendar date, int amount, String memo, long categoryId, long walletId) {
         super(id, date, amount, memo, categoryId);
+        this.walletId = walletId;
     }
 
-    public static ContentValues makeContentValues(int _year, int _month, int _day, int _amount, String _memo, long _categoryId) {
+    public static ContentValues makeContentValues(int _year, int _month, int _day, int _amount, String _memo, long _categoryId, long _walletId) {
         ContentValues values = new ContentValues();
         values.put(MyDbContract.IncomeEntry.COLUMN_YEAR, _year);
         values.put(MyDbContract.IncomeEntry.COLUMN_MONTH, _month);
@@ -20,6 +22,7 @@ public class Income extends BOP {
         values.put(MyDbContract.IncomeEntry.COLUMN_AMOUNT, _amount);
         values.put(MyDbContract.IncomeEntry.COLUMN_MEMO, _memo);
         values.put(MyDbContract.IncomeEntry.COLUMN_CATEGORY_ID, _categoryId);
+        values.put(MyDbContract.IncomeEntry.COLUMN_WALLET_ID, _walletId);
         return values;
     }
     @Override
@@ -30,7 +33,8 @@ public class Income extends BOP {
                 this.getDay(),
                 this.getAmount(),
                 this.getMemo(),
-                this.getCategoryId()
+                this.getCategoryId(),
+                this.walletId
         );
     }
     @Override

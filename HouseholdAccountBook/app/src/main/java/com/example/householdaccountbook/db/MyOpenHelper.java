@@ -38,6 +38,23 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.IncomeEntry.COLUMN_AMOUNT + " INTEGER," +
                     MyDbContract.IncomeEntry.COLUMN_CATEGORY_ID + " INTEGER," +
                     MyDbContract.IncomeEntry.COLUMN_MEMO + " TEXT)";
+    private static final String MONEY_MOVEMENTS_SQL_CREATE_ENTRIES =
+            "CREATE TABLE " + MyDbContract.MoneyMovementsEntry.TABLE_NAME + " (" +
+                    MyDbContract.MoneyMovementsEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    MyDbContract.MoneyMovementsEntry.COLUMN_YEAR + " INTEGER," +
+                    MyDbContract.MoneyMovementsEntry.COLUMN_MONTH + " INTEGER," +
+                    MyDbContract.MoneyMovementsEntry.COLUMN_DAY + " INTEGER," +
+                    MyDbContract.MoneyMovementsEntry.COLUMN_AMOUNT + " INTEGER," +
+                    MyDbContract.MoneyMovementsEntry.COLUMN_CATEGORY_ID + " INTEGER," +
+                    MyDbContract.MoneyMovementsEntry.COLUMN_MEMO + " TEXT," +
+                    MyDbContract.MoneyMovementsEntry.COLUMN_FROM_WALLET_ID + " INTEGER," +
+                    MyDbContract.MoneyMovementsEntry.COLUMN_TO_WALLET_ID + " INTEGER)";
+    private static final String WALLET_SQL_CREATE_ENTRIES =
+            "CREATE TABLE " + MyDbContract.WalletEntry.TABLE_NAME + " (" +
+                    MyDbContract.WalletEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    MyDbContract.WalletEntry.COLUMN_NAME + " TEXT," +
+                    MyDbContract.WalletEntry.COLUMN_INIT_AMOUNT + " INTEGER," +
+                    MyDbContract.WalletEntry.COLUMN_DISPLAY_INDEX + " INTEGER)";
     private static final String PURCHASE_CATEGORY_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.PurchaseCategoryEntry.TABLE_NAME + " (" +
                     MyDbContract.PurchaseCategoryEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -80,10 +97,12 @@ public class MyOpenHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(PURCHASE_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(EXPENSES_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(INCOME_SQL_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL(MONEY_MOVEMENTS_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(PURCHASE_CATEGORY_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(INCOME_CATEGORY_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(PAYMENT_METHOD_SQL_CREATE_ENTRIES);
         sqLiteDatabase.execSQL(BALANCE_DELTA_SQL_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL(WALLET_SQL_CREATE_ENTRIES);
         // 支払いテーブルに
 
     }

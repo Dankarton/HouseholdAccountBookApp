@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,29 +30,34 @@ import com.example.householdaccountbook.myclasses.dbentity.BOP;
 import com.example.householdaccountbook.myclasses.dbentity.BopCategory;
 import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
 import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.viewmodel.ChartDataSharedViewModel;
 
 public class BaseChartFragment<T1 extends BOP, T2 extends BopCategory> extends Fragment {
+
     private final Class<T1> bopClazz;
     private final Class<T2> categoryClazz;
     private HouseHoldApp app;
     private PieChartView pieChartView;
-    private TextView monthTextView;
     private RecyclerView categoryTotalListRecyclerView;
-    private Calendar currentDate;
+
+    private ChartDataSharedViewModel viewModel;
+
     public BaseChartFragment(Class<T1> bopClazz, Class<T2> categoryClazz) {
         this.bopClazz = bopClazz;
         this.categoryClazz = categoryClazz;
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        this.viewModel = new ViewModelProvider(requireParentFragment()).get(ChartDataSharedViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_base_chart, container, false);
         this.app = (HouseHoldApp) layout.getContext().getApplicationContext();
-        this.monthTextView = layout.findViewById(R.id.month_text_view);
         this.pieChartView = layout.findViewById(R.id.pie_chart);
         this.categoryTotalListRecyclerView = layout.findViewById(R.id.category_total_list_recycler_view);
         return layout;
@@ -60,44 +66,20 @@ public class BaseChartFragment<T1 extends BOP, T2 extends BopCategory> extends F
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        this.currentDate = Calendar.getInstance();
-
-        view.findViewById(R.id.month_up_button).setOnClickListener(buttonView -> {
-            this.currentDate.add(Calendar.MONTH, 1);
-            update();
-        });
-        view.findViewById(R.id.month_down_button).setOnClickListener(buttonView -> {
-            this.currentDate.add(Calendar.MONTH, -1);
-            update();
-        });
-
-        update();
-    }
-
-    /**
-     * 日付を更新
-     */
-    private void updateMonthTextView(Calendar date) {
-        this.monthTextView.setText(
-                MyStdlib.convertCalendarToString(
-                        date.get(Calendar.YEAR),
-                        date.get(Calendar.MONTH),
-                        null,
-                        null
-                )
+        this.viewModel.getDateLiveData().observe(
+                getViewLifecycleOwner(),
+                date -> update(date)
         );
     }
 
     /**
      * 画面を更新
      */
-    private void update() {
-        updateMonthTextView(this.currentDate);
+    private void update(Calendar targetDate) {
         // カテゴリーIDをキーにした辞書型
         Map<Long, CategoryTotal> categoryMap = new HashMap<>();
         int allPurchaseTotalAmount = 0;
-        for (BOP purchase : loadCurrentMonthPurchaseData(this.currentDate)) {
+        for (BOP purchase : loadCurrentMonthPurchaseData(targetDate)) {
             // キーが存在しない場合
             if (!categoryMap.containsKey(purchase.getCategoryId())) {
                 BopCategory newCategory = null;
