@@ -27,10 +27,10 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.example.householdaccountbook.customviews.SettingMenuButtonView
-                    android:id="@+id/balance_edit_menu_button"
+                    android:id="@+id/wallet_edit_menu_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:titleText="残高設定" />
+                    app:titleText="ウォレット追加・編集" />
 
                 <com.example.householdaccountbook.customviews.SettingMenuButtonView
                     android:id="@+id/expenses_category_edit_menu_button"

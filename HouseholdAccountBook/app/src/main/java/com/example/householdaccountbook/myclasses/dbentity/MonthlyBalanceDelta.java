@@ -7,12 +7,13 @@ import com.example.householdaccountbook.db.MyDbContract;
 import java.util.Calendar;
 
 public class MonthlyBalanceDelta extends DatabaseEntity {
-
+    long walletId;
     int yearMonthKey;
     int deltaAmount;
 
-    public MonthlyBalanceDelta(Long id, int yearMonthKey, int deltaAmount) {
+    public MonthlyBalanceDelta(Long id, long walletId, int yearMonthKey, int deltaAmount) {
         super(id);
+        this.walletId = walletId;
         this.yearMonthKey = yearMonthKey;
         this.deltaAmount = deltaAmount;
     }
@@ -20,11 +21,13 @@ public class MonthlyBalanceDelta extends DatabaseEntity {
     @Override
     public ContentValues getContentValues() {
         ContentValues values = new ContentValues();
+        values.put(MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_WALLET_ID, this.walletId);
         values.put(MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY, this.yearMonthKey);
         values.put(MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_DELTA_AMOUNT, this.deltaAmount);
         return values;
     }
-
+    public long getWalletId() { return  this.walletId; }
+    
     public int getYearMonthKey() { return this.yearMonthKey; }
 
     public int getDeltaAmount() { return this.deltaAmount; }

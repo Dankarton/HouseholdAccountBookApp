@@ -239,7 +239,8 @@ public class MyDbManager {
      * @param data <T extends DatabaseEntity>
      */
     public static <T extends DatabaseEntity> void deleteDataSafely(T data) {
-
+        // フック関数的な
+        // DatabaseEntityの削除前処理
         data.onBeforeDelete();
 
         switch (data.getDeleteType()) {
@@ -250,7 +251,7 @@ public class MyDbManager {
                 upsertDatabase(data);
                 break;
         }
-
+        // DatabaseEntityの削除後処理
         data.onAfterDelete();
     }
 
@@ -508,7 +509,7 @@ public class MyDbManager {
      * @param date   収支の変更があった日付
      * @param amount 変更分の金額
      */
-    public static void updateMonthlyBalanceDelta(Calendar date, int amount) {
+    public static void updateMonthlyBalanceDelta(Calendar date, long walletId, int amount) {
         int targetYearMonthKey = MonthlyBalanceDelta.makeYearMonthKey(date);
         // 対象年月のデータを取得
         String targetSelection = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " = ?";
@@ -534,11 +535,11 @@ public class MyDbManager {
             );
             if (beforeDateData.isEmpty()) {
                 // 対象年月よりも前にデータが無いときは，対象年月がrootとする．
-                setData(new MonthlyBalanceDelta(null, targetYearMonthKey, amount));
+                setData(new MonthlyBalanceDelta(null, walletId, targetYearMonthKey, amount));
             } else {
                 // 前の月の月からamount分変更することで対象年月の残高差分になる
                 int deltaAmount = beforeDateData.get(0).getDeltaAmount() + amount;
-                setData(new MonthlyBalanceDelta(null, targetYearMonthKey, deltaAmount));
+                setData(new MonthlyBalanceDelta(null, walletId, targetYearMonthKey, deltaAmount));
             }
         } else {
             // 対象年月に残高差分のデータがすでにあった場合は，amount分金額を増減させる．

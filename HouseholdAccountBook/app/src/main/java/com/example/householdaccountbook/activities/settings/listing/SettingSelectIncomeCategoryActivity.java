@@ -50,6 +50,7 @@ public class SettingSelectIncomeCategoryActivity extends SettingMotherActivity {
     protected String setTitleText() {
         return "収入カテゴリ";
     }
+
     private void startEditActivity(IncomeCategory data) {
         Intent intent = new Intent(this, SettingEditIncomeCategoryActivity.class);
         intent.putExtra("IncomeCategory", data);

@@ -43,13 +43,8 @@ public class DailyBop {
         }
         for (Purchase purchase : this._purchaseList) {
             // 購入日と支払日が同じ場合，ダプって表示されるのを防ぐためリストには追加しない
-            if (purchase.getPaymentTiming() != Purchase.PaymentTiming.SAME_DAY) {
-                this._adapterDataList.add(purchase);
-            }
+            // TODO 購入日、支払日は別画面で表示するようにする
             this._purchaseAmount += Math.abs(purchase.getAmount());
-            if (purchase.getPaymentTiming() == Purchase.PaymentTiming.NEXT_MONTH) {
-                this._nextMonthPaymentAmount += Math.abs(purchase.getAmount());
-            }
         }
         for (Expenses expenses : this._paymentList) {
             this._adapterDataList.add(expenses);

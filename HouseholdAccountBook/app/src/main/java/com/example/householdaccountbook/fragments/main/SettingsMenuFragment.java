@@ -13,11 +13,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.activities.settings.SettingBalanceEditActivity;
-import com.example.householdaccountbook.activities.settings.edit.SettingEditPurchaseCategoryActivity;
 import com.example.householdaccountbook.activities.settings.listing.SettingSelectIncomeCategoryActivity;
 import com.example.householdaccountbook.activities.settings.listing.SettingSelectPaymentMethodActivity;
 import com.example.householdaccountbook.activities.settings.listing.SettingSelectPurchaseCategoryActivity;
+import com.example.householdaccountbook.activities.settings.listing.SettingSelectWalletActivity;
 import com.example.householdaccountbook.customviews.SettingMenuButtonView;
 import com.example.householdaccountbook.data.SettingMenuFragmentKind;
 
@@ -42,9 +41,9 @@ public class SettingsMenuFragment extends Fragment implements SettingMenuButtonV
         super.onViewCreated(view, savedInstanceState);
         linearLayout = view.findViewById(R.id.expenses_list_linearlayout);
 
-        SettingMenuButtonView balanceEdit = view.findViewById(R.id.balance_edit_menu_button);
-        balanceEdit.setDestination(SettingMenuFragmentKind.BALANCE_EDIT);
-        balanceEdit.setListener(this);
+        SettingMenuButtonView walletEdit = view.findViewById(R.id.wallet_edit_menu_button);
+        walletEdit.setDestination(SettingMenuFragmentKind.WALLET_EDIT);
+        walletEdit.setListener(this);
 
         SettingMenuButtonView paymentEdit = view.findViewById(R.id.payment_method_edit_menu_button);
         paymentEdit.setDestination(SettingMenuFragmentKind.PAYMENT_METHOD_EDIT);
@@ -63,8 +62,8 @@ public class SettingsMenuFragment extends Fragment implements SettingMenuButtonV
     public void onClicked(SettingMenuFragmentKind type) {
         Context context = requireContext();
         switch (type) {
-            case BALANCE_EDIT:
-                context.startActivity(new Intent(context, SettingBalanceEditActivity.class));
+            case WALLET_EDIT:
+                context.startActivity(new Intent(context, SettingSelectWalletActivity.class));
                 break;
             case PAYMENT_METHOD_EDIT:
                 context.startActivity(new Intent(context, SettingSelectPaymentMethodActivity.class));

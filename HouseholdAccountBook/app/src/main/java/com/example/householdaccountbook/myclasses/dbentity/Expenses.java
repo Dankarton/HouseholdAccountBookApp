@@ -10,11 +10,13 @@ import java.util.Calendar;
 public class Expenses extends BOP {
     private final long purchaseId;
     private final long paymentMethodId;
+    private final long walletId;
 
-    public Expenses(Long id, Calendar date, int amount, String memo, long categoryId, long paymentMethodId, long purchaseId) {
+    public Expenses(Long id, Calendar date, int amount, String memo, long categoryId, long paymentMethodId, long purchaseId, long walletId) {
         super(id, date, amount, memo, categoryId);
         this.paymentMethodId = paymentMethodId;
         this.purchaseId = purchaseId;
+        this.walletId = walletId;
     }
 
     public long getPaymentMethodId() {
@@ -36,22 +38,23 @@ public class Expenses extends BOP {
         values.put(MyDbContract.ExpensesEntry.COLUMN_CATEGORY_ID, this.getCategoryId());
         values.put(MyDbContract.ExpensesEntry.COLUMN_PAYMENT_METHOD_ID, this.paymentMethodId);
         values.put(MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID, this.purchaseId);
+        values.put(MyDbContract.ExpensesEntry.COLUMN_WALLET_ID, this.walletId);
         return values;
     }
 
     @Override
     public void onAfterInsert(long newId) {
         super.onAfterInsert(newId);
-        MyDbManager.updateMonthlyBalanceDelta(this.getDate(), -1 * Math.abs(this.getAmount()));
+        MyDbManager.updateMonthlyBalanceDelta(this.getDate(), this.walletId, -1 * Math.abs(this.getAmount()));
     }
 
     @Override
     public void onAfterUpdate(DatabaseEntity before) {
-        MyDbManager.updateMonthlyBalanceDelta(((Expenses) before).getDate(), Math.abs(((Expenses) before).getAmount()));
-        MyDbManager.updateMonthlyBalanceDelta(this.getDate(), -1 * Math.abs(this.getAmount()));
+        MyDbManager.updateMonthlyBalanceDelta(((Expenses) before).getDate(), this.walletId, Math.abs(((Expenses) before).getAmount()));
+        MyDbManager.updateMonthlyBalanceDelta(this.getDate(), this.walletId, -1 * Math.abs(this.getAmount()));
     }
     @Override
     public void onAfterDelete() {
-        MyDbManager.updateMonthlyBalanceDelta(this.getDate(), Math.abs(this.getAmount()));
+        MyDbManager.updateMonthlyBalanceDelta(this.getDate(), this.walletId, Math.abs(this.getAmount()));
     }
 }

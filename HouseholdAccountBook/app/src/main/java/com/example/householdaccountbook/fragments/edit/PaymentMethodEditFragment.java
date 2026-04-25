@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -18,7 +19,13 @@ import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.adapter.EnumSpinnerAdapter;
 
+import com.example.householdaccountbook.customviews.SelectableListCustomView;
+import com.example.householdaccountbook.customviews.item.WalletItemView;
+import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+
+import java.util.ArrayList;
 
 public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
     EditText nameEdit;
@@ -28,6 +35,7 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
     TextView paymentRuleSettingText;
     EditText closingRuleSettingNumEdit;
     EditText paymentRuleSettingNumEdit;
+    SelectableListCustomView<WalletItemView, Wallet> walletListCV;
 
     public PaymentMethodEditFragment(@NonNull PaymentMethod paymentMethodData) {
         super(paymentMethodData);
@@ -45,6 +53,7 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
         paymentRuleSettingText = view.findViewById(R.id.payment_rule_setting_text);
         closingRuleSettingNumEdit = view.findViewById(R.id.closing_rule_setting_num_edit);
         paymentRuleSettingNumEdit = view.findViewById(R.id.payment_rule_setting_num_edit);
+        walletListCV = view.findViewById(R.id.wallet_list_custom_view);
         saveButton = view.findViewById(R.id.save_button);
         deleteButton = view.findViewById(R.id.delete_button);
         Context context = view.getContext();
@@ -101,6 +110,24 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
             @Override
             public void onNothingSelected(AdapterView<?> parent) { /* Do nothing. */ }
         });
+        // ウォレットのセレクタブルリストにデータ入力
+        ArrayList<WalletItemView> walletItemViews = new ArrayList<>();
+        for (Wallet wallet : MyDbManager.getAllSafely(Wallet.class)) {
+            var tmp = new WalletItemView(context);
+            tmp.setData(wallet);
+            if (wallet.getId() == this.databaseEntityData.getWalletId()) {
+                tmp.setSelectedState(true);
+            }
+            walletItemViews.add(tmp);
+        }
+        this.walletListCV.setItem(walletItemViews);
+
+        this.walletListCV.setListener(new SelectableListCustomView.OnItemSelectedListener() {
+            @Override
+            public <T1> void onItemSelected(T1 itemView) {
+                saveButton.setEnabled(checkInputData());
+            }
+        });
         // Editが変更された時などに実行される処理を記述するWatcher
         TextWatcher watcher = new TextWatcher() {
             @Override
@@ -135,6 +162,10 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
             this.paymentRuleSettingNumEdit.setText(String.valueOf(this.databaseEntityData.getPaymentSettingNum()));
         } else {
             this.paymentRuleSettingNumEdit.setText("");
+        }
+        // データがデフォルト値だった場合は削除ボタンを無効化
+        if (this.databaseEntityData.isDefault()) {
+            this.deleteButton.setEnabled(false);
         }
     }
 
@@ -185,8 +216,8 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
 //            Log.d("PaymentMethodEditFragment", "paymentRuleSetting: true 設置値は使わない");
             isPaymentSettingNumValid = true;
         }
-
-        return isNameValid && isClosingSettingNumValid && isPaymentSettingNumValid;
+        boolean isWalletValid = this.walletListCV.getSelectedItem() != null;
+        return isNameValid && isClosingSettingNumValid && isPaymentSettingNumValid && isWalletValid;
     }
 
     @Override
@@ -214,9 +245,17 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
             paymentSettingNum = null;
         }
         PaymentMethod paymentMethod = new PaymentMethod(
-                this.databaseEntityData.getId(), name, closingRuleCode, closingSettingNum,
-                paymentRuleCode, paymentSettingNum, this.databaseEntityData.getIndex(), false
+                this.databaseEntityData.getId(),
+                name, closingRuleCode, closingSettingNum,
+                paymentRuleCode, paymentSettingNum,
+                this.walletListCV.getSelectedItem().getData().getId(),
+                this.databaseEntityData.getIndex(),
+                false
         );
+        Log.d("PaymentMethodEditFragment",
+                "ID:" + paymentMethod.getId() +
+                        ", Name:" + paymentMethod.getName() +
+                "Wallet ID:" + paymentMethod.getWalletId());
         this.listener.onSaveButtonClicked(paymentMethod);
     }
 

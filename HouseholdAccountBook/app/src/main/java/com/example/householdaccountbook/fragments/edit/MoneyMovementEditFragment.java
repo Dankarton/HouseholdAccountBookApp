@@ -14,34 +14,29 @@ import androidx.annotation.NonNull;
 
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.customviews.item.CategoryItemView;
 import com.example.householdaccountbook.customviews.SelectableListCustomView;
-import com.example.householdaccountbook.customviews.item.PaymentMethodItemView;
+import com.example.householdaccountbook.customviews.item.WalletItemView;
 import com.example.householdaccountbook.db.MyDbManager;
+import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
+import com.example.householdaccountbook.myclasses.dbentity.Wallet;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import com.example.householdaccountbook.myclasses.dbentity.Purchase;
-import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
-import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
-
-public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
+public class MoneyMovementEditFragment extends BaseEditFragment<MoneyMovement> {
     TextView dateTextView;
     Calendar currentDate;
-    EditText memoEditText;
     EditText amountEditText;
-    SelectableListCustomView<CategoryItemView<PurchaseCategory>, PurchaseCategory> categoryList;
-    SelectableListCustomView<PaymentMethodItemView, PaymentMethod> paymentMethodList;
+    EditText memoEditText;
+    SelectableListCustomView<WalletItemView, Wallet> fromWalletList;
+    SelectableListCustomView<WalletItemView, Wallet> toWalletList;
 
-    public PurchaseEditFragment(@NonNull Purchase data) {
-        super(data);
-    }
+
+    public MoneyMovementEditFragment(@NonNull MoneyMovement data) { super(data); }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         Context context = requireContext();
         //
         // Viewオブジェクトの登録
@@ -49,41 +44,31 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
         this.dateTextView = view.findViewById(R.id.date_text);
         this.memoEditText = view.findViewById(R.id.memo_edit_text);
         this.amountEditText = view.findViewById(R.id.amount_edit_text);
-        this.categoryList = view.findViewById(R.id.category_list_custom_view);
-        this.paymentMethodList = view.findViewById(R.id.payment_method_list_custom_view);
+        this.fromWalletList = view.findViewById(R.id.from_wallet_list_custom_view);
+        this.toWalletList = view.findViewById(R.id.to_wallet_list_custom_view);
 
-        this.categoryList.setColumnCount(3);
-        this.paymentMethodList.setColumnCount(2);
-        //
-        // カテゴリーリストにItemViewを挿入する操作
-        //
-        ArrayList<PurchaseCategory> categoryList = MyDbManager.getAllSafely(PurchaseCategory.class);
-        ArrayList<CategoryItemView<PurchaseCategory>> categoryItemViews = new ArrayList<>();
-        for (PurchaseCategory category : categoryList) {
-            CategoryItemView<PurchaseCategory> tmp = new CategoryItemView<>(context);
-            tmp.setData(category);
-            // 編集するデータのカテゴリーと同じ場合だった場合，選択状態にする．
-            if (category.getId() == this.databaseEntityData.getCategoryId()) {
-                tmp.setSelectedState(true);
+        this.fromWalletList.setColumnCount(2);
+        this.toWalletList.setColumnCount(2);
+
+        ArrayList<Wallet> walletList = MyDbManager.getAllSafely(Wallet.class);
+        ArrayList<WalletItemView> fromWalletItemViews = new ArrayList<>();
+        ArrayList<WalletItemView> toWalletItemViews = new ArrayList<>();
+        for (Wallet wallet : walletList) {
+            WalletItemView fromTmp = new WalletItemView(context);
+            WalletItemView toTmp = new WalletItemView(context);
+            fromTmp.setData(wallet);
+            toTmp.setData(wallet);
+            if (wallet.getId() == this.databaseEntityData.getFromWalletId()) {
+                fromTmp.setSelectedState(true);
             }
-            categoryItemViews.add(tmp);
-        }
-        this.categoryList.setItem(categoryItemViews);
-        //
-        // 支払い方法リストにItemViewを挿入する操作
-        //
-        ArrayList<PaymentMethod> paymentMethodList = MyDbManager.getAllSafely(PaymentMethod.class);
-        ArrayList<PaymentMethodItemView> methodItemView = new ArrayList<>();
-        for (PaymentMethod method : paymentMethodList) {
-            PaymentMethodItemView tmp = new PaymentMethodItemView(context);
-            tmp.setData(method);
-            // 編集データと同じ支払い方法だった場合，選択状態にする．
-            if (method.getId() == this.databaseEntityData.getPaymentMethodId()) {
-                tmp.setSelectedState(true);
+            if (wallet.getId() == this.databaseEntityData.getToWalletId()) {
+                toTmp.setSelectedState(true);
             }
-            methodItemView.add(tmp);
+            fromWalletItemViews.add(fromTmp);
+            toWalletItemViews.add(toTmp);
         }
-        this.paymentMethodList.setItem(methodItemView);
+        this.fromWalletList.setItem(fromWalletItemViews);
+        this.toWalletList.setItem(toWalletItemViews);
         //
         // イベントリスナー登録
         //
@@ -126,15 +111,15 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
         };
         this.memoEditText.addTextChangedListener(watcher);
         this.amountEditText.addTextChangedListener(watcher);
-        // カテゴリー，支払い方法のアイテムリストの選択アイテムが変更された時のイベント
-        SelectableListCustomView.OnItemSelectedListener itemListListener = new SelectableListCustomView.OnItemSelectedListener() {
+        // From,toウォレットのアイテムリストの選択アイテムが変更された時のイベント
+        var itemListListener = new SelectableListCustomView.OnItemSelectedListener() {
             @Override
             public <T1> void onItemSelected(T1 itemView) {
                 saveButton.setEnabled(checkInputData());
             }
         };
-        this.categoryList.setListener(itemListListener);
-        this.paymentMethodList.setListener(itemListListener);
+        this.fromWalletList.setListener(itemListListener);
+        this.toWalletList.setListener(itemListListener);
         //
         // 初期値設定
         //
@@ -148,38 +133,23 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
         this.currentDate = this.databaseEntityData.getDate();
         updateDateTextView();
     }
-
-    /**
-     * ベースコンテナに取り付けるFragmentのID
-     * @return int FragmentのID
-     */
     @Override
     protected int getContainerContentLayoutId() {
-        return R.layout.fragment_purchase_edit;
+        return R.layout.fragment_money_movement_edit;
     }
 
     @Override
     protected void onSaveClicked() {
         int amount = Integer.parseInt(this.amountEditText.getText().toString());
-        PaymentMethod method = this.paymentMethodList.getSelectedItem().getData();
-        // TODO
-        Purchase newPurchase = new Purchase(
+        MoneyMovement newMovements = new MoneyMovement(
                 this.databaseEntityData.getId(),
                 this.currentDate,
                 amount,
                 this.memoEditText.getText().toString(),
-                this.categoryList.getSelectedItem().getData().getId(),
-                method.getId()
+                this.fromWalletList.getSelectedItem().getData().getId(),
+                this.toWalletList.getSelectedItem().getData().getId()
         );
-        if (this.listener != null) this.listener.onSaveButtonClicked(newPurchase);
-    }
-
-    private boolean checkInputData() {
-//        boolean isMemoValid = !this.memoEditText.getText().toString().isEmpty();
-        boolean isAmountValid = MyStdlib.canConvertToInteger(this.amountEditText.getText().toString());
-        boolean isCategoryValid = this.categoryList.getSelectedItem() != null;
-        boolean isMethodValid = this.paymentMethodList.getSelectedItem() != null;
-        return isAmountValid && isCategoryValid && isMethodValid;
+        if (this.listener != null) this.listener.onSaveButtonClicked(newMovements);
     }
 
     @Override
@@ -202,7 +172,12 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
                 })
                 .show();
     }
-
+    private boolean checkInputData() {
+        boolean isAmountValid = MyStdlib.canConvertToInteger(this.amountEditText.getText().toString());
+        boolean isFromWalletValid = this.fromWalletList.getSelectedItem() != null;
+        boolean isToWalletValid = this.toWalletList.getSelectedItem() != null;
+        return isAmountValid && isFromWalletValid && isToWalletValid;
+    }
     private void updateDateTextView() {
         this.dateTextView.setText(
                 MyStdlib.convertCalendarToString(
@@ -213,11 +188,10 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
                 )
         );
     }
-
     public void reset() {
-        this.memoEditText.setText("");
         this.amountEditText.setText("");
-        this.categoryList.deselect();
-        this.paymentMethodList.deselect();
+        this.memoEditText.setText("");
+        this.fromWalletList.deselect();
+        this.toWalletList.deselect();
     }
 }

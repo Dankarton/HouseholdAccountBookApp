@@ -143,6 +143,7 @@ public class PaymentMethod extends DatabaseEntity {
     private final Integer closingSettingNum;
     private final PaymentRule paymentRule;
     private final Integer paymentSettingNum;
+    private final long walletId;
     private int index;
     private final boolean isDefault;
 
@@ -153,6 +154,7 @@ public class PaymentMethod extends DatabaseEntity {
         this.closingSettingNum = null;
         this.paymentRule = PaymentRule.fromCode(0);
         this.paymentSettingNum = null;
+        this.walletId = 0;
         this.index = 0;
         this.isDefault = false;
     }
@@ -164,13 +166,14 @@ public class PaymentMethod extends DatabaseEntity {
      * @param paymentSettingNum 支払日(0を入力すると，支払日=購入日になる)
      * @param isDefault デフォルトで用意されている支払方法かどうか
      */
-    public PaymentMethod(Long id, String name, int closingRuleCode, Integer closingSettingNum, int paymentRuleCode, Integer paymentSettingNum, int index, boolean isDefault) {
+    public PaymentMethod(Long id, String name, int closingRuleCode, Integer closingSettingNum, int paymentRuleCode, Integer paymentSettingNum, long walletId, int index, boolean isDefault) {
         super(id);
         this.name = name;
         this.closingRule = ClosingRule.fromCode(closingRuleCode);
         this.closingSettingNum = closingSettingNum;
         this.paymentRule = PaymentRule.fromCode(paymentRuleCode);
         this.paymentSettingNum = paymentSettingNum;
+        this.walletId = walletId;
         this.index = index;
         this.isDefault = isDefault;
     }
@@ -188,7 +191,7 @@ public class PaymentMethod extends DatabaseEntity {
      * @param _isDefault    デフォルトで用意されている支払方法かどうか
      * @return ContentValues
      */
-    public static ContentValues makeContentValues(String _name, int _closingRuleCode, Integer _closingSettingNum, int _paymentRuleCode, Integer _paymentSettingNum, int _index, boolean _isDefault) {
+    public static ContentValues makeContentValues(String _name, int _closingRuleCode, Integer _closingSettingNum, int _paymentRuleCode, Integer _paymentSettingNum, long _walletId, int _index, boolean _isDefault) {
         ContentValues values = new ContentValues();
         // SQLiteはbool型に対応してないので0,1整数に変換
         int isDefaultInteger;
@@ -207,6 +210,7 @@ public class PaymentMethod extends DatabaseEntity {
         // nullだとSQLiteのDBに保存できないのでテキトーな数字を入れとく
         if (_paymentSettingNum == null) _paymentSettingNum = 0;
         values.put(MyDbContract.PaymentMethodEntry.COLUMN_PAYMENT_SETTING_NUM, _paymentSettingNum);
+        values.put(MyDbContract.PaymentMethodEntry.COLUMN_WALLET_ID, _walletId);
         values.put(MyDbContract.PaymentMethodEntry.COLUMN_INDEX, _index);
         values.put(MyDbContract.PaymentMethodEntry.COLUMN_IS_DEFAULT, isDefaultInteger);
         return values;
@@ -223,6 +227,7 @@ public class PaymentMethod extends DatabaseEntity {
                 this.closingSettingNum,
                 this.paymentRule.code,
                 this.paymentSettingNum,
+                this.walletId,
                 this.index,
                 this.isDefault
         );
@@ -243,7 +248,8 @@ public class PaymentMethod extends DatabaseEntity {
                 purchase.getMemo(),
                 purchase.getCategoryId(),
                 purchase.getPaymentMethodId(),
-                purchase.getId()
+                purchase.getId(),
+                this.walletId
         ));
         return result;
     }
@@ -260,6 +266,7 @@ public class PaymentMethod extends DatabaseEntity {
     public Integer getPaymentSettingNum() {
         return this.paymentSettingNum;
     }
+    public long getWalletId() { return this.walletId; }
     public void setIndex(int newlyIndex) { this.index = newlyIndex; }
     public int getIndex() { return this.index; }
     public boolean isDefault() {
@@ -280,7 +287,7 @@ public class PaymentMethod extends DatabaseEntity {
     }
 
     @Override
-    public void onAfterUpdate( DatabaseEntity before) {
+    public void onAfterUpdate(DatabaseEntity before) {
         super.onAfterUpdate(before);
         DatabaseEntityRepository<PaymentMethod> repository = DbEntityRepositoryRegistry.getRepository(PaymentMethod.class);
         if (repository != null) {

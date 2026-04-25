@@ -8,12 +8,12 @@
         android:id="@+id/exp_static_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="center_vertical|center_horizontal"
         android:layout_marginStart="16dp"
         android:text="@string/date_in_japanese"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/date_text"
+        app:layout_constraintTop_toTopOf="@+id/date_text"
         app:layout_constraintBottom_toBottomOf="@+id/date_text"/>
 
     <TextView
@@ -25,17 +25,18 @@
         android:gravity="center_vertical"
         android:text="年月日()"
         android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/date_up_button"
-        app:layout_constraintStart_toEndOf="@+id/date_down_button"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/date_down_button" />
 
     <ImageButton
         android:id="@+id/date_down_button"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="60dp"
+        android:layout_height="44dp"
         android:layout_gravity="center_vertical"
         android:background="@null"
-        android:padding="2dp"
+        android:padding="8dp"
+        android:paddingEnd="16dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/date_text"
         app:layout_constraintStart_toEndOf="@+id/exp_static_text"
@@ -44,12 +45,13 @@
 
     <ImageButton
         android:id="@+id/date_up_button"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="60dp"
+        android:layout_height="44dp"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="16dp"
         android:background="@null"
-        android:padding="2dp"
+        android:padding="8dp"
+        android:paddingStart="16dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/date_text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -59,9 +61,10 @@
     <TextView
         android:id="@+id/exp_static_text2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
         android:text="@string/memo_in_japanese"
         android:textSize="16sp"
+        android:gravity="center_vertical"
         app:layout_constraintBottom_toBottomOf="@+id/memo_edit_text"
         app:layout_constraintStart_toStartOf="@+id/exp_static_text"
         app:layout_constraintTop_toTopOf="@+id/memo_edit_text" />
@@ -70,30 +73,31 @@
         android:id="@+id/memo_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:inputType="text"
-        android:textSize="16sp"
         android:hint="メモを追加"
         android:text="@null"
+        android:textSize="16sp"
+        android:padding="8dp"
         android:background="@drawable/edit_text_round_background"
         android:textCursorDrawable="@drawable/cursor_color"
-        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/exp_static_text2"
-        app:layout_constraintTop_toBottomOf="@+id/date_text" />
+        app:layout_constraintStart_toEndOf="@id/exp_static_text2"
+        app:layout_constraintTop_toBottomOf="@id/amount_edit_text" />
 
     <TextView
         android:id="@+id/exp_static_text3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/expenses_in_japanese"
+        android:text="振替"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/amount_edit_text"
-        app:layout_constraintStart_toStartOf="@+id/exp_static_text2"
-        app:layout_constraintTop_toBottomOf="@+id/memo_edit_text" />
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/amount_edit_text"
+        app:layout_constraintStart_toStartOf="@id/exp_static_text2"
+        app:layout_constraintTop_toTopOf="@id/amount_edit_text" />
 
     <TextView
         android:id="@+id/exp_static_text4"
@@ -102,15 +106,15 @@
         android:layout_marginEnd="16dp"
         android:text="@string/yen_in_japanese"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/amount_edit_text"
+        app:layout_constraintBottom_toBottomOf="@id/amount_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/amount_edit_text" />
+        app:layout_constraintTop_toTopOf="@id/amount_edit_text" />
 
     <EditText
         android:id="@+id/amount_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
@@ -122,56 +126,51 @@
         android:textCursorDrawable="@drawable/cursor_color"
         app:layout_constraintEnd_toStartOf="@+id/exp_static_text4"
         app:layout_constraintStart_toEndOf="@+id/exp_static_text3"
-        app:layout_constraintTop_toBottomOf="@+id/memo_edit_text" />
+        app:layout_constraintTop_toBottomOf="@id/date_text" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
         android:orientation="vertical"
         android:weightSum="3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amount_edit_text">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="4dp"
-                android:text="カテゴリ"
-                android:textSize="14sp"
-                />
-
-        </LinearLayout>
-
-        <com.example.householdaccountbook.customviews.SelectableListCustomView
-            android:id="@+id/category_list_custom_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="16dp"
-            android:layout_weight="2"
-            />
+        app:layout_constraintTop_toBottomOf="@+id/memo_edit_text">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginBottom="4dp"
-            android:text="支払い方法"
+            android:text="From"
             android:textSize="14sp"
             />
         <com.example.householdaccountbook.customviews.SelectableListCustomView
-            android:id="@+id/payment_method_list_custom_view"
+            android:id="@+id/from_wallet_list_custom_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1" />
+        <ImageView
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/keyboard_double_arrow_down_24px"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="4dp"
+            android:text="To"
+            android:textSize="14sp"/>
+        <com.example.householdaccountbook.customviews.SelectableListCustomView
+            android:id="@+id/to_wallet_list_custom_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="16dp"
             android:layout_weight="1" />
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

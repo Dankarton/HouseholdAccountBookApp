@@ -2,9 +2,12 @@ package com.example.householdaccountbook;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.os.Debug;
+import android.util.Log;
 
 import com.example.householdaccountbook.db.MyDbContract;
 import com.example.householdaccountbook.db.MyDbManager;
+import com.example.householdaccountbook.myclasses.dbentity.Wallet;
 import com.example.householdaccountbook.repository.CacheProvider;
 import com.example.householdaccountbook.repository.DatabaseEntityRepository;
 
@@ -16,6 +19,7 @@ public class HouseHoldApp extends Application implements CacheProvider {
     private DatabaseEntityRepository<IncomeCategory> incomeCategoryRepository;
     private DatabaseEntityRepository<PurchaseCategory> purchaseCategoryRepository;
     private DatabaseEntityRepository<PaymentMethod> paymentMethodRepository;
+    private DatabaseEntityRepository<Wallet> walletRepository;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -27,10 +31,12 @@ public class HouseHoldApp extends Application implements CacheProvider {
         this.incomeCategoryRepository = new DatabaseEntityRepository<IncomeCategory>(IncomeCategory.class);
         this.purchaseCategoryRepository = new DatabaseEntityRepository<PurchaseCategory>(PurchaseCategory.class);
         this.paymentMethodRepository = new DatabaseEntityRepository<PaymentMethod>(PaymentMethod.class);
+        this.walletRepository = new DatabaseEntityRepository<Wallet>(Wallet.class);
 
         this.incomeCategoryRepository.init();
         this.purchaseCategoryRepository.init();
         this.paymentMethodRepository.init();
+        this.walletRepository.init();
 
         MyDbManager.setCacheProvider(this);
 
@@ -43,6 +49,7 @@ public class HouseHoldApp extends Application implements CacheProvider {
         }
     }
     private void insertPreData() {
+        Log.d("HouseHoldApp", "初期データ挿入");
         for (PurchaseCategory pc : MyDbContract.PurchaseCategoryEntry.PRE_DATA_LIST) {
             MyDbManager.setDataSafely(pc);
         }
@@ -53,6 +60,7 @@ public class HouseHoldApp extends Application implements CacheProvider {
         for (PaymentMethod pm : MyDbContract.PaymentMethodEntry.PRE_DATA_LIST) {
             MyDbManager.setDataSafely(pm);
         }
+        MyDbManager.upsertDatabaseSafely(MyDbContract.WalletEntry.DEFAULT_WALLET);
     }
     public DatabaseEntityRepository<IncomeCategory> getIncomeCategoryRepository() {
         return this.incomeCategoryRepository;
@@ -62,5 +70,8 @@ public class HouseHoldApp extends Application implements CacheProvider {
     }
     public DatabaseEntityRepository<PaymentMethod> getPaymentMethodRepository() {
         return this.paymentMethodRepository;
+    }
+    public DatabaseEntityRepository<Wallet> getWalletRepository() {
+        return this.walletRepository;
     }
 }

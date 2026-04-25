@@ -6,11 +6,18 @@ import com.example.householdaccountbook.db.MyDbContract;
 
 import java.util.Calendar;
 
-public class MoneyMovements extends BOP {
+public class MoneyMovement extends BOP {
+
     private final long fromWalletId;
     private final long toWalletId;
-    public MoneyMovements(Long id, Calendar date, int amount, String memo, long fromWalletId, long toWalletId) {
-        super(id, date, amount, memo, 0);
+
+    public MoneyMovement() {
+        super(null, Calendar.getInstance(), 0, "", -1);
+        this.fromWalletId = -1;
+        this.toWalletId = -1;
+    }
+    public MoneyMovement(Long id, Calendar date, int amount, String memo, long fromWalletId, long toWalletId) {
+        super(id, date, amount, memo, -1);
         this.fromWalletId = fromWalletId;
         this.toWalletId = toWalletId;
     }

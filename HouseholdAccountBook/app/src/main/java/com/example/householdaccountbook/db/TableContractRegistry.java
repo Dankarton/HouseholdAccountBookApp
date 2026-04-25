@@ -11,6 +11,7 @@ import com.example.householdaccountbook.myclasses.dbentity.Purchase;
 import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
 import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
 import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.Wallet;
 
 /**
  * DatabaseEntityを実装したクラスとEntryの対応表管理クラス
@@ -27,6 +28,7 @@ public final class TableContractRegistry {
         KINDS_MAP.put(IncomeCategory.class, new MyDbContract.IncomeCategoryEntry());
         KINDS_MAP.put(PaymentMethod.class, new MyDbContract.PaymentMethodEntry());
         KINDS_MAP.put(MonthlyBalanceDelta.class, new MyDbContract.MonthlyBalanceDeltaEntry());
+        KINDS_MAP.put(Wallet.class, new MyDbContract.WalletEntry());
     }
 
     @SuppressWarnings("unchecked")

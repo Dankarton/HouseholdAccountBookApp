@@ -7,7 +7,7 @@ import com.example.householdaccountbook.MyStdlib;
 
 import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
 import com.example.householdaccountbook.myclasses.dbentity.Expenses;
-import com.example.householdaccountbook.myclasses.dbentity.MoneyMovements;
+import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
 import com.example.householdaccountbook.myclasses.dbentity.MonthlyBalanceDelta;
 import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
 import com.example.householdaccountbook.myclasses.dbentity.Income;
@@ -15,8 +15,6 @@ import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
 import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 import com.example.householdaccountbook.myclasses.dbentity.Purchase;
 import com.example.householdaccountbook.myclasses.dbentity.Wallet;
-
-import java.util.ArrayList;
 
 public final class MyDbContract {
     public interface TableContract<T extends DatabaseEntity> {
@@ -133,6 +131,7 @@ public final class MyDbContract {
         public static final String TABLE_NAME = "ExpensesDb";
         public static final String COLUMN_PAYMENT_METHOD_ID = "payment_method_id";
         public static final String COLUMN_PURCHASE_ID = "purchase_id";
+        public static final String COLUMN_WALLET_ID = "wallet_id";
 
         public static final String[] COLUMNS = {
                 ExpensesEntry.ID,
@@ -144,6 +143,7 @@ public final class MyDbContract {
                 ExpensesEntry.COLUMN_CATEGORY_ID,
                 ExpensesEntry.COLUMN_PAYMENT_METHOD_ID,
                 ExpensesEntry.COLUMN_PURCHASE_ID,
+                ExpensesEntry.COLUMN_WALLET_ID
         };
 
         @Override
@@ -170,11 +170,12 @@ public final class MyDbContract {
                     cursor.getString(5),
                     cursor.getInt(6),
                     cursor.getInt(7),
-                    cursor.getInt(8)
+                    cursor.getInt(8),
+                    cursor.getInt(9)
             );
         }
     }
-    public static final class MoneyMovementsEntry extends BaseBopEntry implements TableContract<MoneyMovements> {
+    public static final class MoneyMovementsEntry extends BaseBopEntry implements TableContract<MoneyMovement> {
         private MoneyMovementsEntry() { /*インスタンス防止*/ }
 
         public static final String TABLE_NAME = "MoneyMovementsDb";
@@ -210,8 +211,8 @@ public final class MyDbContract {
         }
 
         @Override
-        public MoneyMovements fromCursor(Cursor cursor) {
-            return new MoneyMovements(
+        public MoneyMovement fromCursor(Cursor cursor) {
+            return new MoneyMovement(
                     cursor.getLong(0),
                     MyStdlib.convertToCalendar(cursor.getInt(1), cursor.getInt(2), cursor.getInt(3)),
                     cursor.getInt(4),
@@ -330,6 +331,7 @@ public final class MyDbContract {
         public static final String COLUMN_CLOSING_SETTING_NUM = "closing_day";
         public static final String COLUMN_PAYMENT_RULE_CODE = "payment_rule_code";
         public static final String COLUMN_PAYMENT_SETTING_NUM = "payment_setting_num";
+        public static final String COLUMN_WALLET_ID = "wallet_id";
         public static final String COLUMN_INDEX = "list_index";
         public static final String COLUMN_IS_DEFAULT = "is_default";
 
@@ -340,6 +342,7 @@ public final class MyDbContract {
                 PaymentMethodEntry.COLUMN_CLOSING_SETTING_NUM,
                 PaymentMethodEntry.COLUMN_PAYMENT_RULE_CODE,
                 PaymentMethodEntry.COLUMN_PAYMENT_SETTING_NUM,
+                PaymentMethodEntry.COLUMN_WALLET_ID,
                 PaymentMethodEntry.COLUMN_INDEX,
                 PaymentMethodEntry.COLUMN_IS_DEFAULT
         };
@@ -349,6 +352,7 @@ public final class MyDbContract {
                 "現金",
                 PaymentMethod.ClosingRule.None.getCode(), null,
                 PaymentMethod.PaymentRule.SameDay.getCode(), null,
+                (long) 0,
                 0,
                 true
         );
@@ -358,6 +362,7 @@ public final class MyDbContract {
                         "クレジットカード",
                         PaymentMethod.ClosingRule.EndOfMonth.getCode(), null,
                         PaymentMethod.PaymentRule.FixedDay.getCode(), 27,
+                        (long) 0,
                         1,
                         false
                 )
@@ -388,7 +393,8 @@ public final class MyDbContract {
                     cursor.getInt(4),
                     cursor.getInt(5),
                     cursor.getInt(6),
-                    cursor.getInt(7) == 1
+                    cursor.getInt(7),
+                    cursor.getInt(8) == 1
             );
         }
     }
@@ -398,12 +404,24 @@ public final class MyDbContract {
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_INIT_AMOUNT = "init_amount";
         public static final String COLUMN_DISPLAY_INDEX = "display_index";
+        public static final String COLUMN_IS_DEFAULT = "is_default";
+        public static final String COLUMN_IS_DELETED = "is_deleted";
         public static final String[] COLUMNS = {
                 WalletEntry.ID,
                 WalletEntry.COLUMN_NAME,
                 WalletEntry.COLUMN_INIT_AMOUNT,
-                WalletEntry.COLUMN_DISPLAY_INDEX
+                WalletEntry.COLUMN_DISPLAY_INDEX,
+                WalletEntry.COLUMN_IS_DEFAULT,
+                WalletEntry.COLUMN_IS_DELETED,
         };
+        public static final Wallet DEFAULT_WALLET = new Wallet(
+                (long) 0,
+                "現金",
+                0,
+                0,
+                true,
+                false
+        );
         @Override
         public String getTableName() {
             return WalletEntry.TABLE_NAME;
@@ -425,7 +443,9 @@ public final class MyDbContract {
                     cursor.getLong(0),
                     cursor.getString(1),
                     cursor.getInt(2),
-                    cursor.getInt(3)
+                    cursor.getInt(3),
+                    cursor.getInt(4) == 1,
+                    cursor.getInt(5)== 1
             );
         }
     }
@@ -433,11 +453,13 @@ public final class MyDbContract {
     public static final class MonthlyBalanceDeltaEntry implements TableContract<MonthlyBalanceDelta> {
         public static final String TABLE_NAME = "MonthlyBalanceDeltaDb";
         public static final String ID = "_id";
+        public static final String COLUMN_WALLET_ID = "wallet_id";
         public static final String COLUMN_YEAR_MONTH_KEY = "year_month_key";
         public static final String COLUMN_DELTA_AMOUNT = "delta_amount";
 
         public static final String[] COLUMNS = {
                 MonthlyBalanceDeltaEntry.ID,
+                MonthlyBalanceDeltaEntry.COLUMN_WALLET_ID,
                 MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY,
                 MonthlyBalanceDeltaEntry.COLUMN_DELTA_AMOUNT
         };
@@ -462,7 +484,8 @@ public final class MyDbContract {
             return new MonthlyBalanceDelta(
                     cursor.getLong(0),
                     cursor.getInt(1),
-                    cursor.getInt(2)
+                    cursor.getInt(2),
+                    cursor.getInt(3)
             );
         }
     }

@@ -15,11 +15,11 @@ import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.fragments.edit.BaseEditFragment;
 import com.example.householdaccountbook.fragments.edit.IncomeEditFragment;
+import com.example.householdaccountbook.fragments.edit.MoneyMovementEditFragment;
 import com.example.householdaccountbook.fragments.edit.PurchaseEditFragment;
+import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-
-import java.util.Calendar;
 
 import com.example.householdaccountbook.myclasses.dbentity.Income;
 import com.example.householdaccountbook.myclasses.dbentity.Purchase;
@@ -45,11 +45,13 @@ public class InputMotherFragment extends Fragment {
         makeTabLayoutFragment();
     }
     private void makeTabLayoutFragment() {
-        Purchase insPurchaseData = new Purchase(null, Calendar.getInstance(), 0, "", -1, -1, Purchase.PaymentTiming.NEXT_MONTH);
-        Income insIncomeData = new Income(null, Calendar.getInstance(), 0, "", -1);
+        Purchase insPurchaseData = new Purchase();
+        Income insIncomeData = new Income();
+        MoneyMovement insMoneyMovementData = new MoneyMovement();
 
-        PurchaseEditFragment purchaseEditFragment = new PurchaseEditFragment(insPurchaseData);
-        IncomeEditFragment incomeEditFragment = new IncomeEditFragment(insIncomeData);
+        var purchaseEditFragment = new PurchaseEditFragment(insPurchaseData);
+        var incomeEditFragment = new IncomeEditFragment(insIncomeData);
+        var movementEditFragment = new MoneyMovementEditFragment(insMoneyMovementData);
         purchaseEditFragment.setListener(new BaseEditFragment.OnInputActionListener<Purchase>() {
             @Override
             public void onSaveButtonClicked(Purchase data) {
@@ -76,10 +78,22 @@ public class InputMotherFragment extends Fragment {
                 // 新規登録時は削除ボタンは使わない
             }
         });
+        movementEditFragment.setListener(new BaseEditFragment.OnInputActionListener<MoneyMovement>() {
+            @Override
+            public void onSaveButtonClicked(MoneyMovement data) {
+                MyDbManager.setDataSafely(data);
+                movementEditFragment.reset();
+            }
+
+            @Override
+            public void onDeleteButtonClicked(MoneyMovement data) {
+                // 新規登録時は削除ボタンは使わない
+            }
+        });
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(
                 this,
-                new Fragment[]{ purchaseEditFragment, incomeEditFragment },
-                new String[] { "支出", "収入" }
+                new Fragment[]{ purchaseEditFragment, incomeEditFragment, movementEditFragment },
+                new String[] { "支出", "収入", "振替" }
         );
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, ((tab, position) -> tab.setText(adapter.getPageTitle(position)))).attach();

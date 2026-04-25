@@ -21,14 +21,13 @@
         android:id="@+id/name_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_margin="16dp"
         android:ems="10"
         android:inputType="text"
         android:text="Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/name_text"
         app:layout_constraintTop_toTopOf="parent" />
-
 
     <Spinner
         android:id="@+id/closing_rule_spinner"
@@ -44,6 +43,7 @@
         android:id="@+id/closing_rule_setting_num_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:ems="10"
         android:inputType="numberDecimal"
         app:layout_constraintEnd_toEndOf="@+id/closing_rule_spinner"
@@ -63,10 +63,11 @@
         android:id="@+id/payment_rule_setting_num_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:ems="10"
         android:inputType="numberDecimal"
         app:layout_constraintEnd_toEndOf="@+id/payment_rule_spinner"
-        app:layout_constraintTop_toBottomOf="@+id/payment_rule_spinner" />
+        app:layout_constraintTop_toBottomOf="@id/payment_rule_spinner" />
 
     <TextView
         android:id="@+id/closing_rule_setting_text"
@@ -85,6 +86,29 @@
         app:layout_constraintBottom_toBottomOf="@+id/payment_rule_setting_num_edit"
         app:layout_constraintEnd_toStartOf="@+id/payment_rule_setting_num_edit"
         app:layout_constraintTop_toTopOf="@+id/payment_rule_setting_num_edit" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        android:weightSum="3"
+        app:layout_constraintTop_toBottomOf="@id/payment_rule_setting_num_edit"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="4dp"
+            android:text="ウォレット"
+            android:textSize="14sp"
+            />
+        <com.example.householdaccountbook.customviews.SelectableListCustomView
+            android:id="@+id/wallet_list_custom_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

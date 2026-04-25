@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.householdaccountbook.activities.settings.edit.SettingEditIncomeActivity;
 import com.example.householdaccountbook.activities.settings.edit.SettingEditPurchaseActivity;
+import com.example.householdaccountbook.customviews.CalendarCustomView;
 import com.example.householdaccountbook.customviews.item.MonthlySummaryCustomView;
 import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.MyStdlib;
@@ -40,6 +41,7 @@ public class TransactionDataListFragment extends Fragment {
     RecyclerView dailyRecordRecyclerView;
     TextView monthTextView;
     MonthlySummaryCustomView summaryView;
+    CalendarCustomView calendarView;
     Calendar currentDate;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,7 @@ public class TransactionDataListFragment extends Fragment {
         this.context = view.getContext();
         this.monthTextView = view.findViewById(R.id.month_text_view);
         this.dailyRecordRecyclerView = view.findViewById(R.id.transaction_list_recycler_view);
+        this.calendarView = view.findViewById(R.id.calendar_view);
         this.summaryView = view.findViewById(R.id.monthly_summary_view);
 
         view.findViewById(R.id.month_up_button).setOnClickListener(view1 -> {
@@ -88,6 +91,7 @@ public class TransactionDataListFragment extends Fragment {
     private void updateFragment() {
         List<DailyBop> dataList = loadCurrentMonthDailyData(this.currentDate);
         MonthlyBalanceDelta balanceDelta = MyDbManager.getLatestMonthlyDeltaUpTo(this.currentDate);
+        this.calendarView.bind(this.currentDate, new ArrayList<>());
         int deltaAmount = 0;
         int initialBalanceAmount = 0;
         if (balanceDelta != null) {

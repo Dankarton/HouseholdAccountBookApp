@@ -28,7 +28,8 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.ExpensesEntry.COLUMN_MEMO + " TEXT," +
                     MyDbContract.ExpensesEntry.COLUMN_CATEGORY_ID + " INTEGER," +
                     MyDbContract.ExpensesEntry.COLUMN_PAYMENT_METHOD_ID + " INTEGER," +
-                    MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID + " INTEGER)";
+                    MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID + " INTEGER," +
+                    MyDbContract.ExpensesEntry.COLUMN_WALLET_ID + " INTEGER)";
     private static final String INCOME_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.IncomeEntry.TABLE_NAME + " (" +
                     MyDbContract.IncomeEntry.ID + " INTEGER PRIMARY KEY," +
@@ -37,7 +38,8 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.IncomeEntry.COLUMN_DAY + " INTEGER," +
                     MyDbContract.IncomeEntry.COLUMN_AMOUNT + " INTEGER," +
                     MyDbContract.IncomeEntry.COLUMN_CATEGORY_ID + " INTEGER," +
-                    MyDbContract.IncomeEntry.COLUMN_MEMO + " TEXT)";
+                    MyDbContract.IncomeEntry.COLUMN_MEMO + " TEXT," +
+                    MyDbContract.IncomeEntry.COLUMN_WALLET_ID + " INTEGER)";
     private static final String MONEY_MOVEMENTS_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.MoneyMovementsEntry.TABLE_NAME + " (" +
                     MyDbContract.MoneyMovementsEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -54,7 +56,9 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.WalletEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     MyDbContract.WalletEntry.COLUMN_NAME + " TEXT," +
                     MyDbContract.WalletEntry.COLUMN_INIT_AMOUNT + " INTEGER," +
-                    MyDbContract.WalletEntry.COLUMN_DISPLAY_INDEX + " INTEGER)";
+                    MyDbContract.WalletEntry.COLUMN_DISPLAY_INDEX + " INTEGER," +
+                    MyDbContract.WalletEntry.COLUMN_IS_DEFAULT + " INTEGER NOT NULL DEFAULT 0," +
+                    MyDbContract.WalletEntry.COLUMN_IS_DELETED + " INTEGER NOT NULL DEFAULT 0)";
     private static final String PURCHASE_CATEGORY_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.PurchaseCategoryEntry.TABLE_NAME + " (" +
                     MyDbContract.PurchaseCategoryEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -77,11 +81,13 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.PaymentMethodEntry.COLUMN_CLOSING_SETTING_NUM + " INTEGER," +
                     MyDbContract.PaymentMethodEntry.COLUMN_PAYMENT_RULE_CODE + " INTEGER," +
                     MyDbContract.PaymentMethodEntry.COLUMN_PAYMENT_SETTING_NUM + " INTEGER," +
+                    MyDbContract.PaymentMethodEntry.COLUMN_WALLET_ID + " INTEGER," +
                     MyDbContract.PaymentMethodEntry.COLUMN_INDEX + " INTEGER," +
                     MyDbContract.PaymentMethodEntry.COLUMN_IS_DEFAULT + " INTEGER NOT NULL DEFAULT 0)";
     private static final String BALANCE_DELTA_SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MyDbContract.MonthlyBalanceDeltaEntry.TABLE_NAME + " (" +
                     MyDbContract.MonthlyBalanceDeltaEntry.ID + " INTEGER PRIMARY KEY," +
+                    MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_WALLET_ID + " INTEGER," +
                     MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " INTEGER," +
                     MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_DELTA_AMOUNT + " INTEGER)";
     private static final String INCOME_SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + MyDbContract.IncomeEntry.TABLE_NAME;

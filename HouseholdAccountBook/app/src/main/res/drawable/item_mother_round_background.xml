@@ -4,6 +4,6 @@
     <!--背景色-->
     <solid android:color="@color/custom_view_item_background"/>
     <!--角丸の半径-->
-    <corners android:radius="16dp"/>
+    <corners android:radius="4dp"/>
     <stroke android:width="2dp" android:color="@color/mother_frame_color"/>
 </shape>
