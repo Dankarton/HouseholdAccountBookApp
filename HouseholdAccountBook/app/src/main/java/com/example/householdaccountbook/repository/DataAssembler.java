@@ -10,10 +10,11 @@ import com.example.householdaccountbook.myclasses.dbentity.Expenses;
 import com.example.householdaccountbook.myclasses.dbentity.HasCategory;
 import com.example.householdaccountbook.myclasses.dbentity.Income;
 import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
+import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
+import com.example.householdaccountbook.myclasses.dbentity.Purchase;
 import com.example.householdaccountbook.myclasses.dbentity.Wallet;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class DataAssembler {
@@ -92,25 +93,32 @@ public class DataAssembler {
     public <T extends BOP & HasCategory> TransactionUiModel assemble(T data) {
         BopCategory categoryData = this.rm.getDataById(data.getCategoryClass(), data.getCategoryId());
         long id;
-        BopBaseUiModel.ViewType viewType;
+        BopBaseUiModel.DataType viewType;
+        String additionalMemo = "";
         if (data instanceof Expenses) {
             id = ((Expenses) data).getPurchaseId();
-            viewType = BopBaseUiModel.ViewType.EXPENSES;
+            viewType = BopBaseUiModel.DataType.EXPENSES;
+            PaymentMethod pm = this.rm.getDataById(PaymentMethod.class, ((Expenses) data).getPaymentMethodId());
+            additionalMemo = pm.getName();
+        }
+        else if (data instanceof Income){
+            id = data.getId();
+            viewType = BopBaseUiModel.DataType.INCOME;
+            Wallet wallet = this.rm.getDataById(Wallet.class, ((Income) data).getWalletId());
+            additionalMemo = wallet.getName();
         }
         else {
             id = data.getId();
-            if (data instanceof Income) {
-                viewType = BopBaseUiModel.ViewType.INCOME;
-            }
-            else {
-                viewType = BopBaseUiModel.ViewType.PURCHASE;
-            }
+            viewType = BopBaseUiModel.DataType.PURCHASE;
+            PaymentMethod pm = this.rm.getDataById(PaymentMethod.class, ((Purchase) data).getPaymentMethodId());
+            additionalMemo = pm.getName();
         }
         return new TransactionUiModel(
                 viewType,
                 id,
                 data.getAmount(),
                 data.getMemo(),
+                additionalMemo,
                 categoryData.getColorCode(),
                 categoryData.getName()
         );
@@ -119,7 +127,7 @@ public class DataAssembler {
         Wallet toWallet = this.rm.getDataById(Wallet.class, data.getToWalletId());
         Wallet fromWallet = this.rm.getDataById(Wallet.class, data.getFromWalletId());
         return new MoneyMovementUiModel(
-                BopBaseUiModel.ViewType.MONEY_MOVEMENT,
+                BopBaseUiModel.DataType.MONEY_MOVEMENT,
                 data.getId(),
                 data.getAmount(),
                 data.getMemo(),

@@ -4,7 +4,6 @@ import java.util.List;
 
 public class DailyUiModel {
     private final int year, month, date;
-
     private final int totalIncome;
     private final int totalExpense;
 
