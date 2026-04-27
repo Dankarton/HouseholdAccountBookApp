@@ -7,17 +7,23 @@ import com.example.householdaccountbook.db.MyDbManager;
 
 import java.util.Calendar;
 
-public class Expenses extends BOP {
+public class Expenses extends BOP implements HasCategory, HasWallet {
     private final long purchaseId;
     private final long paymentMethodId;
     private final long walletId;
+    private final long categoryId;
 
     public Expenses(Long id, Calendar date, int amount, String memo, long categoryId, long paymentMethodId, long purchaseId, long walletId) {
-        super(id, date, amount, memo, categoryId);
+        super(id, date, amount, memo);
+        this.categoryId = categoryId;
         this.paymentMethodId = paymentMethodId;
         this.purchaseId = purchaseId;
         this.walletId = walletId;
     }
+    public long getCategoryId() { return this.categoryId; }
+    public Class<PurchaseCategory> getCategoryClass() { return PurchaseCategory.class; }
+
+    public long getWalletId() { return this.walletId; }
 
     public long getPaymentMethodId() {
         return this.paymentMethodId;

@@ -47,7 +47,6 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                     MyDbContract.MoneyMovementsEntry.COLUMN_MONTH + " INTEGER," +
                     MyDbContract.MoneyMovementsEntry.COLUMN_DAY + " INTEGER," +
                     MyDbContract.MoneyMovementsEntry.COLUMN_AMOUNT + " INTEGER," +
-                    MyDbContract.MoneyMovementsEntry.COLUMN_CATEGORY_ID + " INTEGER," +
                     MyDbContract.MoneyMovementsEntry.COLUMN_MEMO + " TEXT," +
                     MyDbContract.MoneyMovementsEntry.COLUMN_FROM_WALLET_ID + " INTEGER," +
                     MyDbContract.MoneyMovementsEntry.COLUMN_TO_WALLET_ID + " INTEGER)";

@@ -16,11 +16,10 @@ public class DatabaseEntityRepository<T extends DatabaseEntity> {
 
     public DatabaseEntityRepository(Class<T> clazz) {
         this.clazz = clazz;
-
     }
-    public void init() {
+    public void init(MyDbManager db) {
         if (this.isInitialized) return;
-        ArrayList<T> dataList = MyDbManager.getAll(clazz);
+        ArrayList<T> dataList = db.getAll(clazz);
         for (T data : dataList) {
             this.cache.put(data.getId(), data);
         }
@@ -39,9 +38,9 @@ public class DatabaseEntityRepository<T extends DatabaseEntity> {
         this.cache.remove(data.getId());
     }
 
-    public void refresh() {
+    public void refresh(MyDbManager db) {
         this.clearCache();
-        this.init();
+        this.init(db);
     }
     public int size() {
         return this.cache.size();

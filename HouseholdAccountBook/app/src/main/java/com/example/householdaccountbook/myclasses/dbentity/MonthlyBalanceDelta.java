@@ -6,13 +6,13 @@ import com.example.householdaccountbook.db.MyDbContract;
 
 import java.util.Calendar;
 
-public class MonthlyBalanceDelta extends DatabaseEntity {
+public class MonthlyBalanceDelta extends DatabaseEntity implements HasWallet {
     long walletId;
     int yearMonthKey;
     int deltaAmount;
 
     public MonthlyBalanceDelta(Long id, long walletId, int yearMonthKey, int deltaAmount) {
-        super(id);
+        super(id, false);
         this.walletId = walletId;
         this.yearMonthKey = yearMonthKey;
         this.deltaAmount = deltaAmount;

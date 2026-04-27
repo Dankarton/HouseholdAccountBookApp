@@ -1,7 +1,6 @@
 package com.example.householdaccountbook.myclasses.dbentity;
 
 import com.example.householdaccountbook.repository.DatabaseEntityRepository;
-import com.example.householdaccountbook.repository.DbEntityRepositoryRegistry;
 
 public class IncomeCategory extends BopCategory {
     public IncomeCategory(Long id, String name, int colorCode, int index, boolean isDeleted) {

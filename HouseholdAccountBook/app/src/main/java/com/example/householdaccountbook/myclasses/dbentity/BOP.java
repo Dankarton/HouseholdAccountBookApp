@@ -6,20 +6,17 @@ import java.util.Calendar;
  BalanceOfPaymentsクラス
  支出と収支の親クラス
  */
-public abstract class BOP extends DatabaseEntity {
+public abstract class BOP extends DatabaseEntity implements HasDate {
     private final Calendar date;
     private final int amount;
     private final String memo;
-    private final long categoryId;
 
-    BOP(Long id, Calendar date, int amount, String memo, long categoryId) {
-        super(id);
+    BOP(Long id, Calendar date, int amount, String memo) {
+        super(id, false);
         this.date = date;
         this.amount = amount;
         this.memo = memo;
-        this.categoryId = categoryId;
     }
-
     public Calendar getDate() {
         return this.date;
     }
@@ -38,5 +35,14 @@ public abstract class BOP extends DatabaseEntity {
     public String getMemo() {
         return memo;
     }
-    public long getCategoryId() { return categoryId; }
+    /**
+     * 日付をYYYYMMDDの形のint型に変換する関数。HashMapのKeyとかで使う用。
+     * @param YY Year
+     * @param MM Month
+     * @param DD Date
+     * @return int
+     */
+    public static int getDateInteger(int YY, int MM, int DD) {
+        return YY * 10000 + MM * 100 + DD;
+    }
 }

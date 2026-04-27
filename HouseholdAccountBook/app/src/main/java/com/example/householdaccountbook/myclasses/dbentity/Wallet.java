@@ -9,22 +9,19 @@ public class Wallet extends DatabaseEntity {
     private final int initAmount;
     private final int displayIndex;
     private final boolean isDefault;
-    private final boolean isDeleted;
 
 
     public Wallet(Long id, String name, int initAmount, int displayIndex, boolean isDefault, boolean isDeleted) {
-        super(id);
+        super(id, isDeleted);
         this.name = name;
         this.initAmount = initAmount;
         this.displayIndex = displayIndex;
         this.isDefault = isDefault;
-        this.isDeleted = isDeleted;
     }
     public String getName() { return this.name; }
     public int getInitAmount() { return this.initAmount; }
     public int getDisplayIndex() { return this.displayIndex; }
     public boolean getIsDefault() { return this.isDefault; }
-    public boolean getIsDeleted() { return this.isDeleted; }
 
     @Override
     public DeleteType getDeleteType() {
@@ -42,7 +39,7 @@ public class Wallet extends DatabaseEntity {
             isDefaultInteger = 0;
         }
         int isDeletedInteger;
-        if(this.isDeleted) {
+        if(this.isDeleted()) {
             isDeletedInteger = 1;
         }
         else {

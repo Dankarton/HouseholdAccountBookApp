@@ -1,5 +1,6 @@
 package com.example.householdaccountbook.db;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -7,12 +8,13 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.householdaccountbook.repository.CacheProvider;
+import com.example.householdaccountbook.myclasses.dbentity.HasDate;
+import com.example.householdaccountbook.myclasses.dbentity.Wallet;
 import com.example.householdaccountbook.repository.DatabaseEntityRepository;
-import com.example.householdaccountbook.repository.DbEntityRepositoryRegistry;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 import com.example.householdaccountbook.myclasses.dbentity.BOP;
 import com.example.householdaccountbook.myclasses.DailyBop;
@@ -28,59 +30,30 @@ import com.example.householdaccountbook.myclasses.dbentity.Purchase;
 public class MyDbManager {
     // フィールド
 
-    /**
-     * MyOpenHelper格納用
-     * ヘルパーセット前に使おうとするとエラーを出すようにしたかっただけ．
-     */
-    private static class MyOpenHelperContainer {
-        private static MyOpenHelper helper = null;
+    private static MyDbManager instance = null;
+    private MyOpenHelper helper = null;
 
-        /**
-         * Helperセット
-         *
-         * @param helper MyOpenHelper
-         */
-        public static void setHelper(MyOpenHelper helper) {
-            MyOpenHelperContainer.helper = helper;
-        }
-
-        /**
-         * Helper取得
-         *
-         * @return MyOpenHelper
-         */
-        public static MyOpenHelper getHelper() {
-            if (MyOpenHelperContainer.helper != null) {
-                return MyOpenHelperContainer.helper;
-            } else {
-                throw new NullPointerException(
-                        "MyDbManagerにMyOpenHelperがセットされる前に，データベースの参照を行おうとしています．"
-                );
-            }
-        }
-
-        public boolean existHelper() {
-            return MyOpenHelperContainer.helper != null;
+    private MyDbManager(MyOpenHelper helper) {
+        this.helper = helper;
+    }
+    public static void init(Context context) {
+        if (MyDbManager.instance == null) {
+            MyDbManager.instance = new MyDbManager(new MyOpenHelper(context));
         }
     }
-
-    private static CacheProvider cacheProvider = null;
-
-    public static void setMyOpenHelper(Context context) {
-        MyOpenHelperContainer.setHelper(new MyOpenHelper(context));
+    public static MyDbManager getInstance() {
+        if (MyDbManager.instance == null) {
+            throw new IllegalStateException("MyDbManagerをinstanceが生成される前に使用しています。アプリ開始時のonCreate()にinit()を記述し忘れている可能性があります。");
+        }
+        return MyDbManager.instance;
     }
-
-    public static void setCacheProvider(CacheProvider provider) {
-        MyDbManager.cacheProvider = provider;
-    }
-
 
     /**
      * デフォルトの支払方法を確保する関数
      * デフォルトの支払方法(通常支払い)が不具合でデータベースから削除されても自動で補完するためのもの
      */
-    public static void ensureDefaultPayments() {
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
+    public void ensureDefaultPayments() {
+        SQLiteDatabase db = this.helper.getWritableDatabase();
         // デフォルトの支払い方法のIDで検索をかける
         Cursor cursor = db.query(
                 MyDbContract.PaymentMethodEntry.TABLE_NAME,
@@ -99,7 +72,7 @@ public class MyDbManager {
         // 件数が1以上だったら登録する必要はないので終了
         if (count > 0) return;
         // デフォルトの支払方法を新規作成
-        ArrayList<PaymentMethod> newlyList = MyDbManager.getAll(PaymentMethod.class);
+        ArrayList<PaymentMethod> newlyList = getAll(PaymentMethod.class);
         // リストの一番最初に来るように登録
         ContentValues values = MyDbContract.PaymentMethodEntry.DEFAULT_PAYMENT_METHOD.getContentValues();
         values.put(
@@ -122,7 +95,7 @@ public class MyDbManager {
      * @param <T>  extends DatabaseEntity
      * @return id番号
      */
-    private static <T extends DatabaseEntity> long setData(SQLiteDatabase db, MyDbContract.TableContract<T> contract, T data) {
+    private <T extends DatabaseEntity> long setData(SQLiteDatabase db, MyDbContract.TableContract<T> contract, T data) {
         if (data.getId() != null) {
             throw new IllegalArgumentException(
                     "データにIDが設定されています．既存データを謝って登録している可能性があります: id = " + data.getId()
@@ -137,8 +110,8 @@ public class MyDbManager {
         }
     }
 
-    private static <T extends DatabaseEntity> long setData(T data) {
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
+    private <T extends DatabaseEntity> long setData(T data) {
+        SQLiteDatabase db = this.helper.getWritableDatabase();
         return setData(db, TableContractRegistry.getContract(data.getClass()), data);
     }
 
@@ -148,7 +121,7 @@ public class MyDbManager {
      * @param data データ
      * @param <T>  DatabaseEntity
      */
-    public static <T extends DatabaseEntity> void setDataSafely(T data) {
+    public <T extends DatabaseEntity> void setDataSafely(T data) {
         if (data.getId() != null) {
             throw new IllegalArgumentException(
                     "データにIDが設定されています．既存データを謝って登録している可能性があります: id = " + data.getId()
@@ -171,7 +144,7 @@ public class MyDbManager {
      * @param data データクラス
      * @param <T>  DatabaseEntityを継承したデータクラス
      */
-    private static <T extends DatabaseEntity> void upsertDatabase(SQLiteDatabase db, MyDbContract.TableContract<T> contract, T data) {
+    private <T extends DatabaseEntity> void upsertDatabase(SQLiteDatabase db, MyDbContract.TableContract<T> contract, T data) {
         Long id = data.getId();
         if (id == null) {
             throw new IllegalArgumentException("DatabaseEntityのidがnullです．upsert関数にはidが必要です．");
@@ -205,11 +178,11 @@ public class MyDbManager {
      * @param data データ
      * @param <T>  DatabaseEntityを継承したデータクラス
      */
-    private static <T extends DatabaseEntity> void upsertDatabase(T data) {
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getWritableDatabase();
+    private <T extends DatabaseEntity> void upsertDatabase(T data) {
+        SQLiteDatabase db = this.helper.getWritableDatabase();
         // dataのクラスから対応するTableContractを取得
-        final MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(data.getClass());
-        MyDbManager.upsertDatabase(db, contract, data);
+        MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(data.getClass());
+        upsertDatabase(db, contract, data);
     }
 
     /**
@@ -218,14 +191,14 @@ public class MyDbManager {
      * @param data データ
      * @param <T>  DatabaseEntityを継承したデータクラス
      */
-    public static <T extends DatabaseEntity> void upsertDatabaseSafely(T data) {
+    public <T extends DatabaseEntity> void upsertDatabaseSafely(T data) {
         if (data.getId() == null) {
             Log.e("MyDbManager", "upsertDatabase: idがnullのため更新・挿入を中止しました．");
             return;
         }
         // dataは必ず<T extends DatabaseEntity>の範疇であることが確定してるので警告は無視できる(はず)
         @SuppressWarnings("unchecked")
-        T beforeData = getDataById((Class<T>) data.getClass(), data.getId());
+        T beforeData = getDataByIdupd((Class<T>) data.getClass(), data.getId());
 
         data.onBeforeUpdate();
         upsertDatabase(data);
@@ -238,7 +211,7 @@ public class MyDbManager {
      *
      * @param data <T extends DatabaseEntity>
      */
-    public static <T extends DatabaseEntity> void deleteDataSafely(T data) {
+    public <T extends DatabaseEntity> void deleteDataSafely(T data) {
         // フック関数的な
         // DatabaseEntityの削除前処理
         data.onBeforeDelete();
@@ -259,7 +232,7 @@ public class MyDbManager {
      * データ削除(低レベル操作，依存関係などを無視して指定されたデータを削除する)
      * アプリケーションのデータ構造を維持したまま削除するなら deleteDataSafely を使うように!
      */
-    private static <T extends DatabaseEntity> void deleteData(T data) {
+    private <T extends DatabaseEntity> void deleteData(T data) {
         if (data.getId() == null) {
             Log.d("MyDbManager.deleteData", "IDがnullです．データベースに追加前のデータを削除することはできません．");
             return;
@@ -275,10 +248,10 @@ public class MyDbManager {
      * @param id    ID
      * @param <T>   DatabaseEntity
      */
-    private static <T extends DatabaseEntity> void deleteData(Class<T> clazz, long id) {
+    private <T extends DatabaseEntity> void deleteData(Class<T> clazz, long id) {
         MyDbContract.TableContract<T> classKind = TableContractRegistry.getContract(clazz);
 
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
+        SQLiteDatabase db = helper.getReadableDatabase();
         int deletedRowNum = db.delete(
                 classKind.getTableName(),
                 classKind.getIdColumnName() + " = ?",
@@ -297,18 +270,10 @@ public class MyDbManager {
      * @param <T>   DatabaseEntity
      * @return データ
      */
-    public static <T extends DatabaseEntity> T getDataById(Class<T> clazz, long id) {
+    public <T extends DatabaseEntity> T getDataByIdupd(Class<T> clazz, long id) {
         T data = null;
-        DatabaseEntityRepository<T> cash = DbEntityRepositoryRegistry.getRepository(clazz);
-        if (cash != null) {
-            // キャッシュが用意されてるエンティティならキャッシュから取得
-            data = cash.getDataById(id);
-            if (data != null) {
-                return data;
-            }
-        }
-        // キャッシュが用意されていない，もしくはキャッシュにデータが無かったらデータベースを検索
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
+        // Classの型とIDからデータベースを検索
+        SQLiteDatabase db = helper.getReadableDatabase();
         MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
         Cursor cursor = db.query(
                 contract.getTableName(),
@@ -323,10 +288,6 @@ public class MyDbManager {
             data = contract.fromCursor(cursor);
         }
         cursor.close();
-        if (data != null && cash != null) {
-            // キャッシュに無かったデータを登録
-            cash.updateCache(data);
-        }
         return data;
     }
 
@@ -340,8 +301,8 @@ public class MyDbManager {
      * @param <T>   BOP
      * @return ArrayList
      */
-    public static <T extends BOP> ArrayList<T> getBopDataByDate(Class<T> clazz, Integer year, Integer month, Integer day) {
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
+    public <T extends BOP> ArrayList<T> getBopDataByDate(Class<T> clazz, Integer year, Integer month, Integer day) {
+        SQLiteDatabase db = helper.getReadableDatabase();
         MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
         String selection = buildWhereClauseByDate(
                 year, month, day,
@@ -371,14 +332,81 @@ public class MyDbManager {
         cursor.close();
         return bopDataList;
     }
-
+    public <T extends DatabaseEntity, HasDate> ArrayList<T> getDataInRange(Class<T> clazz, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
+        String selection = "printf(\"%04d-%02d-%02d\", " + MyDbContract.BaseBopEntry.COLUMN_YEAR + ", " +
+                MyDbContract.BaseBopEntry.COLUMN_MONTH + ", " + MyDbContract.BaseBopEntry.COLUMN_DAY + ") BETWEEN ? AND ?";
+        // Androidアプリだと言語を設定してformatしないと形が崩れる場合があるらしい。
+        String[] selectionArgs = new String[]{
+                String.format(Locale.US, "%04d%02d%02d", startYY, startMM, startDD),
+                String.format(Locale.US, "%04d%02d%02d", endYY, endMM, endDD)
+        };
+        String orderBy = MyDbContract.BaseBopEntry.COLUMN_YEAR + " ASC, "
+                + MyDbContract.BaseBopEntry.COLUMN_MONTH + " ASC, "
+                + MyDbContract.BaseBopEntry.COLUMN_DAY + " ASC";
+        Cursor cursor = db.query(
+                contract.getTableName(),
+                contract.getColumns(),
+                selection,
+                selectionArgs,
+                null,
+                null,
+                orderBy
+        );
+        ArrayList<T> bopDataList = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                bopDataList.add(contract.fromCursor(cursor));
+            } while (cursor.moveToNext());
+        }
+        ;
+        cursor.close();
+        return bopDataList;
+    }
+    public <T extends DatabaseEntity, HasDate, HasWallet> ArrayList<T> getDataInRangeWithWallet(
+            Class<T> clazz, long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
+        String selection = MyDbContract.ExpensesEntry.COLUMN_WALLET_ID + " = ? AND printf(\"%04d-%02d-%02d\", " +
+                MyDbContract.BaseBopEntry.COLUMN_YEAR + ", " +
+                MyDbContract.BaseBopEntry.COLUMN_MONTH + ", " +
+                MyDbContract.BaseBopEntry.COLUMN_DAY + ") BETWEEN ? AND ?";
+        // Androidアプリだと言語を設定してformatしないと形が崩れる場合があるらしい。
+        String[] selectionArgs = new String[]{
+                String.valueOf(walletId),
+                String.format(Locale.US, "%04d%02d%02d", startYY, startMM, startDD),
+                String.format(Locale.US, "%04d%02d%02d", endYY, endMM, endDD)
+        };
+        String orderBy = MyDbContract.BaseBopEntry.COLUMN_YEAR + " ASC, "
+                + MyDbContract.BaseBopEntry.COLUMN_MONTH + " ASC, "
+                + MyDbContract.BaseBopEntry.COLUMN_DAY + " ASC";
+        Cursor cursor = db.query(
+                contract.getTableName(),
+                contract.getColumns(),
+                selection,
+                selectionArgs,
+                null,
+                null,
+                orderBy
+        );
+        ArrayList<T> bopDataList = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                bopDataList.add(contract.fromCursor(cursor));
+            } while (cursor.moveToNext());
+        }
+        ;
+        cursor.close();
+        return bopDataList;
+    }
     /**
      * Purchaseの子Expensesを全て取得
      *
      * @param purchase 親Purchase
      * @return ArrayList
      */
-    public static ArrayList<Expenses> getChildExpensesList(Purchase purchase) {
+    public ArrayList<Expenses> getChildExpensesList(Purchase purchase) {
         return getData(
                 Expenses.class,
                 MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID + " = ?",
@@ -393,7 +421,8 @@ public class MyDbManager {
      * @param date 日付
      * @return 残高差分
      */
-    public static MonthlyBalanceDelta getLatestMonthlyDeltaUpTo(Calendar date) {
+    public MonthlyBalanceDelta getLatestMonthlyDeltaUpTo(Calendar date) {
+        // TODO ウォレット追加で残高がウォレットごとに存在することになったので、それに合わせて改良。(引数にウォレットIDがいるんじゃないかな)
         ArrayList<MonthlyBalanceDelta> dataList = getData(
                 MonthlyBalanceDelta.class,
                 MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " <= ?",
@@ -410,10 +439,10 @@ public class MyDbManager {
         }
     }
 
-    public static DailyBop getDailyData(int year, int month, int day) {
-        ArrayList<Purchase> purchaseList = MyDbManager.getBopDataByDate(Purchase.class, year, month, day);
-        ArrayList<Expenses> expensesList = MyDbManager.getBopDataByDate(Expenses.class, year, month, day);
-        ArrayList<Income> incomeList = MyDbManager.getBopDataByDate(Income.class, year, month, day);
+    public DailyBop getDailyData(int year, int month, int day) {
+        ArrayList<Purchase> purchaseList = getBopDataByDate(Purchase.class, year, month, day);
+        ArrayList<Expenses> expensesList = getBopDataByDate(Expenses.class, year, month, day);
+        ArrayList<Income> incomeList = getBopDataByDate(Income.class, year, month, day);
         // 収入も支出もない場合
         if ((purchaseList.isEmpty() && expensesList.isEmpty()) && incomeList.isEmpty()) {
             return null;
@@ -428,7 +457,7 @@ public class MyDbManager {
      * @param <T>   DatabaseEntityを実装したクラス
      * @return リスト
      */
-    public static <T extends DatabaseEntity> ArrayList<T> getAllSafely(Class<T> clazz) {
+    public <T extends DatabaseEntity> ArrayList<T> getAllSafely(Class<T> clazz) {
         if (clazz == PurchaseCategory.class || clazz == IncomeCategory.class) {
             // 論理削除されてないデータだけを取得
             String selection = MyDbContract.BaseCategoryEntry.COLUMN_IS_DELETED + " = ?";
@@ -445,8 +474,8 @@ public class MyDbManager {
      * @param <T>   DatabaseEntity継承済み
      * @return ArrayList
      */
-    public static <T extends DatabaseEntity> ArrayList<T> getAll(Class<T> clazz) {
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
+    public <T extends DatabaseEntity> ArrayList<T> getAll(Class<T> clazz) {
+        SQLiteDatabase db = this.helper.getReadableDatabase();
         MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
         ArrayList<T> result = new ArrayList<>();
         Cursor cursor = db.query(
@@ -477,10 +506,10 @@ public class MyDbManager {
      * @param <T>       DatabaseEntity
      * @return ArrayList
      */
-    private static <T extends DatabaseEntity> ArrayList<T> getData(Class<T> clazz, String selection,
+    public <T extends DatabaseEntity> ArrayList<T> getData(Class<T> clazz, String selection,
                                                                    String[] selectionArgs, String groupBy,
                                                                    String having, String orderBy, String limit) {
-        SQLiteDatabase db = MyOpenHelperContainer.getHelper().getReadableDatabase();
+        SQLiteDatabase db = this.helper.getReadableDatabase();
         MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
         ArrayList<T> result = new ArrayList<>();
         Cursor cursor = db.query(
@@ -509,7 +538,7 @@ public class MyDbManager {
      * @param date   収支の変更があった日付
      * @param amount 変更分の金額
      */
-    public static void updateMonthlyBalanceDelta(Calendar date, long walletId, int amount) {
+    public void updateMonthlyBalanceDelta(Calendar date, long walletId, int amount) {
         int targetYearMonthKey = MonthlyBalanceDelta.makeYearMonthKey(date);
         // 対象年月のデータを取得
         String targetSelection = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " = ?";
@@ -572,7 +601,7 @@ public class MyDbManager {
      * @param dayColumn   日のカラム名
      * @return Where句
      */
-    private static String buildWhereClauseByDate(Integer year, Integer month, Integer day, String yearColumn, String monthColumn, String dayColumn) {
+    private String buildWhereClauseByDate(Integer year, Integer month, Integer day, String yearColumn, String monthColumn, String dayColumn) {
         ArrayList<String> selectionParts = new ArrayList<>();
 
         if (year != null) {
@@ -590,5 +619,15 @@ public class MyDbManager {
             selection = String.join(" AND ", selectionParts);
         }
         return selection;
+    }
+    private String buildDateInRangeSelection(String year, String month, String day) {
+        return  "printf(\"%04d-%02d-%02d\", " + MyDbContract.BaseBopEntry.COLUMN_YEAR + ", " +
+                MyDbContract.BaseBopEntry.COLUMN_MONTH + ", " + MyDbContract.BaseBopEntry.COLUMN_DAY + ") BETWEEN ? AND ?";
+    }
+    private String[] buildDateInRangeSelectionArg(int sYY, int sMM, int sDD, int eYY, int eMM, int eDD) {
+         return new String[]{
+                String.format(Locale.US, "%04d%02d%02d", sYY, sMM, sDD),
+                String.format(Locale.US, "%04d%02d%02d", eYY, eMM, eDD)
+        };
     }
 }

@@ -25,9 +25,6 @@ import java.util.List;
 public class CalendarCustomView extends ConstraintLayout {
     GridLayout daysGridLayout;
 
-    private HashMap<Integer, List<BOP>> dailyDataMap;
-    private HashMap<Integer, Integer> dailyTransAmountMap;
-
     public CalendarCustomView(@NonNull Context context) {
         super(context);
         init(context);
@@ -46,24 +43,13 @@ public class CalendarCustomView extends ConstraintLayout {
         View layout = ConstraintLayout.inflate(context, R.layout.custom_view_calendar, this);
         this.daysGridLayout = layout.findViewById(R.id.item_list_grid_layout);
     }
-    public void bind(Calendar targetDate, List<BOP> bopData) {
+    public void bind(Calendar targetDate, HashMap<Integer, Integer> amountDataMap, int maxAmount) {
         Log.d("CalendarCustomView", "bind");
-        this.dailyDataMap = new HashMap<>();
-        this.dailyTransAmountMap = new HashMap<>();
-        for (BOP data: bopData) {
-            int day = data.getDay();
-            if (!this.dailyDataMap.containsKey(day)) {
-                this.dailyDataMap.put(day, new ArrayList<>());
-            }
-            this.dailyDataMap.get(day).add(data);
-            int totalAmo = this.dailyTransAmountMap.getOrDefault(day, 0);
-            this.dailyTransAmountMap.put(day, totalAmo  + data.getAmount());
-        }
         this.daysGridLayout.post(() -> {
-            setCalendarItems(getContext(), targetDate);
+            setCalendarItems(getContext(), targetDate, amountDataMap, maxAmount);
         });
     }
-    private void setCalendarItems(Context context, Calendar targetDate) {
+    private void setCalendarItems(Context context, Calendar targetDate, HashMap<Integer, Integer> amountData, int maxAmount) {
         this.daysGridLayout.removeAllViews();
         int motherWidth = this.daysGridLayout.getWidth() - this.daysGridLayout.getPaddingStart() - this.daysGridLayout.getPaddingEnd();
         int itemSize = motherWidth / 7;
@@ -90,6 +76,23 @@ public class CalendarCustomView extends ConstraintLayout {
                     textColor = context.getColor(R.color.gray);
                     solidColor = context.getColor(R.color.gray);
                     scale = CalendarItemView.calcCircleScale(0, 0, 1);
+                }
+                else {
+                    Integer amount = amountData.get(currItemDate.get(Calendar.DAY_OF_MONTH));
+                    if (amount == null) {
+                        amount = 0;
+                    }
+                    else if (amount < 0) {
+                        textColor = context.getColor(R.color.base_background);
+                        circleColor = context.getColor(R.color.expenses_text_color);
+                        solidColor = context.getColor(R.color.expenses_text_color);
+                    }
+                    else if (amount > 0) {
+                        textColor = context.getColor(R.color.base_background);
+                        circleColor = context.getColor(R.color.income_text_color);
+                        solidColor = context.getColor(R.color.income_text_color);
+                    }
+                    scale = CalendarItemView.calcCircleScale(amount, 0, maxAmount);
                 }
                 dayView.setAppearance(itemSize, scale, textColor, circleColor, solidColor);
 

@@ -14,15 +14,20 @@ public abstract class DatabaseEntity implements Serializable {
         LOGICAL
     }
     private Long id;
+    private boolean isDeleted;
 
-    protected DatabaseEntity(Long id) {
+    protected DatabaseEntity(Long id, boolean isDeleted) {
         this.id = id;
+        this.isDeleted = isDeleted;
     }
     /**
      * データベースのID取得用.新規追加前でIDが割り当てられてない場合はnullを返すようにする
      * @return id
      */
     public final Long getId() { return this.id; }
+
+    public final boolean isDeleted() { return isDeleted; }
+
     /**
      * データのContentValue取得．IDは除外するように！
      * @return ContentValues
@@ -40,5 +45,5 @@ public abstract class DatabaseEntity implements Serializable {
     public void onBeforeUpdate() {}
     public void onAfterUpdate(DatabaseEntity before) {}
     public void onBeforeDelete() {}
-    public void onAfterDelete() {}
+    public void onAfterDelete() { this.isDeleted = true; }
 }

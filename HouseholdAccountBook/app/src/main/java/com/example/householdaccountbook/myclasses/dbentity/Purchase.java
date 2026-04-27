@@ -8,17 +8,22 @@ import com.example.householdaccountbook.db.MyDbManager;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class Purchase extends BOP {
+public class Purchase extends BOP implements HasCategory {
+    private final long categoryId;
     private final long paymentMethodId;
     public Purchase() {
-        super(null, Calendar.getInstance(), 0, "", -1);
+        super(null, Calendar.getInstance(), 0, "");
+        this.categoryId = -1;
         this.paymentMethodId = -1;
     }
     public Purchase(Long id, Calendar date, int amount, String memo, long categoryId, long paymentMethodId) {
-        super(id, date, amount, memo, categoryId);
+        super(id, date, amount, memo);
+        this.categoryId = categoryId;
         this.paymentMethodId = paymentMethodId;
     }
 
+    public long getCategoryId() { return this.categoryId; }
+    public Class<PurchaseCategory> getCategoryClass() { return PurchaseCategory.class; }
     public long getPaymentMethodId() {
         return this.paymentMethodId;
     }

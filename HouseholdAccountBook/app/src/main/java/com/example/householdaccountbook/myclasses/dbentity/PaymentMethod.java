@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import com.example.householdaccountbook.db.MyDbContract;
 import com.example.householdaccountbook.repository.DatabaseEntityRepository;
-import com.example.householdaccountbook.repository.DbEntityRepositoryRegistry;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,7 +23,7 @@ import com.example.householdaccountbook.strategy.paymentstrategy.SameDayPaymentR
 /**
  * 支払方法クラス
  */
-public class PaymentMethod extends DatabaseEntity {
+public class PaymentMethod extends DatabaseEntity implements HasWallet {
     public enum ClosingRule {
         FixedDay(0, "毎月指定日", true, "日付(日)") {
             @Override
@@ -148,7 +147,7 @@ public class PaymentMethod extends DatabaseEntity {
     private final boolean isDefault;
 
     public PaymentMethod() {
-        super(null);
+        super(null, false);
         this.name = "";
         this.closingRule = ClosingRule.fromCode(0);
         this.closingSettingNum = null;
@@ -167,7 +166,7 @@ public class PaymentMethod extends DatabaseEntity {
      * @param isDefault デフォルトで用意されている支払方法かどうか
      */
     public PaymentMethod(Long id, String name, int closingRuleCode, Integer closingSettingNum, int paymentRuleCode, Integer paymentSettingNum, long walletId, int index, boolean isDefault) {
-        super(id);
+        super(id, false);
         this.name = name;
         this.closingRule = ClosingRule.fromCode(closingRuleCode);
         this.closingSettingNum = closingSettingNum;

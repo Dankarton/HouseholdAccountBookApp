@@ -89,9 +89,10 @@ public class TransactionDataListFragment extends Fragment {
      * 更新
      */
     private void updateFragment() {
+        // TODO
         List<DailyBop> dataList = loadCurrentMonthDailyData(this.currentDate);
         MonthlyBalanceDelta balanceDelta = MyDbManager.getLatestMonthlyDeltaUpTo(this.currentDate);
-        this.calendarView.bind(this.currentDate, new ArrayList<>());
+        this.calendarView.bind(this.currentDate);
         int deltaAmount = 0;
         int initialBalanceAmount = 0;
         if (balanceDelta != null) {

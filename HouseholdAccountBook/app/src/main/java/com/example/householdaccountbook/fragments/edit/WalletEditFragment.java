@@ -68,7 +68,7 @@ public class WalletEditFragment extends BaseEditFragment<Wallet> {
                 initAmount,
                 this.databaseEntityData.getDisplayIndex(),
                 this.databaseEntityData.getIsDefault(),
-                this.databaseEntityData.getIsDeleted()
+                this.databaseEntityData.isDeleted()
         );
         this.listener.onSaveButtonClicked(wallet);
     }

@@ -8,19 +8,17 @@ public abstract class BopCategory extends DatabaseEntity {
     private final String _name;
     private final int _colorCode;
     private final int _index;
-    private boolean _isDeleted;
 
     public BopCategory(Long id, String name, int colorCode, int index, boolean isDeleted) {
-        super(id);
+        super(id, isDeleted);
         this._name = name;
         this._colorCode = colorCode;
         this._index = index;
-        this._isDeleted = isDeleted;
     }
     public ContentValues getContentValuesWithoutId() {
         ContentValues values = new ContentValues();
         int isDeletedInteger;
-        if (this._isDeleted) {
+        if (this.isDeleted()) {
             isDeletedInteger = 1;
         }
         else {
@@ -40,22 +38,14 @@ public abstract class BopCategory extends DatabaseEntity {
     public int getIndex() {
         return this._index;
     }
-    public boolean isDeleted() { return this._isDeleted; }
 
     @Override
     public ContentValues getContentValues() {
         return getContentValuesWithoutId();
     }
 
-    public void setIsDeleted(boolean isDeleted) { this._isDeleted = isDeleted; }
-
     @Override
     public DeleteType getDeleteType() {
         return DeleteType.LOGICAL;
-    }
-
-    @Override
-    public void onBeforeDelete() {
-        this._isDeleted = true;
     }
 }

@@ -12,12 +12,12 @@ public class MoneyMovement extends BOP {
     private final long toWalletId;
 
     public MoneyMovement() {
-        super(null, Calendar.getInstance(), 0, "", -1);
+        super(null, Calendar.getInstance(), 0, "");
         this.fromWalletId = -1;
         this.toWalletId = -1;
     }
     public MoneyMovement(Long id, Calendar date, int amount, String memo, long fromWalletId, long toWalletId) {
-        super(id, date, amount, memo, -1);
+        super(id, date, amount, memo);
         this.fromWalletId = fromWalletId;
         this.toWalletId = toWalletId;
     }
@@ -33,7 +33,6 @@ public class MoneyMovement extends BOP {
         values.put(MyDbContract.MoneyMovementsEntry.COLUMN_DAY, this.getDay());
         values.put(MyDbContract.MoneyMovementsEntry.COLUMN_AMOUNT, this.getAmount());
         values.put(MyDbContract.MoneyMovementsEntry.COLUMN_MEMO, this.getMemo());
-        values.put(MyDbContract.MoneyMovementsEntry.COLUMN_CATEGORY_ID, this.getCategoryId());
         return values;
     }
 }

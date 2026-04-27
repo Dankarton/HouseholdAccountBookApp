@@ -39,6 +39,8 @@ public final class MyDbContract {
         public static final String COLUMN_AMOUNT = "amount";
         public static final String COLUMN_MEMO = "memo";
         public static final String COLUMN_CATEGORY_ID = "category_id";
+
+        public String getColumnAmount() { return COLUMN_AMOUNT; }
     }
 
     public static final class IncomeEntry extends BaseBopEntry implements TableContract<Income> {
