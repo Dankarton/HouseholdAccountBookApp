@@ -1,24 +1,19 @@
 package com.example.householdaccountbook.repository;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 
-import com.example.householdaccountbook.db.MyDbContract;
 import com.example.householdaccountbook.db.MyDbManager;
-import com.example.householdaccountbook.myclasses.DailyUiModel;
-import com.example.householdaccountbook.myclasses.dbentity.BOP;
 import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
 import com.example.householdaccountbook.myclasses.dbentity.Expenses;
-import com.example.householdaccountbook.myclasses.dbentity.HasDate;
 import com.example.householdaccountbook.myclasses.dbentity.Income;
 import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
 import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
 import com.example.householdaccountbook.myclasses.dbentity.Wallet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class RepositoryManager {
     private static RepositoryManager instance;
@@ -90,15 +85,51 @@ public class RepositoryManager {
         }
         return data;
     }
+
+    /**
+     * WalletIDからIncomeを検索
+     * @param walletId
+     * @param startYY
+     * @param startMM
+     * @param startDD
+     * @param endYY
+     * @param endMM
+     * @param endDD
+     * @return
+     */
     public ArrayList<Income> getIncomeDataByWalletId(long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
         return db.getDataInRangeWithWallet(Income.class, walletId, startYY, startMM, startDD, endYY, endMM, endDD);
     }
+
+    /**
+     *
+     * @param walletId
+     * @param startYY
+     * @param startMM
+     * @param startDD
+     * @param endYY
+     * @param endMM
+     * @param endDD
+     * @return
+     */
     public ArrayList<Expenses> getExpensesDataByWalletId(long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
         return db.getDataInRangeWithWallet(Expenses.class, walletId, startYY, startMM, startDD, endYY, endMM, endDD);
     }
 
-
-
+    /**
+     *
+     * @param walletId
+     * @param startYY
+     * @param startMM
+     * @param startDD
+     * @param endYY
+     * @param endMM
+     * @param endDD
+     * @return
+     */
+    public ArrayList<MoneyMovement> getMoneyMovementDataByWalletId(long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
+        return db.getDataInRangeWithWallet(MoneyMovement.class, walletId, startYY, startMM, startDD, endYY, endMM, endDD);
+    }
     /**
      * キャッシュ管理専用クラス
      */

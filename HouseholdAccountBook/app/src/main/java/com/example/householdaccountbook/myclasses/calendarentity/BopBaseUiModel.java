@@ -1,6 +1,6 @@
-package com.example.householdaccountbook.myclasses;
+package com.example.householdaccountbook.myclasses.calendarentity;
 
-public abstract class BopBaseUiModel {
+public abstract class BopBaseUiModel implements CalendarDisplayItem {
     private final DataType viewType;
     private final long id;
     private final int amount;
@@ -31,35 +31,18 @@ public abstract class BopBaseUiModel {
     public String getMemo() { return this.memo; }
 
     public enum DataType {
-        INCOME(0, UiLayoutType.BASIC_BOP),
-        PURCHASE(1, UiLayoutType.BASIC_BOP),
-        EXPENSES(2, UiLayoutType.BASIC_BOP),
-        MONEY_MOVEMENT(3, UiLayoutType.MONEY_MOVEMENT);
+        INCOME(0),
+        PURCHASE(1),
+        EXPENSES(2),
+        MONEY_MOVEMENT(3);
 
         private final int code;
-        private final UiLayoutType uiLayoutType;
 
-        DataType(int code, UiLayoutType uiType) {
+        DataType(int code) {
             this.code = code;
-            this.uiLayoutType = uiType;
         }
         public int getCode() {
             return this.code;
         }
-        public UiLayoutType getUiType() {
-            return this.uiLayoutType;
-        }
-    }
-    public enum UiLayoutType {
-        BASIC_BOP(0),
-        MONEY_MOVEMENT(1);
-
-        private final int code;
-
-        UiLayoutType(int code) {
-            this.code = code;
-        }
-
-        public int getCode() { return this.code; }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.myclasses;
+package com.example.householdaccountbook.myclasses.calendarentity;
 
 public class TransactionUiModel extends BopBaseUiModel {
     private String additionalMemo;
@@ -14,4 +14,14 @@ public class TransactionUiModel extends BopBaseUiModel {
     public int getCategoryColor() { return this.categoryColor; }
     public String getCategoryName() { return this.categoryName; }
     public String getAdditionalMemo() { return this.additionalMemo; }
+
+    @Override
+    public ViewType getViewType() {
+        return ViewType.TRANSACTION_UI;
+    }
+
+    @Override
+    public String getUniqueKey() {
+        return String.valueOf(getViewType().getCode()) + String.valueOf(getViewType());
+    }
 }

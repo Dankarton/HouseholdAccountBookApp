@@ -1,9 +1,9 @@
 package com.example.householdaccountbook.repository;
 
-import com.example.householdaccountbook.myclasses.BopBaseUiModel;
-import com.example.householdaccountbook.myclasses.DailyUiModel;
-import com.example.householdaccountbook.myclasses.MoneyMovementUiModel;
-import com.example.householdaccountbook.myclasses.TransactionUiModel;
+import com.example.householdaccountbook.myclasses.calendarentity.BopBaseUiModel;
+import com.example.householdaccountbook.myclasses.calendarentity.DailyUiModel;
+import com.example.householdaccountbook.myclasses.calendarentity.MoneyMovementUiModel;
+import com.example.householdaccountbook.myclasses.calendarentity.TransactionUiModel;
 import com.example.householdaccountbook.myclasses.dbentity.BOP;
 import com.example.householdaccountbook.myclasses.dbentity.BopCategory;
 import com.example.householdaccountbook.myclasses.dbentity.Expenses;

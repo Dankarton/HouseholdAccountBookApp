@@ -9,13 +9,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.householdaccountbook.customviews.item.BopItemView;
 import com.example.householdaccountbook.customviews.item.MoneyMovementItemView;
 import com.example.householdaccountbook.customviews.item.TransactionItemView;
-import com.example.householdaccountbook.myclasses.BopBaseUiModel;
-import com.example.householdaccountbook.myclasses.MoneyMovementUiModel;
-import com.example.householdaccountbook.myclasses.TransactionUiModel;
+import com.example.householdaccountbook.myclasses.calendarentity.BopBaseUiModel;
+import com.example.householdaccountbook.myclasses.calendarentity.CalendarDisplayItem;
+import com.example.householdaccountbook.myclasses.calendarentity.MoneyMovementUiModel;
+import com.example.householdaccountbook.myclasses.calendarentity.TransactionUiModel;
 
 import java.util.List;
 
-public class DailyUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class BopUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<BopBaseUiModel> BopUiList;
     public interface OnListItemActionListener {
@@ -25,7 +26,7 @@ public class DailyUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == BopBaseUiModel.UiLayoutType.BASIC_BOP.getCode()) {
+        if (viewType == BopBaseUiModel.UiLayoutType.TRANSACTION.getCode()) {
             var uiView = new TransactionItemView(parent.getContext());
             var holder = new TransactionUiViewHolder(uiView);
             return setupViewHolder(uiView, holder);
@@ -56,7 +57,7 @@ public class DailyUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        return this.BopUiList.get(position).getDataType().getUiType().getCode();
+        return this.BopUiList.get(position).getViewType().getCode();
     }
     public void bind(List<BopBaseUiModel> dataList) {
         this.BopUiList = dataList;
@@ -83,7 +84,7 @@ public class DailyUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     // ホルダー系宣言
     /**
-     * このアダプターで使うホルダーのベース
+     *      * このアダプターで使うホルダーのベース
      * @param <T>
      * @param <V>
      */

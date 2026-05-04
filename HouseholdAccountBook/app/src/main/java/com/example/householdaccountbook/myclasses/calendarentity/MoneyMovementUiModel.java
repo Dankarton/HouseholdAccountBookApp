@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.myclasses;
+package com.example.householdaccountbook.myclasses.calendarentity;
 
 public class MoneyMovementUiModel extends BopBaseUiModel {
     private String toWalletName;
@@ -8,6 +8,12 @@ public class MoneyMovementUiModel extends BopBaseUiModel {
         this.toWalletName = toWalletName;
         this.fromWalletName = fromWalletName;
     }
+
+    @Override
+    public ViewType getViewType() { return ViewType.MONEY_MOVEMENT_UI; }
+    @Override
+    public String getUniqueKey() { return String.valueOf(getViewType().getCode()) + String.valueOf(getId()); }
+
     public String getToWalletName() { return this.toWalletName; }
     public String getFromWalletName() { return this.fromWalletName; }
 }
