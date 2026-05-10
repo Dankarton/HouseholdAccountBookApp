@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.householdaccountbook.activities.settings.edit.SettingEditIncomeActivity;
 import com.example.householdaccountbook.activities.settings.edit.SettingEditPurchaseActivity;
-import com.example.householdaccountbook.customviews.CalendarCustomView;
+import com.example.householdaccountbook.customviews.calendar.CalendarCustomView;
 import com.example.householdaccountbook.customviews.item.MonthlySummaryCustomView;
 import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.MyStdlib;

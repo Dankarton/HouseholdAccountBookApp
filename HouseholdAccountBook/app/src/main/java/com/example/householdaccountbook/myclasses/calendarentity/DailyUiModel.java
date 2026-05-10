@@ -2,18 +2,20 @@ package com.example.householdaccountbook.myclasses.calendarentity;
 
 import java.util.List;
 
-public class DailyUiModel implements CalendarDisplayItem {
+public class DailyUiModel implements CalendarDisplayItem, HasListVisible {
     private final int year, month, date;
     private final int deltaAmount;
+    private boolean isListVisible;
 
     private final List<CalendarDisplayItem> displayItems;
 
-    public DailyUiModel(int year, int month, int date, int deltaAmount, List<CalendarDisplayItem> displayItems) {
+    public DailyUiModel(int year, int month, int date, int deltaAmount, List<CalendarDisplayItem> displayItems, boolean isListVisible) {
         this.year = year;
         this.month = month;
         this.date = date;
         this.deltaAmount = deltaAmount;
         this.displayItems = displayItems;
+        this.isListVisible = isListVisible;
     }
 
     public int getYear() { return year; }
@@ -21,6 +23,9 @@ public class DailyUiModel implements CalendarDisplayItem {
     public int getDate() { return this.date; }
     public int getDeltaAmount() { return this.deltaAmount; }
     public List<CalendarDisplayItem> getChildItems() { return this.displayItems; }
+
+    public boolean isListVisible() { return this.isListVisible; }
+    public void setListVisible(boolean isListVisible) { this.isListVisible = isListVisible; }
 
     @Override
     public ViewType getViewType() {

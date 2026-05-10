@@ -1,12 +1,10 @@
-package com.example.householdaccountbook.customviews;
+package com.example.householdaccountbook.customviews.calendar;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.GridLayout;
 
 import androidx.annotation.NonNull;
@@ -14,13 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.customviews.item.CalendarItemView;
-import com.example.householdaccountbook.myclasses.dbentity.BOP;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 public class CalendarCustomView extends ConstraintLayout {
     GridLayout daysGridLayout;

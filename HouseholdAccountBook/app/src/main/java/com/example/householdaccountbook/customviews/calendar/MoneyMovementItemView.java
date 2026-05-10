@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.customviews.item;
+package com.example.householdaccountbook.customviews.calendar;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -21,14 +21,17 @@ public class MoneyMovementItemView extends BopItemView {
     TextView amountText;
     public MoneyMovementItemView(@NonNull Context context) {
         super(context);
+        init(context);
     }
 
     public MoneyMovementItemView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        init(context);
     }
 
     public MoneyMovementItemView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(context);
     }
     private void init(Context context) {
         View layout = ConstraintLayout.inflate(context, R.layout.custom_view_money_movement_item, this);

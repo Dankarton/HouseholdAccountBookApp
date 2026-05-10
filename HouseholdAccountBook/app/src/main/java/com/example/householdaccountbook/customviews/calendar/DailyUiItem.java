@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.customviews.item;
+package com.example.householdaccountbook.customviews.calendar;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,22 +9,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.adapter.BopUiAdapter;
 
 import java.util.Locale;
 
-public class DailyUiItem extends ConstraintLayout {
-    public interface OnActionListener {
-        void onPullDownButtonClicked(boolean visible);
-    }
+public class DailyUiItem extends ConstraintLayout implements ListableItem {
     private TextView dateTextView;
     private TextView amountTextView;
     private ImageView listStateImageView;
-    private RecyclerView dailyUiRecyclerView;
+    private boolean isListVisible = false;
 
     private OnActionListener listener = null;
 
@@ -52,12 +46,11 @@ public class DailyUiItem extends ConstraintLayout {
         this.dateTextView = layout.findViewById(R.id.date_text);
         this.amountTextView = layout.findViewById(R.id.amount_text);
         this.listStateImageView = layout.findViewById(R.id.list_sate_view);
-        this.dailyUiRecyclerView = layout.findViewById(R.id.daily_ui_recycler_view);
         this.listStateImageView.setOnClickListener(
                 new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        changeDropDownVisible(dailyUiRecyclerView.getVisibility() != View.VISIBLE);
+                        changeDropDownVisible(!isListVisible);
                     }
                 }
         );
@@ -68,16 +61,11 @@ public class DailyUiItem extends ConstraintLayout {
      * データ挿入
      * @param date
      * @param amount
-     * @param adapter
      * @param isDropDownVisible
      */
-    public void bind(int date, int amount, RecyclerView.Adapter<RecyclerView.ViewHolder> adapter, boolean isDropDownVisible) {
+    public void bind(int date, int amount, boolean isDropDownVisible) {
         setDate(date);
         setAmount(amount);
-        if (this.dailyUiRecyclerView.getLayoutManager() == null) {
-            this.dailyUiRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        }
-        this.dailyUiRecyclerView.setAdapter(adapter);
         changeDropDownVisible(isDropDownVisible);
     }
 
@@ -112,14 +100,13 @@ public class DailyUiItem extends ConstraintLayout {
      */
     private void changeDropDownVisible(boolean visible) {
         if (visible) {
-            this.dailyUiRecyclerView.setVisibility(View.VISIBLE);
             this.listStateImageView.setImageResource(R.drawable.arrow_drop_up_24px);
         }
         else {
-            dailyUiRecyclerView.setVisibility(View.GONE);
             listStateImageView.setImageResource(R.drawable.arrow_drop_down_24px);
         }
-        if (this.listener != null) this.listener.onPullDownButtonClicked(visible);
+        this.isListVisible = visible;
+        if (this.listener != null) this.listener.onListableButtonClicked(visible);
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.customviews.item;
+package com.example.householdaccountbook.customviews.calendar;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.customviews.CalendarCustomView;
 
 public class CalendarItemView extends ConstraintLayout {
 

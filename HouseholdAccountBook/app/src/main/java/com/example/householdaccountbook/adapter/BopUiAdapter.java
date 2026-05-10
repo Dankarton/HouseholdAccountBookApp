@@ -6,11 +6,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.householdaccountbook.customviews.item.BopItemView;
-import com.example.householdaccountbook.customviews.item.MoneyMovementItemView;
-import com.example.householdaccountbook.customviews.item.TransactionItemView;
+import com.example.householdaccountbook.customviews.calendar.BopItemView;
+import com.example.householdaccountbook.customviews.calendar.ListableItem;
+import com.example.householdaccountbook.customviews.calendar.MoneyMovementItemView;
+import com.example.householdaccountbook.customviews.calendar.TransactionItemView;
 import com.example.householdaccountbook.myclasses.calendarentity.BopBaseUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.CalendarDisplayItem;
 import com.example.householdaccountbook.myclasses.calendarentity.MoneyMovementUiModel;
 import com.example.householdaccountbook.myclasses.calendarentity.TransactionUiModel;
 
@@ -65,6 +65,7 @@ public class BopUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void setListener(OnListItemActionListener listener) {
         this.listener = listener;
     }
+
     private<T extends BopBaseUiModel, V extends BopItemView, VH extends BaseViewHolder<T, V>> VH setupViewHolder(V itemView, VH viewHolder) {
         itemView.setListener(
                 new BopItemView.OnActionListener() {

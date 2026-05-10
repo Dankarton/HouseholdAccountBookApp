@@ -8,11 +8,13 @@ import com.example.householdaccountbook.myclasses.dbentity.Expenses;
 import com.example.householdaccountbook.myclasses.dbentity.Income;
 import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
 import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
+import com.example.householdaccountbook.myclasses.dbentity.MonthlyBalanceDelta;
 import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
 import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
 import com.example.householdaccountbook.myclasses.dbentity.Wallet;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class RepositoryManager {
@@ -35,6 +37,9 @@ public class RepositoryManager {
             throw new IllegalStateException("RepositoryManagerをinstanceが生成される前に使用しています。アプリ開始時のonCreate()にinit()を記述し忘れている可能性があります。");
         }
         return RepositoryManager.instance;
+    }
+    public <T extends DatabaseEntity> ArrayList<T> getAll(Class<T> clazz) {
+        return this.db.getAll(clazz);
     }
 
     /**
@@ -87,7 +92,7 @@ public class RepositoryManager {
     }
 
     /**
-     * WalletIDからIncomeを検索
+     * WalletIDからIncomeを検
      * @param walletId
      * @param startYY
      * @param startMM
@@ -127,8 +132,14 @@ public class RepositoryManager {
      * @param endDD
      * @return
      */
-    public ArrayList<MoneyMovement> getMoneyMovementDataByWalletId(long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
-        return db.getDataInRangeWithWallet(MoneyMovement.class, walletId, startYY, startMM, startDD, endYY, endMM, endDD);
+    public ArrayList<MoneyMovement> getMoneyMovementDataByToWalletId(long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
+        return db.getMoneyMovementInRangeWithToWallet(walletId, startYY, startMM, startDD, endYY, endMM, endDD);
+    }
+    public ArrayList<MoneyMovement> getMoneyMovementDataByFromWalletId(long walletId,int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
+        return db.getMoneyMovementInRangeWithFromWallet(walletId, startYY, startMM, startDD, endYY, endMM, endDD);
+    }
+    public MonthlyBalanceDelta getLatestMonthlyBalanceDelta(long walletId, Calendar targetDate) {
+        return db.getLatestMonthlyDeltaUpTo(walletId, targetDate);
     }
     /**
      * キャッシュ管理専用クラス

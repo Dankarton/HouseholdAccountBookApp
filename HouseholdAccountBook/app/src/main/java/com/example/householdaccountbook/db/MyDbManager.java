@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.householdaccountbook.myclasses.dbentity.HasDate;
+import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
 import com.example.householdaccountbook.myclasses.dbentity.Wallet;
 import com.example.householdaccountbook.repository.DatabaseEntityRepository;
 
@@ -390,7 +391,82 @@ public class MyDbManager {
                 null,
                 orderBy
         );
+
         ArrayList<T> bopDataList = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                bopDataList.add(contract.fromCursor(cursor));
+            } while (cursor.moveToNext());
+        }
+        ;
+        cursor.close();
+        return bopDataList;
+    }
+    public ArrayList<MoneyMovement> getMoneyMovementInRangeWithToWallet(
+            long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        MyDbContract.TableContract<MoneyMovement> contract = TableContractRegistry.getContract(MoneyMovement.class);
+        String selection = MyDbContract.MoneyMovementsEntry.COLUMN_TO_WALLET_ID + " = ? AND printf(\"%04d-%02d-%02d\", " +
+                MyDbContract.MoneyMovementsEntry.COLUMN_YEAR + ", " +
+                MyDbContract.MoneyMovementsEntry.COLUMN_MONTH + ", " +
+                MyDbContract.MoneyMovementsEntry.COLUMN_DAY + ") BETWEEN ? AND ?";
+        // Androidアプリだと言語を設定してformatしないと形が崩れる場合があるらしい。
+        String[] selectionArgs = new String[]{
+                String.valueOf(walletId),
+                String.format(Locale.US, "%04d%02d%02d", startYY, startMM, startDD),
+                String.format(Locale.US, "%04d%02d%02d", endYY, endMM, endDD)
+        };
+        String orderBy = MyDbContract.MoneyMovementsEntry.COLUMN_YEAR + " ASC, "
+                + MyDbContract.MoneyMovementsEntry.COLUMN_MONTH + " ASC, "
+                + MyDbContract.MoneyMovementsEntry.COLUMN_DAY + " ASC";
+        Cursor cursor = db.query(
+                contract.getTableName(),
+                contract.getColumns(),
+                selection,
+                selectionArgs,
+                null,
+                null,
+                orderBy
+        );
+
+        ArrayList<MoneyMovement> bopDataList = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                bopDataList.add(contract.fromCursor(cursor));
+            } while (cursor.moveToNext());
+        }
+        ;
+        cursor.close();
+        return bopDataList;
+    }
+    public ArrayList<MoneyMovement> getMoneyMovementInRangeWithFromWallet(
+            long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        MyDbContract.TableContract<MoneyMovement> contract = TableContractRegistry.getContract(MoneyMovement.class);
+        String selection = MyDbContract.MoneyMovementsEntry.COLUMN_FROM_WALLET_ID + " = ? AND printf(\"%04d-%02d-%02d\", " +
+                MyDbContract.MoneyMovementsEntry.COLUMN_YEAR + ", " +
+                MyDbContract.MoneyMovementsEntry.COLUMN_MONTH + ", " +
+                MyDbContract.MoneyMovementsEntry.COLUMN_DAY + ") BETWEEN ? AND ?";
+        // Androidアプリだと言語を設定してformatしないと形が崩れる場合があるらしい。
+        String[] selectionArgs = new String[]{
+                String.valueOf(walletId),
+                String.format(Locale.US, "%04d%02d%02d", startYY, startMM, startDD),
+                String.format(Locale.US, "%04d%02d%02d", endYY, endMM, endDD)
+        };
+        String orderBy = MyDbContract.MoneyMovementsEntry.COLUMN_YEAR + " ASC, "
+                + MyDbContract.MoneyMovementsEntry.COLUMN_MONTH + " ASC, "
+                + MyDbContract.MoneyMovementsEntry.COLUMN_DAY + " ASC";
+        Cursor cursor = db.query(
+                contract.getTableName(),
+                contract.getColumns(),
+                selection,
+                selectionArgs,
+                null,
+                null,
+                orderBy
+        );
+
+        ArrayList<MoneyMovement> bopDataList = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
                 bopDataList.add(contract.fromCursor(cursor));
@@ -421,12 +497,12 @@ public class MyDbManager {
      * @param date 日付
      * @return 残高差分
      */
-    public MonthlyBalanceDelta getLatestMonthlyDeltaUpTo(Calendar date) {
+    public MonthlyBalanceDelta getLatestMonthlyDeltaUpTo(long walletId, Calendar date) {
         // TODO ウォレット追加で残高がウォレットごとに存在することになったので、それに合わせて改良。(引数にウォレットIDがいるんじゃないかな)
         ArrayList<MonthlyBalanceDelta> dataList = getData(
                 MonthlyBalanceDelta.class,
-                MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " <= ?",
-                new String[]{String.valueOf(MonthlyBalanceDelta.makeYearMonthKey(date))},
+                MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_WALLET_ID + " = ? AND" + MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " <= ?",
+                new String[]{String.valueOf(walletId), String.valueOf(MonthlyBalanceDelta.makeYearMonthKey(date))},
                 null,
                 null,
                 MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " DESC",

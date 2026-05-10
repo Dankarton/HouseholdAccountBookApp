@@ -53,7 +53,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <com.example.householdaccountbook.customviews.CalendarCustomView
+    <com.example.householdaccountbook.customviews.calendar.CalendarCustomView
         android:id="@+id/calendar_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

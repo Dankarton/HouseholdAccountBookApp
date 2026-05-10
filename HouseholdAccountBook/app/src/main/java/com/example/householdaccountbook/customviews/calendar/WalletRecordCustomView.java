@@ -1,4 +1,4 @@
-package com.example.householdaccountbook.customviews;
+package com.example.householdaccountbook.customviews.calendar;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,22 +9,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.adapter.BopUiAdapter;
 
 import java.util.Locale;
 
-public class WalletRecordCustomView extends ConstraintLayout {
-    public interface OnActionListener {
-        void onPulDownButtonClicked(boolean visible);
-    }
+public class WalletRecordCustomView extends ConstraintLayout implements ListableItem {
     private TextView walletNameTextView;
     private TextView bopAmountTextView;
     private TextView totalAmountTextView;
     private ImageView listStateView;
-    private RecyclerView itemList;
 
     private OnActionListener listener = null;
 
@@ -54,18 +48,17 @@ public class WalletRecordCustomView extends ConstraintLayout {
                     @Override
                     public void onClick(View view) {
                         boolean isVisible = listStateView.getVisibility() != View.VISIBLE;
-                        if (listener != null) listener.onPulDownButtonClicked(isVisible);
                         changeDropDownVisible(isVisible);
+                        if (listener != null) listener.onListableButtonClicked(isVisible);
                     }
                 }
         );
     }
 
-    public void bind(String walletName, int bopAmount, int totalAmount, BopUiAdapter adapter, boolean isListVisible) {
+    public void bind(String walletName, int bopAmount, int totalAmount, boolean isListVisible) {
         this.walletNameTextView.setText(walletName);
         setBopAmount(bopAmount);
         this.totalAmountTextView.setText(totalAmount);
-        this.itemList.setAdapter(adapter);
         changeDropDownVisible(isListVisible);
     }
 
@@ -84,11 +77,9 @@ public class WalletRecordCustomView extends ConstraintLayout {
 
     private void changeDropDownVisible(boolean visible) {
         if (visible) {
-            this.itemList.setVisibility(View.VISIBLE);
             this.listStateView.setImageResource(R.drawable.keyboard_arrow_up_24px);
         }
         else {
-            this.itemList.setVisibility(View.GONE);
             this.listStateView.setImageResource(R.drawable.keyboard_arrow_down_24px);
         }
     }

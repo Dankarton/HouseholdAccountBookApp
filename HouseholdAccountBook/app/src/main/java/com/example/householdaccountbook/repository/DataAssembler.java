@@ -1,6 +1,7 @@
 package com.example.householdaccountbook.repository;
 
 import com.example.householdaccountbook.myclasses.calendarentity.BopBaseUiModel;
+import com.example.householdaccountbook.myclasses.calendarentity.CalendarDisplayItem;
 import com.example.householdaccountbook.myclasses.calendarentity.DailyUiModel;
 import com.example.householdaccountbook.myclasses.calendarentity.MoneyMovementUiModel;
 import com.example.householdaccountbook.myclasses.calendarentity.TransactionUiModel;
@@ -36,7 +37,7 @@ public class DataAssembler {
         return DataAssembler.instance;
     }
     public <T extends BOP & HasCategory> DailyUiModel assembleDailyUiModel(int year, int month, int date, List<Income> incomes, List<T> expOrPurList) {
-        List<BopBaseUiModel> bopUiModelList = new ArrayList<>();
+        List<CalendarDisplayItem> bopUiModelList = new ArrayList<>();
         int totalIncome = 0;
         int totalExpenses = 0;
         for (TransactionUiModel data : assembleTransactionUiModels(incomes)) {
@@ -47,13 +48,13 @@ public class DataAssembler {
             bopUiModelList.add(data);
             totalExpenses += data.getAmount();
         }
-        return new DailyUiModel(year, month, date, totalIncome, totalExpenses, bopUiModelList);
+        return new DailyUiModel(year, month, date, totalIncome - totalExpenses, bopUiModelList, false);
     }
     public DailyUiModel assembleDailyUiModel(
             int year, int month, int date,
             List<Income> incomes, List<Expenses> expenses,
             List<MoneyMovement> toMoneys, List<MoneyMovement> fromMoneys) {
-        List<BopBaseUiModel> bopUiModelList = new ArrayList<>();
+        List<CalendarDisplayItem> bopUiModelList = new ArrayList<>();
         int totalIncome = 0;
         int totalExpenses = 0;
         for (TransactionUiModel data : assembleTransactionUiModels(incomes)) {
@@ -72,7 +73,7 @@ public class DataAssembler {
             bopUiModelList.add(data);
             totalExpenses += data.getAmount();
         }
-        return new DailyUiModel(year, month, date, totalIncome, totalExpenses, bopUiModelList);
+        return new DailyUiModel(year, month, date, totalIncome - totalExpenses, bopUiModelList, false);
     }
 
     public <T extends BOP & HasCategory> List<TransactionUiModel> assembleTransactionUiModels(List<T> dataList) {
