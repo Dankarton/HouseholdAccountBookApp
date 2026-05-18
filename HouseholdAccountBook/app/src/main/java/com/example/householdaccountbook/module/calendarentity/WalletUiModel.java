@@ -49,4 +49,16 @@ public class WalletUiModel implements CalendarDisplayItem, HasListVisible, HasGr
     public void setPositionType(GroupableItem.PositionType type) {
         this.groupPos = type;
     }
+
+    @Override
+    public boolean equalData(Object o) {
+        if (this == o) return true;
+        if (WalletUiModel.class != o.getClass()) return false;
+        var obj = (WalletUiModel) o;
+        return this.getId() == obj.getId() &&
+                this.getDeltaAmount() == obj.getDeltaAmount() &&
+                this.getCurrentAmount() == obj.getCurrentAmount() &&
+                this.isListVisible() == obj.isListVisible() &&
+                this.getPositionType() == obj.getPositionType();
+    }
 }

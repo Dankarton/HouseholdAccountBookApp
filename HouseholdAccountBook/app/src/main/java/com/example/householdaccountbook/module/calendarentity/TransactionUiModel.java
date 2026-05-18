@@ -26,4 +26,13 @@ public class TransactionUiModel extends BopBaseUiModel {
     public String getUniqueKey() {
         return String.valueOf(getViewType().getCode()) + String.valueOf(getId());
     }
+    @Override
+    public boolean equalData(Object o) {
+        if (this == o) return true;
+        if (TransactionUiModel.class != o.getClass()) return false;
+        TransactionUiModel obj = (TransactionUiModel) o;
+        return this.getViewType() == obj.getViewType() &&
+                this.getId() == obj.getId() &&
+                this.getPositionType() == obj.getPositionType();
+    }
 }

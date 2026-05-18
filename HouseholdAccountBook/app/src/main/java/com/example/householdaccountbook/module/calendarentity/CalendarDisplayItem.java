@@ -37,4 +37,6 @@ public interface CalendarDisplayItem {
     }
     public ViewType getViewType();
     public String getUniqueKey();
+
+    public boolean equalData(Object obj);
 }

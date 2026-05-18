@@ -48,4 +48,16 @@ public class DailyUiModel implements CalendarDisplayItem, HasListVisible, HasGro
     public void setPositionType(GroupableItem.PositionType type) {
         this.groupPos = type;
     }
+
+    @Override
+    public boolean equalData(Object o) {
+        if (this == o) return true;
+        if (DailyUiModel.class != o.getClass()) return false;
+        DailyUiModel obj = (DailyUiModel) o;
+        return this.getYear() == obj.getYear() &&
+                this.getMonth() == obj.getMonth() &&
+                this.getDate() == obj.getDate() &&
+                this.isListVisible() == obj.isListVisible() &&
+                this.getPositionType() == obj.getPositionType();
+    }
 }

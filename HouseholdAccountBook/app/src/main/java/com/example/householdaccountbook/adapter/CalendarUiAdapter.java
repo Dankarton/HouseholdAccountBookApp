@@ -60,21 +60,14 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
                         CalendarDisplayItem oldData = dataList.get(oldItemPosition);
                         CalendarDisplayItem newData = newDataList.get(newItemPosition);
-                        return Objects.equals(dataList.get(oldItemPosition).getUniqueKey(), newDataList.get(newItemPosition).getUniqueKey());
+                        return Objects.equals(oldData.getUniqueKey(), newData.getUniqueKey());
                     }
 
                     @Override
                     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                         CalendarDisplayItem oldData = dataList.get(oldItemPosition);
                         CalendarDisplayItem newData = newDataList.get(newItemPosition);
-                        if (oldData instanceof CalendarUiModel && newData instanceof CalendarUiModel) {
-                            Calendar od = ((CalendarUiModel) oldData).getTargetDate();
-                            Calendar nd = ((CalendarUiModel) newData).getTargetDate();
-                            Log.d("CalendarUiAdapter",
-                                    "old key: " + oldData.getUniqueKey() + ", Year: " + od.get(Calendar.YEAR) + ", Month: " + od.get(Calendar.MONTH) +
-                                            "\nnew key: " + newData.getUniqueKey() + ", Year: " + nd.get(Calendar.YEAR) + ", Month: " + nd.get(Calendar.MONTH));
-                        }
-                        return Objects.equals(oldData.getUniqueKey(), newData.getUniqueKey());
+                        return oldData.equalData(newData);
                     }
                 }
         );

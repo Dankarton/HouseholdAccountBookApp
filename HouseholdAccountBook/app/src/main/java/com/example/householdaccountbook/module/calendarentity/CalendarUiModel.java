@@ -36,4 +36,12 @@ public class CalendarUiModel implements CalendarDisplayItem {
     public String getUniqueKey() {
         return String.format(Locale.JAPANESE, "%04d%02d", targetDate.get(Calendar.YEAR), targetDate.get(Calendar.MONTH)) + String.valueOf(getViewType().getCode());
     }
+    @Override
+    public boolean equalData(Object o) {
+        if (this == o) return true;
+        if (CalendarUiModel.class != o.getClass()) return false;
+        var obj = (CalendarUiModel) o;
+        return this.targetDate.get(Calendar.YEAR) == obj.targetDate.get(Calendar.YEAR) &&
+                this.targetDate.get(Calendar.MONTH) == obj.targetDate.get(Calendar.MONTH);
+    }
 }

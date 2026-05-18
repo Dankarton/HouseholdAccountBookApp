@@ -2,10 +2,12 @@ package com.example.householdaccountbook.fragments.calendar;
 
 import android.util.Log;
 
+import com.example.householdaccountbook.customviews.item.GroupableItem;
 import com.example.householdaccountbook.module.calendarentity.BopBaseUiModel;
 import com.example.householdaccountbook.module.calendarentity.CalendarDisplayItem;
 import com.example.householdaccountbook.module.calendarentity.CalendarUiModel;
 import com.example.householdaccountbook.module.calendarentity.DailyUiModel;
+import com.example.householdaccountbook.module.calendarentity.HasGroupable;
 import com.example.householdaccountbook.module.calendarentity.MoneyMovementUiModel;
 import com.example.householdaccountbook.module.calendarentity.TransactionUiModel;
 import com.example.householdaccountbook.module.calendarentity.WalletUiModel;
@@ -196,7 +198,6 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
     @Override
     List<CalendarDisplayItem> flatten(List<CalendarDisplayItem> beforeData) {
         ArrayList<CalendarDisplayItem> afterList = new ArrayList<>();
-
         for (CalendarDisplayItem data : beforeData) {
             if (data instanceof CalendarUiModel) {
                 afterList.add(data);
@@ -204,17 +205,48 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
             else if (data instanceof DailyUiModel) {
                 afterList.add(data);
                 if (((DailyUiModel) data).isListVisible()) {
-                    for (CalendarDisplayItem childData : ((DailyUiModel) data).getChildItems()) {
-                        if (childData instanceof WalletUiModel) {
-                            afterList.add(childData);
-                            if (((WalletUiModel) childData).isListVisible()) {
-                                afterList.addAll(((WalletUiModel) childData).getChildItems());
-                            }
-                        }
-                    }
+                    ((DailyUiModel) data).setPositionType(GroupableItem.PositionType.TOP);
+                    afterList.addAll(flattenChildItems(((DailyUiModel) data).getChildItems()));
+                }
+                else {
+                    ((DailyUiModel) data).setPositionType(GroupableItem.PositionType.SINGLE);
                 }
             }
         }
         return afterList;
+    }
+    List<CalendarDisplayItem> flattenChildItems(List<CalendarDisplayItem> childItems) {
+        // TODO ネスト深いのいつか直す
+        List<CalendarDisplayItem> result = new ArrayList<>();
+        for (int i = 0; i < childItems.size(); i++) {
+            CalendarDisplayItem child = childItems.get(i);
+            if (child instanceof WalletUiModel) {
+                result.add(child);
+                if (((WalletUiModel) child).isListVisible()) {
+                    List<CalendarDisplayItem> childChildItems = new ArrayList<>();
+                    for (int j = 0; j < childChildItems.size(); j++) {
+                        CalendarDisplayItem childChild = childChildItems.get(j);
+                        if (childChild instanceof GroupableItem) {
+                            if (i < childItems.size() - 1) {
+                                ((GroupableItem) childChild).setGroupPosition(GroupableItem.PositionType.MIDDLE);
+                            }
+                            else {
+                                ((GroupableItem) childChild).setGroupPosition(GroupableItem.PositionType.BOTTOM);
+                            }
+                            result.add(childChild);
+                        }
+                    }
+                }
+                else {
+                    if (i < childItems.size() - 1) {
+                        ((WalletUiModel) child).setPositionType(GroupableItem.PositionType.MIDDLE);
+                    }
+                    else {
+                        ((WalletUiModel) child).setPositionType(GroupableItem.PositionType.BOTTOM);
+                    }
+                }
+            }
+        }
+        return result;
     }
 }
