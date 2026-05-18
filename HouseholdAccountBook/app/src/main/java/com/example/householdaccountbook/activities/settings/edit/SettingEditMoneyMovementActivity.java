@@ -1,7 +1,7 @@
 package com.example.householdaccountbook.activities.settings.edit;
 
 import com.example.householdaccountbook.fragments.edit.MoneyMovementEditFragment;
-import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
+import com.example.householdaccountbook.module.dbentity.MoneyMovement;
 
 public class SettingEditMoneyMovementActivity extends SettingEditBaseActivity<MoneyMovement, MoneyMovementEditFragment> {
     @Override

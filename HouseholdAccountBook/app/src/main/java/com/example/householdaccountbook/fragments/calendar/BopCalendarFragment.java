@@ -1,10 +1,14 @@
 package com.example.householdaccountbook.fragments.calendar;
 
-import com.example.householdaccountbook.myclasses.calendarentity.CalendarDisplayItem;
-import com.example.householdaccountbook.myclasses.calendarentity.CalendarUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.DailyUiModel;
-import com.example.householdaccountbook.myclasses.dbentity.Income;
-import com.example.householdaccountbook.myclasses.dbentity.Purchase;
+import android.util.Log;
+
+import com.example.householdaccountbook.customviews.item.GroupableItem;
+import com.example.householdaccountbook.module.calendarentity.CalendarDisplayItem;
+import com.example.householdaccountbook.module.calendarentity.CalendarUiModel;
+import com.example.householdaccountbook.module.calendarentity.DailyUiModel;
+import com.example.householdaccountbook.module.calendarentity.HasGroupable;
+import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.Purchase;
 import com.example.householdaccountbook.repository.DataAssembler;
 import com.example.householdaccountbook.repository.RepositoryManager;
 
@@ -23,6 +27,7 @@ public class BopCalendarFragment extends BaseCalendarFragment {
         // 年月で範囲指定してデータを取得
         List<Income> incomeList = RepositoryManager.getInstance().getBopDataInRange(Income.class, YY, MM, startDD, YY, MM, endDD);
         List<Purchase> purchaseList = RepositoryManager.getInstance().getBopDataInRange(Purchase.class, YY, MM, startDD, YY, MM, endDD);
+        Log.d("BopCalendarFragment", "Income count: " + incomeList.size());
         // カレンダーオブジェで使うメンバ変数とか
         int maxAmount = 0;
         HashMap<Integer, Integer> dailyDeltaAmountHashMap = new HashMap<>();
@@ -49,13 +54,18 @@ public class BopCalendarFragment extends BaseCalendarFragment {
         }
         List<CalendarDisplayItem> dailyUiList = new ArrayList<>();
         // 先頭にカレンダーオブジェ専用のデータクラスをセット
-        dailyUiList.add(new CalendarUiModel(targetDate, dailyDeltaAmountHashMap, maxAmount));
+        dailyUiList.add(new CalendarUiModel((Calendar) targetDate.clone(), dailyDeltaAmountHashMap, maxAmount));
         for (int i = startDD; i <= endDD; i++) {
+            List<Income> daysIncomeList = incomeHashMap.getOrDefault(i, new ArrayList<>());
+            List<Purchase> daysPurchaseList = purchaseHashMap.getOrDefault(i, new ArrayList<>());
+
+            if (daysIncomeList.size() <= 0 && daysPurchaseList.size() <= 0) continue;
+
             dailyUiList.add(
                     DataAssembler.getInstance().assembleDailyUiModel(
                             YY, MM, i,
-                            incomeHashMap.getOrDefault(i, new ArrayList<>()),
-                            purchaseHashMap.getOrDefault(i, new ArrayList<>())
+                            daysIncomeList,
+                            daysPurchaseList
                     )
             );
         }
@@ -66,15 +76,33 @@ public class BopCalendarFragment extends BaseCalendarFragment {
     List<CalendarDisplayItem> flatten(List<CalendarDisplayItem> beforeData) {
         // 均した後のリスト格納用
         ArrayList<CalendarDisplayItem> afterList = new ArrayList<>();
-
-        for (CalendarDisplayItem data : beforeData) {
+        // TODO ネスト深すぎ。後で関数に切り離す。
+        for (int i = 0; i < beforeData.size(); i++) {
+            CalendarDisplayItem data = beforeData.get(i);
             if (data instanceof CalendarUiModel) {
                 afterList.add(data);
             }
             else if (data instanceof DailyUiModel) {
                 afterList.add(data);
-                if (((DailyUiModel) data).isListVisible()) {
-                    afterList.addAll(((DailyUiModel) data).getChildItems());
+                List<CalendarDisplayItem> childItems = ((DailyUiModel) data).getChildItems();
+                if (((DailyUiModel) data).isListVisible() && !childItems.isEmpty()) {
+                    ((DailyUiModel) data).setPositionType(GroupableItem.PositionType.TOP);
+                    Log.d("BopCalendarFragment.flatten()", "ListVisible: " + ((DailyUiModel) data).isListVisible() + ", " + ((DailyUiModel) data).getChildItems().size());
+                    for (int j = 0; j < childItems.size(); j++) {
+                        CalendarDisplayItem child = childItems.get(j);
+                        if (child instanceof HasGroupable) {
+                            if (j < childItems.size() - 1) {
+                                ((HasGroupable) child).setPositionType(GroupableItem.PositionType.MIDDLE);
+                            }
+                            else {
+                                ((HasGroupable) child).setPositionType(GroupableItem.PositionType.BOTTOM);
+                            }
+                            afterList.add(child);
+                        }
+                    }
+                }
+                else {
+                    ((DailyUiModel) data).setPositionType(GroupableItem.PositionType.SINGLE);
                 }
             }
         }

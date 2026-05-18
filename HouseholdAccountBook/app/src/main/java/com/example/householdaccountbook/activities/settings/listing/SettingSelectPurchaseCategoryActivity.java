@@ -12,14 +12,15 @@ import com.example.householdaccountbook.fragments.listing.BaseListingFragment;
 
 import java.util.ArrayList;
 
-import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.module.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.repository.RepositoryManager;
 
 public class SettingSelectPurchaseCategoryActivity extends SettingMotherActivity {
     @Override
     protected Fragment init() {
         // カテゴリーリスト作成
         ArrayList<CategoryItemView<PurchaseCategory>> categoryViewList = new ArrayList<>();
-        for (PurchaseCategory data : MyDbManager.getAllSafely(PurchaseCategory.class)) {
+        for (PurchaseCategory data : RepositoryManager.getInstance().getAllActive(PurchaseCategory.class)) {
             CategoryItemView<PurchaseCategory> item = new CategoryItemView<>(this);
             item.setData(data);
             item.setSelectedState(false);

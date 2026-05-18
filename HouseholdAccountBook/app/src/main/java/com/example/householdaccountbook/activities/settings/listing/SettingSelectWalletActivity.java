@@ -9,7 +9,8 @@ import com.example.householdaccountbook.activities.settings.edit.SettingEditWall
 import com.example.householdaccountbook.customviews.item.WalletItemView;
 import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.fragments.listing.BaseListingFragment;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.dbentity.Wallet;
+import com.example.householdaccountbook.repository.RepositoryManager;
 
 import java.util.ArrayList;
 
@@ -17,7 +18,7 @@ public class SettingSelectWalletActivity extends SettingMotherActivity {
     @Override
     protected Fragment init() {
         ArrayList<WalletItemView> itemViewList = new ArrayList<>();
-        for (Wallet data : MyDbManager.getAllSafely(Wallet.class)) {
+        for (Wallet data : RepositoryManager.getInstance().getAllActive(Wallet.class)) {
             WalletItemView item = new WalletItemView(this);
             item.setData(data);
             item.setSelectedState(false);

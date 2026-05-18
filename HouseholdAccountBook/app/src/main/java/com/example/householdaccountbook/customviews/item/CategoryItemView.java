@@ -14,7 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
 
-import com.example.householdaccountbook.myclasses.dbentity.BopCategory;
+import com.example.householdaccountbook.module.dbentity.BopCategory;
 
 public class CategoryItemView <T extends BopCategory> extends ConstraintLayout implements SelectableItem<T> {
     View colorDot;

@@ -22,9 +22,10 @@ import com.example.householdaccountbook.db.MyDbManager;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import com.example.householdaccountbook.myclasses.dbentity.Purchase;
-import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
-import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
+import com.example.householdaccountbook.module.dbentity.Purchase;
+import com.example.householdaccountbook.module.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.module.dbentity.PaymentMethod;
+import com.example.householdaccountbook.repository.RepositoryManager;
 
 public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
     TextView dateTextView;
@@ -57,7 +58,7 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
         //
         // カテゴリーリストにItemViewを挿入する操作
         //
-        ArrayList<PurchaseCategory> categoryList = MyDbManager.getAllSafely(PurchaseCategory.class);
+        ArrayList<PurchaseCategory> categoryList = RepositoryManager.getInstance().getAllActive(PurchaseCategory.class);
         ArrayList<CategoryItemView<PurchaseCategory>> categoryItemViews = new ArrayList<>();
         for (PurchaseCategory category : categoryList) {
             CategoryItemView<PurchaseCategory> tmp = new CategoryItemView<>(context);
@@ -72,7 +73,7 @@ public class PurchaseEditFragment extends BaseEditFragment<Purchase> {
         //
         // 支払い方法リストにItemViewを挿入する操作
         //
-        ArrayList<PaymentMethod> paymentMethodList = MyDbManager.getAllSafely(PaymentMethod.class);
+        ArrayList<PaymentMethod> paymentMethodList = RepositoryManager.getInstance().getAllActive(PaymentMethod.class);
         ArrayList<PaymentMethodItemView> methodItemView = new ArrayList<>();
         for (PaymentMethod method : paymentMethodList) {
             PaymentMethodItemView tmp = new PaymentMethodItemView(context);

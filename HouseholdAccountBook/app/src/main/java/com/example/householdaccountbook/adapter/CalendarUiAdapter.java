@@ -1,9 +1,12 @@
 package com.example.householdaccountbook.adapter;
 
+import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.householdaccountbook.customviews.calendar.CalendarCustomView;
@@ -13,16 +16,19 @@ import com.example.householdaccountbook.customviews.calendar.BopItemView;
 import com.example.householdaccountbook.customviews.calendar.DailyUiItem;
 import com.example.householdaccountbook.customviews.calendar.MoneyMovementItemView;
 import com.example.householdaccountbook.customviews.calendar.TransactionItemView;
-import com.example.householdaccountbook.myclasses.calendarentity.BopBaseUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.CalendarDisplayItem;
-import com.example.householdaccountbook.myclasses.calendarentity.CalendarUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.DailyUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.HasListVisible;
-import com.example.householdaccountbook.myclasses.calendarentity.MoneyMovementUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.TransactionUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.WalletUiModel;
+import com.example.householdaccountbook.module.calendarentity.BopBaseUiModel;
+import com.example.householdaccountbook.module.calendarentity.CalendarDisplayItem;
+import com.example.householdaccountbook.module.calendarentity.CalendarUiModel;
+import com.example.householdaccountbook.module.calendarentity.DailyUiModel;
+import com.example.householdaccountbook.module.calendarentity.HasListVisible;
+import com.example.householdaccountbook.module.calendarentity.MoneyMovementUiModel;
+import com.example.householdaccountbook.module.calendarentity.TransactionUiModel;
+import com.example.householdaccountbook.module.calendarentity.WalletUiModel;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public interface OnActionListener {
@@ -32,8 +38,48 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private List<CalendarDisplayItem> dataList;
     private OnActionListener listener;
 
-    public void setData(List<CalendarDisplayItem> dataList) {
-        this.dataList = dataList;
+    public void setData(List<CalendarDisplayItem> newDataList) {
+        if (this.dataList == null) {
+            this.dataList = newDataList;
+            notifyItemRangeInserted(0, newDataList.size());
+            return;
+        }
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(
+                new DiffUtil.Callback() {
+                    @Override
+                    public int getOldListSize() {
+                        return dataList.size();
+                    }
+
+                    @Override
+                    public int getNewListSize() {
+                        return newDataList.size();
+                    }
+
+                    @Override
+                    public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                        CalendarDisplayItem oldData = dataList.get(oldItemPosition);
+                        CalendarDisplayItem newData = newDataList.get(newItemPosition);
+                        return Objects.equals(dataList.get(oldItemPosition).getUniqueKey(), newDataList.get(newItemPosition).getUniqueKey());
+                    }
+
+                    @Override
+                    public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                        CalendarDisplayItem oldData = dataList.get(oldItemPosition);
+                        CalendarDisplayItem newData = newDataList.get(newItemPosition);
+                        if (oldData instanceof CalendarUiModel && newData instanceof CalendarUiModel) {
+                            Calendar od = ((CalendarUiModel) oldData).getTargetDate();
+                            Calendar nd = ((CalendarUiModel) newData).getTargetDate();
+                            Log.d("CalendarUiAdapter",
+                                    "old key: " + oldData.getUniqueKey() + ", Year: " + od.get(Calendar.YEAR) + ", Month: " + od.get(Calendar.MONTH) +
+                                            "\nnew key: " + newData.getUniqueKey() + ", Year: " + nd.get(Calendar.YEAR) + ", Month: " + nd.get(Calendar.MONTH));
+                        }
+                        return Objects.equals(oldData.getUniqueKey(), newData.getUniqueKey());
+                    }
+                }
+        );
+        this.dataList = newDataList;
+        result.dispatchUpdatesTo(this);
     }
     public void setListener(OnActionListener listener) {
         this.listener = listener;
@@ -46,7 +92,18 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == CalendarDisplayItem.UiLayoutType.CALENDAR.getCode()) {
-            return new CalendarViewHolder(new CalendarCustomView(parent.getContext()));
+            CalendarCustomView calendarView = new CalendarCustomView(parent.getContext());
+
+            RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            int margin = (int) (24 * parent.getContext().getResources().getDisplayMetrics().density);
+            params.setMargins(margin, 0, margin, 0);
+
+            calendarView.setLayoutParams(params);
+
+            return new CalendarViewHolder(calendarView);
         }
         else if (viewType == CalendarDisplayItem.UiLayoutType.DAILY.getCode()) {
             var itemView = new DailyUiItem(parent.getContext());
@@ -81,6 +138,7 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         CalendarDisplayItem data = this.dataList.get(position);
         if (data instanceof CalendarUiModel && holder instanceof CalendarViewHolder) {
+            Log.d("CalendarUiAdapter", "CalendarUiModel and CalendarViewHolder");
             ((CalendarViewHolder) holder).bind((CalendarUiModel) data);
         }
         else if (data instanceof DailyUiModel && holder instanceof DailyUiViewHolder) {
@@ -90,9 +148,11 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             ((WalletViewHolder) holder).bind((WalletUiModel) data);
         }
         else if (data instanceof TransactionUiModel && holder instanceof TransactionUiViewHolder) {
+            Log.d("CalendarUiAdapter", "TransactionUiModel and TransactionUiViewHolder");
             ((TransactionUiViewHolder) holder).bind((TransactionUiModel) data);
         }
         else if (data instanceof MoneyMovementUiModel && holder instanceof MoneyMovementUiViewHolder) {
+            Log.d("CalendarUiAdapter", "MoneyMovementUiModel and MoneyMovementUiViewHolder");
             ((MoneyMovementUiViewHolder) holder).bind((MoneyMovementUiModel) data);
         }
         else {
@@ -102,7 +162,13 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemCount() {
-        return this.dataList.size();
+        if (this.dataList != null)
+            return this.dataList.size();
+        else{
+            Log.d("CalendarUiAdapter", "データが挿入される前に描画が始まりました。");
+            return 0;
+        }
+
     }
     @Override
     public int getItemViewType(int position) {
@@ -120,6 +186,7 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         public void bind(CalendarUiModel data) {
             this.calendarView.bind(data.getTargetDate(), data.getDateData(), data.getMaxAmount());
+            Log.d("CalendarViewHolder", "Height: " + this.calendarView.getHeight() + ", Width: " + this.calendarView.getWidth());
         }
     }
 
@@ -127,34 +194,37 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      * 日時UI
      */
     static class DailyUiViewHolder extends BaseViewHolder<DailyUiModel, DailyUiItem> {
-        private final DailyUiItem itemView;
+        DailyUiItem itemView;
         public DailyUiViewHolder(@NonNull DailyUiItem itemView) {
             super(itemView);
             this.itemView = itemView;
         }
         public void bind(DailyUiModel data) {
-            this.itemView.bind(data.getDate(), data.getDeltaAmount(), data.isListVisible());
+            this.itemView.bind(data.getDate(), data.getDeltaAmount(), data.getPositionType(), data.isListVisible());
         }
     }
     /**
      * ウォレットUI
      */
     static class WalletViewHolder extends BaseViewHolder<WalletUiModel, WalletRecordCustomView> {
+        WalletRecordCustomView itemView;
         public WalletViewHolder(@NonNull WalletRecordCustomView itemView) {
             super(itemView);
             this.itemView = itemView;
         }
         @Override
         public void bind(WalletUiModel data) {
-            this.itemView.bind(data.getWalletName(), data.getDeltaAmount(), data.getCurrentAmount(), data.isListVisible());
+            this.itemView.bind(data.getWalletName(), data.getDeltaAmount(), data.getCurrentAmount(), data.getPositionType(), data.isListVisible());
         }
     }
     /**
      * 支出とか収入とかお金を外部とやり取りしたとき用のUi
      */
     static class TransactionUiViewHolder extends BaseViewHolder<TransactionUiModel, TransactionItemView> {
-        public TransactionUiViewHolder(@NonNull View itemView) {
+        TransactionItemView itemView;
+        public TransactionUiViewHolder(@NonNull TransactionItemView itemView) {
             super(itemView);
+            this.itemView = itemView;
         }
         public void bind(TransactionUiModel data) {
             this.itemView.bind(
@@ -162,7 +232,8 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     data.getCategoryName(),
                     data.getMemo(),
                     data.getAdditionalMemo(),
-                    data.getSignedAmount()
+                    data.getSignedAmount(),
+                    data.getPositionType()
             );
         }
     }
@@ -171,15 +242,18 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      * 振替とかチャージとか内部のお金の移動を表示すると起用のui
      */
     static class MoneyMovementUiViewHolder extends BaseViewHolder<MoneyMovementUiModel, MoneyMovementItemView> {
-        public MoneyMovementUiViewHolder(@NonNull View itemView) {
+        MoneyMovementItemView itemView;
+        public MoneyMovementUiViewHolder(@NonNull MoneyMovementItemView itemView) {
             super(itemView);
+            this.itemView = itemView;
         }
         public void bind(MoneyMovementUiModel data) {
             this.itemView.bind(
                     data.getToWalletName(),
                     data.getFromWalletName(),
                     data.getMemo(),
-                    data.getAmount()
+                    data.getSignedAmount(),
+                    data.getPositionType()
             );
         }
     }
@@ -189,10 +263,8 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      * @param <V>
      */
     static abstract class BaseViewHolder<T extends CalendarDisplayItem, V> extends RecyclerView.ViewHolder {
-        protected V itemView;
         public BaseViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.itemView = (V) itemView;
         }
         public abstract void bind(T data);
     }
@@ -209,12 +281,15 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                             ((HasListVisible) data).setListVisible(!((HasListVisible) data).isListVisible());
                             listener.onListableButtonClicked();
                         }
+                        else {
+                            Log.d("BaseViewHolder", "HasListVisibleが継承されてないクラス");
+                        }
                     }
                 }
         );
     }
     /**
-     * アイテムへのリスナー登録とか毎回書くのめんどくさいからまとめて処理できるようにした関数。Javaの引数はオブジェ参照だからちゃんと動くはず。
+     * アイテムへのリスナー登録とか毎回書くのめんどくさいからまとめて処理できるようにした関数。
      * @param itemView
      * @param viewHolder
      * @param <T>
@@ -233,6 +308,9 @@ public class CalendarUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         CalendarDisplayItem data = dataList.get(position);
                         if (data instanceof BopBaseUiModel){
                             listener.onMoreActionButtonClicked(((BopBaseUiModel) data).getDataType(), ((BopBaseUiModel) data).getId());
+                        }
+                        else {
+                            Log.d("BaseViewHolder", "BopBaseUiModelが継承されてないクラス");
                         }
                     }
                 }

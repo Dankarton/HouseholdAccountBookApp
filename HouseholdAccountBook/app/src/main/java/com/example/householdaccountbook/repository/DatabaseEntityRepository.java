@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
+import com.example.householdaccountbook.module.dbentity.DatabaseEntity;
 
 public class DatabaseEntityRepository<T extends DatabaseEntity> {
     private final Class<T> clazz;

@@ -3,20 +3,14 @@ package com.example.householdaccountbook.fragments.edit;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.dbentity.Wallet;
 
 public class WalletEditFragment extends BaseEditFragment<Wallet> {
     EditText nameEdit;
@@ -32,8 +26,20 @@ public class WalletEditFragment extends BaseEditFragment<Wallet> {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        nameEdit = view.findViewById(R.id.name_edit_text);
-        initAmountEdit = view.findViewById(R.id.balance_amount_edit_text);
+        this.nameEdit = view.findViewById(R.id.name_edit_text);
+        this.initAmountEdit = view.findViewById(R.id.balance_amount_edit_text);
+        //
+        // 初期値設定
+        //
+        this.nameEdit.setText(this.databaseEntityData.getName());
+        this.initAmountEdit.setText(String.valueOf(this.databaseEntityData.getInitAmount()));
+        // デフォルト値データの場合はボタンを無効化
+        if (this.databaseEntityData.getIsDefault()) {
+            this.deleteButton.setEnabled(false);
+        }
+        else {
+            this.deleteButton.setEnabled(true);
+        }
     }
     private boolean checkInputData() {
         return checkValidName() && checkValidInitAmount();

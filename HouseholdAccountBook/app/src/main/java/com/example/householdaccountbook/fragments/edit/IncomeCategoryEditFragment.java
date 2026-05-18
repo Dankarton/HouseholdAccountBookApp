@@ -20,7 +20,7 @@ import com.example.householdaccountbook.customviews.item.ColorItemView;
 
 import java.util.ArrayList;
 
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
 
 public class IncomeCategoryEditFragment extends BaseEditFragment<IncomeCategory> {
     private EditText nameEdit;

@@ -17,12 +17,13 @@ import com.example.householdaccountbook.fragments.edit.BaseEditFragment;
 import com.example.householdaccountbook.fragments.edit.IncomeEditFragment;
 import com.example.householdaccountbook.fragments.edit.MoneyMovementEditFragment;
 import com.example.householdaccountbook.fragments.edit.PurchaseEditFragment;
-import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
+import com.example.householdaccountbook.module.dbentity.MoneyMovement;
+import com.example.householdaccountbook.repository.RepositoryManager;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import com.example.householdaccountbook.myclasses.dbentity.Income;
-import com.example.householdaccountbook.myclasses.dbentity.Purchase;
+import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.Purchase;
 
 public class InputMotherFragment extends Fragment {
     ViewPager2 viewPager;
@@ -56,7 +57,7 @@ public class InputMotherFragment extends Fragment {
             @Override
             public void onSaveButtonClicked(Purchase data) {
 
-                MyDbManager.setDataSafely(data);
+                RepositoryManager.getInstance().setDataSafely(data);
                 purchaseEditFragment.reset();
             }
 
@@ -69,7 +70,7 @@ public class InputMotherFragment extends Fragment {
             @Override
             public void onSaveButtonClicked(Income data) {
 
-                MyDbManager.setDataSafely(data);
+                RepositoryManager.getInstance().setDataSafely(data);
                 incomeEditFragment.reset();
             }
 
@@ -81,7 +82,7 @@ public class InputMotherFragment extends Fragment {
         movementEditFragment.setListener(new BaseEditFragment.OnInputActionListener<MoneyMovement>() {
             @Override
             public void onSaveButtonClicked(MoneyMovement data) {
-                MyDbManager.setDataSafely(data);
+                RepositoryManager.getInstance().setDataSafely(data);
                 movementEditFragment.reset();
             }
 

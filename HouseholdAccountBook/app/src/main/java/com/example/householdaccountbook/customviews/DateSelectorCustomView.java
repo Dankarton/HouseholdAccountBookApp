@@ -26,6 +26,7 @@ public class DateSelectorCustomView extends ConstraintLayout {
         void onUpButtonClicked();
         void onBackButtonClicked();
         void onDateTextClicked();
+        void onDateChanged();
     }
 
     public DateSelectorCustomView(@NonNull Context context) {
@@ -52,7 +53,10 @@ public class DateSelectorCustomView extends ConstraintLayout {
                     public void onClick(View view) {
                         changeDate(1);
                         setInDateText();
-                        if (listener != null) listener.onUpButtonClicked();
+                        if (listener != null) {
+                            listener.onUpButtonClicked();
+                            listener.onDateChanged();
+                        }
                     }
                 }
         );
@@ -62,7 +66,10 @@ public class DateSelectorCustomView extends ConstraintLayout {
                     public void onClick(View view) {
                         changeDate(-1);
                         setInDateText();
-                        if (listener != null) listener.onBackButtonClicked();
+                        if (listener != null) {
+                            listener.onBackButtonClicked();
+                            listener.onDateChanged();
+                        }
                     }
                 }
         );
@@ -99,8 +106,10 @@ public class DateSelectorCustomView extends ConstraintLayout {
     }
     public void setDate(Calendar date) {
         this.currentDate = date;
+        // データ更新
+        setInDateText();
     }
-    public Calendar getCurrentDate(Calendar date) {
+    public Calendar getCurrentDate() {
         return this.currentDate;
     }
     public void setListener(OnActionListener listener) {

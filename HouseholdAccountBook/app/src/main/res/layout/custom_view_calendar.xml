@@ -6,14 +6,59 @@
     <GridLayout
         android:id="@+id/item_list_grid_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:columnCount="7"
         android:orientation="horizontal"
-        android:clipToOutline="true"
         android:padding="4dp"
+
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
+        <com.example.householdaccountbook.customviews.calendar.CalendarItemView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"/>
     </GridLayout>
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

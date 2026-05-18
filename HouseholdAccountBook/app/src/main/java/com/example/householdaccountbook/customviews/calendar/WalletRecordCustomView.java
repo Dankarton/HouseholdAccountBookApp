@@ -11,14 +11,17 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
+import com.example.householdaccountbook.customviews.item.GroupableItem;
 
 import java.util.Locale;
 
-public class WalletRecordCustomView extends ConstraintLayout implements ListableItem {
+public class WalletRecordCustomView extends ConstraintLayout implements ListableItem, GroupableItem {
     private TextView walletNameTextView;
     private TextView bopAmountTextView;
     private TextView totalAmountTextView;
     private ImageView listStateView;
+
+    private PositionType groupPosition = PositionType.SINGLE;
 
     private OnActionListener listener = null;
 
@@ -55,10 +58,12 @@ public class WalletRecordCustomView extends ConstraintLayout implements Listable
         );
     }
 
-    public void bind(String walletName, int bopAmount, int totalAmount, boolean isListVisible) {
+    public void bind(String walletName, int bopAmount, int totalAmount, PositionType type, boolean isListVisible) {
         this.walletNameTextView.setText(walletName);
         setBopAmount(bopAmount);
-        this.totalAmountTextView.setText(totalAmount);
+        this.totalAmountTextView.setText(String.format(Locale.JAPANESE, "￥%,d", totalAmount));
+        this.groupPosition = type;
+        this.setBackgroundResource(type.getResource());
         changeDropDownVisible(isListVisible);
     }
 
@@ -85,5 +90,15 @@ public class WalletRecordCustomView extends ConstraintLayout implements Listable
     }
     public void setListener(OnActionListener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    public void setGroupPosition(PositionType type) {
+        this.groupPosition = type;
+    }
+
+    @Override
+    public PositionType getGroupPosition() {
+        return this.groupPosition;
     }
 }

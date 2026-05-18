@@ -2,6 +2,7 @@ package com.example.householdaccountbook.customviews.calendar;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,14 +12,16 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
+import com.example.householdaccountbook.customviews.item.GroupableItem;
 
 import java.util.Locale;
 
-public class DailyUiItem extends ConstraintLayout implements ListableItem {
+public class DailyUiItem extends ConstraintLayout implements ListableItem, GroupableItem {
     private TextView dateTextView;
     private TextView amountTextView;
     private ImageView listStateImageView;
     private boolean isListVisible = false;
+    private PositionType groupPosition = PositionType.SINGLE;
 
     private OnActionListener listener = null;
 
@@ -50,6 +53,7 @@ public class DailyUiItem extends ConstraintLayout implements ListableItem {
                 new OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if (listener != null) listener.onListableButtonClicked(!isListVisible);
                         changeDropDownVisible(!isListVisible);
                     }
                 }
@@ -63,9 +67,12 @@ public class DailyUiItem extends ConstraintLayout implements ListableItem {
      * @param amount
      * @param isDropDownVisible
      */
-    public void bind(int date, int amount, boolean isDropDownVisible) {
+    public void bind(int date, int amount, PositionType type, boolean isDropDownVisible) {
         setDate(date);
         setAmount(amount);
+        Log.d("DailyUiItem", "PosType: " + type.getCode());
+        this.groupPosition = type;
+        this.setBackgroundResource(type.getResource());
         changeDropDownVisible(isDropDownVisible);
     }
 
@@ -106,7 +113,6 @@ public class DailyUiItem extends ConstraintLayout implements ListableItem {
             listStateImageView.setImageResource(R.drawable.arrow_drop_down_24px);
         }
         this.isListVisible = visible;
-        if (this.listener != null) this.listener.onListableButtonClicked(visible);
     }
 
     /**
@@ -115,5 +121,15 @@ public class DailyUiItem extends ConstraintLayout implements ListableItem {
      */
     public void setListener(OnActionListener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    public void setGroupPosition(PositionType type) {
+        this.groupPosition = type;
+    }
+
+    @Override
+    public PositionType getGroupPosition() {
+        return this.groupPosition;
     }
 }

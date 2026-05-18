@@ -5,16 +5,16 @@ import android.graphics.Color;
 
 import com.example.householdaccountbook.MyStdlib;
 
-import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
-import com.example.householdaccountbook.myclasses.dbentity.Expenses;
-import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
-import com.example.householdaccountbook.myclasses.dbentity.MonthlyBalanceDelta;
-import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
-import com.example.householdaccountbook.myclasses.dbentity.Income;
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
-import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
-import com.example.householdaccountbook.myclasses.dbentity.Purchase;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.dbentity.DatabaseEntity;
+import com.example.householdaccountbook.module.dbentity.Expenses;
+import com.example.householdaccountbook.module.dbentity.MoneyMovement;
+import com.example.householdaccountbook.module.dbentity.MonthlyBalanceDelta;
+import com.example.householdaccountbook.module.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.PaymentMethod;
+import com.example.householdaccountbook.module.dbentity.Purchase;
+import com.example.householdaccountbook.module.dbentity.Wallet;
 
 public final class MyDbContract {
     public interface TableContract<T extends DatabaseEntity> {
@@ -178,22 +178,20 @@ public final class MyDbContract {
         }
     }
     public static final class MoneyMovementsEntry extends BaseBopEntry implements TableContract<MoneyMovement> {
-        private MoneyMovementsEntry() { /*インスタンス防止*/ }
 
         public static final String TABLE_NAME = "MoneyMovementsDb";
         public static final String COLUMN_FROM_WALLET_ID = "from_wallet_id";
         public static final String COLUMN_TO_WALLET_ID = "to_wallet_id";
 
         public static final String[] COLUMNS = {
-                MoneyMovementsEntry.ID,
-                MoneyMovementsEntry.COLUMN_YEAR,
-                MoneyMovementsEntry.COLUMN_MONTH,
-                MoneyMovementsEntry.COLUMN_DAY,
-                MoneyMovementsEntry.COLUMN_AMOUNT,
-                MoneyMovementsEntry.COLUMN_MEMO,
-                MoneyMovementsEntry.COLUMN_CATEGORY_ID,
-                MoneyMovementsEntry.COLUMN_FROM_WALLET_ID,
-                MoneyMovementsEntry.COLUMN_TO_WALLET_ID
+                MoneyMovementsEntry.ID,                     // 0
+                MoneyMovementsEntry.COLUMN_YEAR,            // 1
+                MoneyMovementsEntry.COLUMN_MONTH,           // 2
+                MoneyMovementsEntry.COLUMN_DAY,             // 3
+                MoneyMovementsEntry.COLUMN_AMOUNT,          // 4
+                MoneyMovementsEntry.COLUMN_MEMO,            // 5
+                MoneyMovementsEntry.COLUMN_FROM_WALLET_ID,  // 6
+                MoneyMovementsEntry.COLUMN_TO_WALLET_ID     // 7
         };
 
 

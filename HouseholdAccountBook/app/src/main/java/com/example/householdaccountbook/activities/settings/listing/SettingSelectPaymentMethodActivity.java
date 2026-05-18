@@ -13,7 +13,8 @@ import com.example.householdaccountbook.fragments.listing.BaseListingFragment;
 
 import java.util.ArrayList;
 
-import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
+import com.example.householdaccountbook.module.dbentity.PaymentMethod;
+import com.example.householdaccountbook.repository.RepositoryManager;
 
 public class SettingSelectPaymentMethodActivity extends SettingMotherActivity {
     @Override
@@ -29,7 +30,7 @@ public class SettingSelectPaymentMethodActivity extends SettingMotherActivity {
     @NonNull
     private BaseListingFragment<PaymentMethodItemView, PaymentMethod> getPaymentMethodListingFragment() {
         ArrayList<PaymentMethodItemView> methodViewList = new ArrayList<>();
-        for (PaymentMethod data : MyDbManager.getAllSafely(PaymentMethod.class)) {
+        for (PaymentMethod data : RepositoryManager.getInstance().getAllActive(PaymentMethod.class)) {
             PaymentMethodItemView item = new PaymentMethodItemView(this);
             item.setData(data);
             item.setSelectedState(false);

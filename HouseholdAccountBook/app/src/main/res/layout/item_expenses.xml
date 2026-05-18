@@ -12,7 +12,8 @@
         android:id="@+id/item_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/mother_item_background_color">
+        android:background="@color/mother_item_background_color"
+        >
     </View>
     <View
         android:id="@+id/category_color_dot"

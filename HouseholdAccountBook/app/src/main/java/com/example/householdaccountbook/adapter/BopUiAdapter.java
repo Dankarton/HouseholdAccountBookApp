@@ -7,12 +7,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.householdaccountbook.customviews.calendar.BopItemView;
-import com.example.householdaccountbook.customviews.calendar.ListableItem;
 import com.example.householdaccountbook.customviews.calendar.MoneyMovementItemView;
 import com.example.householdaccountbook.customviews.calendar.TransactionItemView;
-import com.example.householdaccountbook.myclasses.calendarentity.BopBaseUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.MoneyMovementUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.TransactionUiModel;
+import com.example.householdaccountbook.module.calendarentity.BopBaseUiModel;
+import com.example.householdaccountbook.module.calendarentity.MoneyMovementUiModel;
+import com.example.householdaccountbook.module.calendarentity.TransactionUiModel;
 
 import java.util.List;
 
@@ -111,7 +110,8 @@ public class BopUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     data.getCategoryName(),
                     data.getMemo(),
                     data.getAdditionalMemo(),
-                    data.getSignedAmount()
+                    data.getSignedAmount(),
+                    data.getPositionType()
             );
         }
     }
@@ -128,7 +128,8 @@ public class BopUiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     data.getToWalletName(),
                     data.getFromWalletName(),
                     data.getMemo(),
-                    data.getAmount()
+                    data.getAmount(),
+                    data.getPositionType()
             );
         }
     }

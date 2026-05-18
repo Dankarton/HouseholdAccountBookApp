@@ -1,19 +1,19 @@
 package com.example.householdaccountbook.repository;
 
-import com.example.householdaccountbook.myclasses.calendarentity.BopBaseUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.CalendarDisplayItem;
-import com.example.householdaccountbook.myclasses.calendarentity.DailyUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.MoneyMovementUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.TransactionUiModel;
-import com.example.householdaccountbook.myclasses.dbentity.BOP;
-import com.example.householdaccountbook.myclasses.dbentity.BopCategory;
-import com.example.householdaccountbook.myclasses.dbentity.Expenses;
-import com.example.householdaccountbook.myclasses.dbentity.HasCategory;
-import com.example.householdaccountbook.myclasses.dbentity.Income;
-import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
-import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
-import com.example.householdaccountbook.myclasses.dbentity.Purchase;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.calendarentity.BopBaseUiModel;
+import com.example.householdaccountbook.module.calendarentity.CalendarDisplayItem;
+import com.example.householdaccountbook.module.calendarentity.DailyUiModel;
+import com.example.householdaccountbook.module.calendarentity.MoneyMovementUiModel;
+import com.example.householdaccountbook.module.calendarentity.TransactionUiModel;
+import com.example.householdaccountbook.module.dbentity.BOP;
+import com.example.householdaccountbook.module.dbentity.BopCategory;
+import com.example.householdaccountbook.module.dbentity.Expenses;
+import com.example.householdaccountbook.module.dbentity.HasCategory;
+import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.MoneyMovement;
+import com.example.householdaccountbook.module.dbentity.PaymentMethod;
+import com.example.householdaccountbook.module.dbentity.Purchase;
+import com.example.householdaccountbook.module.dbentity.Wallet;
 
 import java.util.ArrayList;
 import java.util.List;

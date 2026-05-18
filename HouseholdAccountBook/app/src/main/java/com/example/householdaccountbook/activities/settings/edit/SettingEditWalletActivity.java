@@ -1,7 +1,7 @@
 package com.example.householdaccountbook.activities.settings.edit;
 
 import com.example.householdaccountbook.fragments.edit.WalletEditFragment;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.dbentity.Wallet;
 
 public class SettingEditWalletActivity extends SettingEditBaseActivity<Wallet, WalletEditFragment> {
 

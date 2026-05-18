@@ -2,7 +2,7 @@ package com.example.householdaccountbook.activities.settings.edit;
 
 import com.example.householdaccountbook.fragments.edit.IncomeEditFragment;
 
-import com.example.householdaccountbook.myclasses.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.Income;
 
 public class SettingEditIncomeActivity extends SettingEditBaseActivity<Income, IncomeEditFragment> {
     @Override

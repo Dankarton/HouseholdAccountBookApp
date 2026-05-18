@@ -10,15 +10,19 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
+import com.example.householdaccountbook.customviews.item.GroupableItem;
 
 import java.util.Locale;
 
-public class MoneyMovementItemView extends BopItemView {
+public class MoneyMovementItemView extends BopItemView implements GroupableItem {
     View colorDot;
     TextView toWalletText;
     TextView fromWalletText;
     TextView memoText;
     TextView amountText;
+
+    private PositionType groupPosition = PositionType.SINGLE;
+
     public MoneyMovementItemView(@NonNull Context context) {
         super(context);
         init(context);
@@ -39,22 +43,35 @@ public class MoneyMovementItemView extends BopItemView {
         this.toWalletText = layout.findViewById(R.id.to_wallet_text);
         this.fromWalletText = layout.findViewById(R.id.from_wallet_text);
         this.memoText = layout.findViewById(R.id.memo_text_view);
-        this.amountText = layout.findViewById(R.id.amount_text);
+        this.amountText = layout.findViewById(R.id.amount_text_view);
         layout.findViewById(R.id.more_action_button).setOnClickListener(
                 v -> {
                     if (listener != null) listener.onMoreActionButtonClicked();
                 }
         );
     }
-    public void bind(String toWalletName, String fromWalletName, String memo, int amount) {
+    public void bind(String toWalletName, String fromWalletName, String memo, int amount, PositionType type) {
         this.toWalletText.setText(toWalletName);
         this.fromWalletText.setText(fromWalletName);
         this.memoText.setText(memo);
         this.amountText.setText(String.format(Locale.JAPANESE, "￥%,d", amount));
+        this.amountText.setTextColor(getAmountColor(amount));
+        this.groupPosition = type;
+        this.setBackgroundResource(type.getResource());
     }
 
     @Override
     public void setListener(OnActionListener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    public void setGroupPosition(PositionType type) {
+        this.groupPosition = type;
+    }
+
+    @Override
+    public PositionType getGroupPosition() {
+        return this.groupPosition;
     }
 }

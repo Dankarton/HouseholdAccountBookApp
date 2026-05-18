@@ -1,6 +1,5 @@
 package com.example.householdaccountbook.db;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -8,25 +7,22 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.householdaccountbook.myclasses.dbentity.HasDate;
-import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
-import com.example.householdaccountbook.repository.DatabaseEntityRepository;
+import com.example.householdaccountbook.module.dbentity.MoneyMovement;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-import com.example.householdaccountbook.myclasses.dbentity.BOP;
-import com.example.householdaccountbook.myclasses.DailyBop;
-import com.example.householdaccountbook.myclasses.dbentity.Expenses;
-import com.example.householdaccountbook.myclasses.dbentity.MonthlyBalanceDelta;
-import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
-import com.example.householdaccountbook.myclasses.dbentity.Income;
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
-import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
-import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
-import com.example.householdaccountbook.myclasses.dbentity.Purchase;
+import com.example.householdaccountbook.module.dbentity.BOP;
+import com.example.householdaccountbook.module.DailyBop;
+import com.example.householdaccountbook.module.dbentity.Expenses;
+import com.example.householdaccountbook.module.dbentity.MonthlyBalanceDelta;
+import com.example.householdaccountbook.module.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.PaymentMethod;
+import com.example.householdaccountbook.module.dbentity.DatabaseEntity;
+import com.example.householdaccountbook.module.dbentity.Purchase;
 
 public class MyDbManager {
     // フィールド
@@ -199,7 +195,7 @@ public class MyDbManager {
         }
         // dataは必ず<T extends DatabaseEntity>の範疇であることが確定してるので警告は無視できる(はず)
         @SuppressWarnings("unchecked")
-        T beforeData = getDataByIdupd((Class<T>) data.getClass(), data.getId());
+        T beforeData = getDataById((Class<T>) data.getClass(), data.getId());
 
         data.onBeforeUpdate();
         upsertDatabase(data);
@@ -271,7 +267,7 @@ public class MyDbManager {
      * @param <T>   DatabaseEntity
      * @return データ
      */
-    public <T extends DatabaseEntity> T getDataByIdupd(Class<T> clazz, long id) {
+    public <T extends DatabaseEntity> T getDataById(Class<T> clazz, long id) {
         T data = null;
         // Classの型とIDからデータベースを検索
         SQLiteDatabase db = helper.getReadableDatabase();
@@ -336,7 +332,7 @@ public class MyDbManager {
     public <T extends DatabaseEntity, HasDate> ArrayList<T> getDataInRange(Class<T> clazz, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
         SQLiteDatabase db = helper.getReadableDatabase();
         MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
-        String selection = "printf(\"%04d-%02d-%02d\", " + MyDbContract.BaseBopEntry.COLUMN_YEAR + ", " +
+        String selection = "printf(\"%04d%02d%02d\", " + MyDbContract.BaseBopEntry.COLUMN_YEAR + ", " +
                 MyDbContract.BaseBopEntry.COLUMN_MONTH + ", " + MyDbContract.BaseBopEntry.COLUMN_DAY + ") BETWEEN ? AND ?";
         // Androidアプリだと言語を設定してformatしないと形が崩れる場合があるらしい。
         String[] selectionArgs = new String[]{
@@ -369,7 +365,7 @@ public class MyDbManager {
             Class<T> clazz, long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
         SQLiteDatabase db = helper.getReadableDatabase();
         MyDbContract.TableContract<T> contract = TableContractRegistry.getContract(clazz);
-        String selection = MyDbContract.ExpensesEntry.COLUMN_WALLET_ID + " = ? AND printf(\"%04d-%02d-%02d\", " +
+        String selection = MyDbContract.ExpensesEntry.COLUMN_WALLET_ID + " = ? AND printf(\"%04d%02d%02d\", " +
                 MyDbContract.BaseBopEntry.COLUMN_YEAR + ", " +
                 MyDbContract.BaseBopEntry.COLUMN_MONTH + ", " +
                 MyDbContract.BaseBopEntry.COLUMN_DAY + ") BETWEEN ? AND ?";
@@ -406,7 +402,7 @@ public class MyDbManager {
             long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
         SQLiteDatabase db = helper.getReadableDatabase();
         MyDbContract.TableContract<MoneyMovement> contract = TableContractRegistry.getContract(MoneyMovement.class);
-        String selection = MyDbContract.MoneyMovementsEntry.COLUMN_TO_WALLET_ID + " = ? AND printf(\"%04d-%02d-%02d\", " +
+        String selection = MyDbContract.MoneyMovementsEntry.COLUMN_TO_WALLET_ID + " = ? AND printf(\"%04d%02d%02d\", " +
                 MyDbContract.MoneyMovementsEntry.COLUMN_YEAR + ", " +
                 MyDbContract.MoneyMovementsEntry.COLUMN_MONTH + ", " +
                 MyDbContract.MoneyMovementsEntry.COLUMN_DAY + ") BETWEEN ? AND ?";
@@ -443,7 +439,7 @@ public class MyDbManager {
             long walletId, int startYY, int startMM, int startDD, int endYY, int endMM, int endDD) {
         SQLiteDatabase db = helper.getReadableDatabase();
         MyDbContract.TableContract<MoneyMovement> contract = TableContractRegistry.getContract(MoneyMovement.class);
-        String selection = MyDbContract.MoneyMovementsEntry.COLUMN_FROM_WALLET_ID + " = ? AND printf(\"%04d-%02d-%02d\", " +
+        String selection = MyDbContract.MoneyMovementsEntry.COLUMN_FROM_WALLET_ID + " = ? AND printf(\"%04d%02d%02d\", " +
                 MyDbContract.MoneyMovementsEntry.COLUMN_YEAR + ", " +
                 MyDbContract.MoneyMovementsEntry.COLUMN_MONTH + ", " +
                 MyDbContract.MoneyMovementsEntry.COLUMN_DAY + ") BETWEEN ? AND ?";
@@ -477,21 +473,6 @@ public class MyDbManager {
         return bopDataList;
     }
     /**
-     * Purchaseの子Expensesを全て取得
-     *
-     * @param purchase 親Purchase
-     * @return ArrayList
-     */
-    public ArrayList<Expenses> getChildExpensesList(Purchase purchase) {
-        return getData(
-                Expenses.class,
-                MyDbContract.ExpensesEntry.COLUMN_PURCHASE_ID + " = ?",
-                new String[]{String.valueOf(purchase.getId())},
-                null, null, null, null
-        );
-    }
-
-    /**
      * 過去からdateまでの中で最も新しい残高差分のデータを返す関数．
      *
      * @param date 日付
@@ -501,7 +482,7 @@ public class MyDbManager {
         // TODO ウォレット追加で残高がウォレットごとに存在することになったので、それに合わせて改良。(引数にウォレットIDがいるんじゃないかな)
         ArrayList<MonthlyBalanceDelta> dataList = getData(
                 MonthlyBalanceDelta.class,
-                MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_WALLET_ID + " = ? AND" + MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " <= ?",
+                MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_WALLET_ID + " = ? AND " + MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " <= ?",
                 new String[]{String.valueOf(walletId), String.valueOf(MonthlyBalanceDelta.makeYearMonthKey(date))},
                 null,
                 null,
@@ -639,7 +620,7 @@ public class MyDbManager {
                     null, null, orderBy, "1"
             );
             if (beforeDateData.isEmpty()) {
-                // 対象年月よりも前にデータが無いときは，対象年月がrootとする．
+                // 対象年月よりも前にデータが無いときは，対象年月をrootとする．
                 setData(new MonthlyBalanceDelta(null, walletId, targetYearMonthKey, amount));
             } else {
                 // 前の月の月からamount分変更することで対象年月の残高差分になる

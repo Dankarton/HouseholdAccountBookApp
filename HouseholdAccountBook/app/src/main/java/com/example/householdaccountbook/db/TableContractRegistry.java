@@ -3,15 +3,16 @@ package com.example.householdaccountbook.db;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
-import com.example.householdaccountbook.myclasses.dbentity.Expenses;
-import com.example.householdaccountbook.myclasses.dbentity.Income;
-import com.example.householdaccountbook.myclasses.dbentity.MonthlyBalanceDelta;
-import com.example.householdaccountbook.myclasses.dbentity.Purchase;
-import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
-import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.dbentity.DatabaseEntity;
+import com.example.householdaccountbook.module.dbentity.Expenses;
+import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.MoneyMovement;
+import com.example.householdaccountbook.module.dbentity.MonthlyBalanceDelta;
+import com.example.householdaccountbook.module.dbentity.Purchase;
+import com.example.householdaccountbook.module.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.PaymentMethod;
+import com.example.householdaccountbook.module.dbentity.Wallet;
 
 /**
  * DatabaseEntityを実装したクラスとEntryの対応表管理クラス
@@ -24,6 +25,7 @@ public final class TableContractRegistry {
         KINDS_MAP.put(Purchase.class, new MyDbContract.PurchaseEntry());
         KINDS_MAP.put(Expenses.class, new MyDbContract.ExpensesEntry());
         KINDS_MAP.put(Income.class, new MyDbContract.IncomeEntry());
+        KINDS_MAP.put(MoneyMovement.class, new MyDbContract.MoneyMovementsEntry());
         KINDS_MAP.put(PurchaseCategory.class, new MyDbContract.PurchaseCategoryEntry());
         KINDS_MAP.put(IncomeCategory.class, new MyDbContract.IncomeCategoryEntry());
         KINDS_MAP.put(PaymentMethod.class, new MyDbContract.PaymentMethodEntry());

@@ -12,6 +12,10 @@
     <color name="mother_frame_color">#555555</color>
     <color name="child_item_background_color">#3A3A3A</color>
     <color name="child_item_frame_color">#555555</color>
+
+    <color name="group_item_color">#666666</color>
+    <color name="group_item_frame_color">#666666</color>
+
     <color name="normal_text_color">#FFFFFF</color>
     <color name="idle_text_color">#666666</color>
     <color name="expenses_text_color">#F15412</color>

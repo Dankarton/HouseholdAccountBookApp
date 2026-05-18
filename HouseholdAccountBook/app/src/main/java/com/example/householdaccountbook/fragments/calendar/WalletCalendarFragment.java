@@ -1,44 +1,53 @@
 package com.example.householdaccountbook.fragments.calendar;
 
-import com.example.householdaccountbook.myclasses.calendarentity.BopBaseUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.CalendarDisplayItem;
-import com.example.householdaccountbook.myclasses.calendarentity.DailyUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.MoneyMovementUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.TransactionUiModel;
-import com.example.householdaccountbook.myclasses.calendarentity.WalletUiModel;
-import com.example.householdaccountbook.myclasses.dbentity.Expenses;
-import com.example.householdaccountbook.myclasses.dbentity.Income;
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
-import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
-import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
-import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
-import com.example.householdaccountbook.repository.DataAssembler;
+import android.util.Log;
+
+import com.example.householdaccountbook.module.calendarentity.BopBaseUiModel;
+import com.example.householdaccountbook.module.calendarentity.CalendarDisplayItem;
+import com.example.householdaccountbook.module.calendarentity.CalendarUiModel;
+import com.example.householdaccountbook.module.calendarentity.DailyUiModel;
+import com.example.householdaccountbook.module.calendarentity.MoneyMovementUiModel;
+import com.example.householdaccountbook.module.calendarentity.TransactionUiModel;
+import com.example.householdaccountbook.module.calendarentity.WalletUiModel;
+import com.example.householdaccountbook.module.dbentity.Expenses;
+import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.MoneyMovement;
+import com.example.householdaccountbook.module.dbentity.MonthlyBalanceDelta;
+import com.example.householdaccountbook.module.dbentity.PaymentMethod;
+import com.example.householdaccountbook.module.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.module.dbentity.Wallet;
 import com.example.householdaccountbook.repository.RepositoryManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class WalletCalendarFragment extends BaseCalendarFragment {
 
     @Override
-    List<CalendarDisplayItem> getData(Calendar targetDate) {
-        // TODO 2026/05/10
+    List<CalendarDisplayItem> getData(Calendar date) {
+        Calendar targetDate = (Calendar) date.clone();
         List<Wallet> wallets = RepositoryManager.getInstance().getAll(Wallet.class);
         int YY = targetDate.get(Calendar.YEAR);
         int MM = targetDate.get(Calendar.MONTH);
         int startDD = targetDate.getActualMinimum(Calendar.DAY_OF_MONTH);
         int endDD = targetDate.getActualMaximum(Calendar.DAY_OF_MONTH);
-        int[] monthlyBalanceDeltaList = new int[wallets.size()];
+
+        int maxAmount = 0;
+        HashMap<Integer, Integer> dailyDeltaAmountHashMap = new HashMap<>();
+
+
+        int[] walletCurrentAmountArray = new int[wallets.size()];
         boolean[] needlessWallets = new boolean[wallets.size()];
-        int[][] deltaAmountArray = new int[wallets.size()][endDD];
+        int[][] walletDeltaAmountArray = new int[wallets.size()][endDD];
         ArrayList<CalendarDisplayItem>[][] dailyObjArray = new ArrayList[wallets.size()][endDD];
+
         for (int i = 0; i < wallets.size(); i++) {
             for (int j = 0; j < endDD; j++) {
-                deltaAmountArray[i][j] = 0;
+                walletDeltaAmountArray[i][j] = 0;
                 dailyObjArray[i][j] = new ArrayList<>();
             }
         }
@@ -47,8 +56,12 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
             Wallet wallet = wallets.get(i);
             List<Income> incomeList = RepositoryManager.getInstance().getIncomeDataByWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
             List<Expenses> expensesList = RepositoryManager.getInstance().getExpensesDataByWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
-            List<MoneyMovement> comeInMmList = RepositoryManager.getInstance().getMoneyMovementDataByToWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
-            List<MoneyMovement> goOutMmList = RepositoryManager.getInstance().getMoneyMovementDataByFromWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
+            List<MoneyMovement> comeInMmList = RepositoryManager.getInstance().getMoneyMovementDataByFromWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
+            List<MoneyMovement> goOutMmList = RepositoryManager.getInstance().getMoneyMovementDataByToWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
+
+//            Log.d("WalletCalendarFragment", String.format(Locale.JAPANESE, "%4d%2d%2d~%4d%2d%2d", YY, MM, startDD, YY, MM, endDD) +
+//                    "Wallet[id: " + wallet.getId() + ", name: " + wallet.getName() + "] " +
+//                    "Income count: " + incomeList.size() + ", Expenses count: " + expensesList.size() + ", toMM count: " + comeInMmList.size() + ", fromMM count: " + goOutMmList.size());
             // 削除済みのウォレットで金の動きがないものはスキップ
             if (wallet.isDeleted() && incomeList.isEmpty() && expensesList.isEmpty() && comeInMmList.isEmpty() && goOutMmList.isEmpty()) {
                 needlessWallets[i] = true;
@@ -57,10 +70,19 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
             else {
                 needlessWallets[i] = false;
             }
+
+            MonthlyBalanceDelta mbd = RepositoryManager.getInstance().getLatestMonthlyBalanceDelta(wallet.getId(), targetDate);
+            if (mbd != null) {
+                walletCurrentAmountArray[i] = mbd.getDeltaAmount();
+            }
+            else {
+                walletCurrentAmountArray[i] = 0;
+            }
+
             for (Income income : incomeList) {
                 int index = income.getDay() - 1;
                 IncomeCategory category = RepositoryManager.getInstance().getDataById(IncomeCategory.class, income.getCategoryId());
-                deltaAmountArray[i][index] += income.getAmount();
+                walletDeltaAmountArray[i][index] += income.getAmount();
                 dailyObjArray[i][index].add(
                         new TransactionUiModel(
                                 BopBaseUiModel.DataType.INCOME,
@@ -72,12 +94,17 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
                                 category.getName()
                         )
                 );
+                int deltaAmount = dailyDeltaAmountHashMap.getOrDefault(income.getDay(), 0) + income.getAmount();
+                dailyDeltaAmountHashMap.put(income.getDay(), deltaAmount);
+                if (maxAmount < deltaAmount) {
+                    maxAmount = deltaAmount;
+                }
             }
             for (Expenses expenses : expensesList) {
                 int index = expenses.getDay() - 1;
                 PurchaseCategory category = RepositoryManager.getInstance().getDataById(PurchaseCategory.class, expenses.getCategoryId());
                 PaymentMethod paymentMethod = RepositoryManager.getInstance().getDataById(PaymentMethod.class, expenses.getPaymentMethodId());
-                deltaAmountArray[i][index] -= Math.abs(expenses.getAmount());
+                walletDeltaAmountArray[i][index] -= Math.abs(expenses.getAmount());
                 dailyObjArray[i][index].add(
                         new TransactionUiModel(
                                 BopBaseUiModel.DataType.EXPENSES,
@@ -89,41 +116,55 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
                                 category.getName()
                         )
                 );
+                int deltaAmount = dailyDeltaAmountHashMap.getOrDefault(expenses.getDay(), 0) - Math.abs(expenses.getAmount());
+                dailyDeltaAmountHashMap.put(expenses.getDay(), deltaAmount);
+                if (maxAmount < Math.abs(deltaAmount)) {
+                    maxAmount = Math.abs(deltaAmount);
+                }
             }
-            for (MoneyMovement toMM : comeInMmList) {
-                int index = toMM.getDay() - 1;
-                Wallet toWallet = RepositoryManager.getInstance().getDataById(Wallet.class, toMM.getToWalletId());
-                Wallet fromWallet = RepositoryManager.getInstance().getDataById(Wallet.class, toMM.getFromWalletId());
-                deltaAmountArray[i][index] += toMM.getAmount();
-                dailyObjArray[i][index].add(
-                        new MoneyMovementUiModel(
-                                BopBaseUiModel.DataType.MONEY_MOVEMENT,
-                                toMM.getId(),
-                                toMM.getAmount(),
-                                toMM.getMemo(),
-                                toWallet.getName(),
-                                fromWallet.getName()
-                        )
-                );
-            }
-            for (MoneyMovement fromMM : goOutMmList) {
+
+            for (MoneyMovement fromMM : comeInMmList) {
                 int index = fromMM.getDay() - 1;
                 Wallet toWallet = RepositoryManager.getInstance().getDataById(Wallet.class, fromMM.getToWalletId());
                 Wallet fromWallet = RepositoryManager.getInstance().getDataById(Wallet.class, fromMM.getFromWalletId());
-                deltaAmountArray[i][index] += fromMM.getAmount();
+                int moveAmount =  fromMM.getAmount();
+                walletDeltaAmountArray[i][index] += moveAmount;
                 dailyObjArray[i][index].add(
                         new MoneyMovementUiModel(
                                 BopBaseUiModel.DataType.MONEY_MOVEMENT,
                                 fromMM.getId(),
-                                fromMM.getAmount(),
+                                moveAmount,
                                 fromMM.getMemo(),
                                 toWallet.getName(),
                                 fromWallet.getName()
                         )
                 );
+                // 振替は全資産の合計値は変わらないのでdailyDeltaAmountArrayの値更新はしない。
+            }
+
+            for (MoneyMovement toMM : goOutMmList) {
+                int index = toMM.getDay() - 1;
+                Wallet toWallet = RepositoryManager.getInstance().getDataById(Wallet.class, toMM.getToWalletId());
+                Wallet fromWallet = RepositoryManager.getInstance().getDataById(Wallet.class, toMM.getFromWalletId());
+                int moveAmount = -1 * toMM.getAmount();
+                walletDeltaAmountArray[i][index] += moveAmount;
+                dailyObjArray[i][index].add(
+                        new MoneyMovementUiModel(
+                                BopBaseUiModel.DataType.MONEY_MOVEMENT,
+                                toMM.getId(),
+                                moveAmount,
+                                toMM.getMemo(),
+                                toWallet.getName(),
+                                fromWallet.getName()
+                        )
+                );
+                // 振替は全資産の合計値は変わらないのでdailyDeltaAmountArrayの値更新はしない。
             }
         }
         ArrayList<CalendarDisplayItem> dailyUiModels = new ArrayList<>();
+        // 先頭にカレンダーオブジェ専用のデータクラスをセット
+        dailyUiModels.add(new CalendarUiModel(targetDate, dailyDeltaAmountHashMap, maxAmount));
+
         for (int i = 0; i < endDD; i++) {
             ArrayList<CalendarDisplayItem> walletUiModels = new ArrayList<>();
             for (int j = 0; j < wallets.size(); j++) {
@@ -132,17 +173,17 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
                 walletUiModels.add(new WalletUiModel(
                     wallet.getId(),
                         wallet.getName(),
-                        deltaAmountArray[j][i],
-                        // TODO CurrentAmountを計算するようにして。
-                        0,
+                        walletDeltaAmountArray[j][i],
+                        walletCurrentAmountArray[j],
                         dailyObjArray[j][i],
                         false
                 ));
+                walletCurrentAmountArray[j] += walletDeltaAmountArray[j][i];
             }
             dailyUiModels.add(
                     new DailyUiModel(
                             YY, MM, i + 1,
-                            0,
+                            dailyDeltaAmountHashMap.getOrDefault(i + 1, 0),
                             walletUiModels,
                             false
                     )
@@ -154,6 +195,26 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
 
     @Override
     List<CalendarDisplayItem> flatten(List<CalendarDisplayItem> beforeData) {
-        return Collections.emptyList();
+        ArrayList<CalendarDisplayItem> afterList = new ArrayList<>();
+
+        for (CalendarDisplayItem data : beforeData) {
+            if (data instanceof CalendarUiModel) {
+                afterList.add(data);
+            }
+            else if (data instanceof DailyUiModel) {
+                afterList.add(data);
+                if (((DailyUiModel) data).isListVisible()) {
+                    for (CalendarDisplayItem childData : ((DailyUiModel) data).getChildItems()) {
+                        if (childData instanceof WalletUiModel) {
+                            afterList.add(childData);
+                            if (((WalletUiModel) childData).isListVisible()) {
+                                afterList.addAll(((WalletUiModel) childData).getChildItems());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return afterList;
     }
 }

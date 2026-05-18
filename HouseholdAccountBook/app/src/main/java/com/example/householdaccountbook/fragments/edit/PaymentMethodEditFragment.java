@@ -22,8 +22,9 @@ import com.example.householdaccountbook.adapter.EnumSpinnerAdapter;
 import com.example.householdaccountbook.customviews.SelectableListCustomView;
 import com.example.householdaccountbook.customviews.item.WalletItemView;
 import com.example.householdaccountbook.db.MyDbManager;
-import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.dbentity.PaymentMethod;
+import com.example.householdaccountbook.module.dbentity.Wallet;
+import com.example.householdaccountbook.repository.RepositoryManager;
 
 import java.util.ArrayList;
 
@@ -112,7 +113,7 @@ public class PaymentMethodEditFragment extends BaseEditFragment<PaymentMethod> {
         });
         // ウォレットのセレクタブルリストにデータ入力
         ArrayList<WalletItemView> walletItemViews = new ArrayList<>();
-        for (Wallet wallet : MyDbManager.getAllSafely(Wallet.class)) {
+        for (Wallet wallet : RepositoryManager.getInstance().getAllActive(Wallet.class)) {
             var tmp = new WalletItemView(context);
             tmp.setData(wallet);
             if (wallet.getId() == this.databaseEntityData.getWalletId()) {

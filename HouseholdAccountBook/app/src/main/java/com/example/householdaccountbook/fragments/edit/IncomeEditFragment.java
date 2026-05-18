@@ -16,16 +16,16 @@ import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.customviews.SelectableListCustomView;
 import com.example.householdaccountbook.customviews.item.CategoryItemView;
-import com.example.householdaccountbook.customviews.item.SelectableItem;
 import com.example.householdaccountbook.customviews.item.WalletItemView;
 import com.example.householdaccountbook.db.MyDbManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import com.example.householdaccountbook.myclasses.dbentity.Income;
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.Wallet;
+import com.example.householdaccountbook.repository.RepositoryManager;
 
 public class IncomeEditFragment extends BaseEditFragment<Income> {
     TextView dateTextView;
@@ -57,7 +57,7 @@ public class IncomeEditFragment extends BaseEditFragment<Income> {
         //
         // カテゴリーリストにItemViewを挿入する操作
         //
-        ArrayList<IncomeCategory> categoryList = MyDbManager.getAllSafely(IncomeCategory.class);
+        ArrayList<IncomeCategory> categoryList = RepositoryManager.getInstance().getAllActive(IncomeCategory.class);
         ArrayList<CategoryItemView<IncomeCategory>> categoryItemViews = new ArrayList<>();
         for (IncomeCategory category : categoryList) {
             CategoryItemView<IncomeCategory> tmp = new CategoryItemView<>(context);
@@ -72,7 +72,7 @@ public class IncomeEditFragment extends BaseEditFragment<Income> {
         //
         // ウォレットリストにItemViewを挿入する操作
         //
-        ArrayList<Wallet> walletArrayList = MyDbManager.getAllSafely(Wallet.class);
+        ArrayList<Wallet> walletArrayList = RepositoryManager.getInstance().getAllActive(Wallet.class);
         ArrayList<WalletItemView> walletItemViews = new ArrayList<>();
         for (Wallet wallet : walletArrayList) {
             WalletItemView tmp = new WalletItemView(context);

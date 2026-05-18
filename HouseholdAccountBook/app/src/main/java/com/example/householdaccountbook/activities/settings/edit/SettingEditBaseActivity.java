@@ -8,7 +8,8 @@ import com.example.householdaccountbook.activities.settings.SettingMotherActivit
 import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.fragments.edit.BaseEditFragment;
 
-import com.example.householdaccountbook.myclasses.dbentity.DatabaseEntity;
+import com.example.householdaccountbook.module.dbentity.DatabaseEntity;
+import com.example.householdaccountbook.repository.RepositoryManager;
 
 public abstract class SettingEditBaseActivity<T extends DatabaseEntity, F extends BaseEditFragment<T>> extends SettingMotherActivity {
     // DatabaseEntityインターフェースはSerializableを継承しているので，TにSerializableが継承されていることを明示しなくてもいい
@@ -26,12 +27,12 @@ public abstract class SettingEditBaseActivity<T extends DatabaseEntity, F extend
                 // IDが無い場合(新規追加の場合)
                 if (data.getId() == null) {
                     Log.d("SettingEditBaseActivity", "set data");
-                    MyDbManager.setDataSafely(data);
+                    RepositoryManager.getInstance().setDataSafely(data);
                 }
                 // 編集の場合
                 else {
                     Log.d("SettingEditBaseActivity", "upsert");
-                    MyDbManager.upsertDatabaseSafely(data);
+                    RepositoryManager.getInstance().upsertDataSafely(data);
                 }
                 finish();
             }
@@ -39,7 +40,7 @@ public abstract class SettingEditBaseActivity<T extends DatabaseEntity, F extend
             @Override
             public void onDeleteButtonClicked(T data) {
                 if (data.getId() != null) {
-                    MyDbManager.deleteDataSafely(data);
+                    RepositoryManager.getInstance().deleteDataSafely(data);
                 }
                 finish();
             }

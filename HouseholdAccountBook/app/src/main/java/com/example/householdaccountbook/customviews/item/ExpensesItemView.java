@@ -15,7 +15,7 @@ import com.example.householdaccountbook.R;
 
 import java.util.Locale;
 
-public class ExpensesItemView extends ConstraintLayout {
+public class ExpensesItemView extends ConstraintLayout implements GroupableItem {
     public interface OnActionListener {
         void onMoreActionButtonClicked();
     }
@@ -29,7 +29,6 @@ public class ExpensesItemView extends ConstraintLayout {
     private OnActionListener listener = null;
 
     public ExpensesItemView(@NonNull Context context) {
-
         super(context);
         init(context);
     }
@@ -55,7 +54,7 @@ public class ExpensesItemView extends ConstraintLayout {
             if (this.listener != null) this.listener.onMoreActionButtonClicked();
         });
     }
-    public void bind(int colorInt, String categoryText, String memoText, String paymentMethodText, int amount) {
+    public void bind(int colorInt, String categoryText, String memoText, String paymentMethodText, int amount, PositionType type) {
         // カラー変更
         Drawable background = this.categoryColorDot.getBackground();
         if (background instanceof GradientDrawable) {
@@ -67,6 +66,15 @@ public class ExpensesItemView extends ConstraintLayout {
         this.memoTextView.setText(memoText);
         this.paymentMethodTextView.setText(paymentMethodText);
         this.amountTextView.setText(String.format(Locale.JAPANESE, "￥%,d", amount));
+    }
+    @Override
+    public void setGroupPosition(PositionType type) {
+
+    }
+
+    @Override
+    public PositionType getGroupPosition() {
+        return null;
     }
     public void setListener(OnActionListener listener) {
         this.listener = listener;

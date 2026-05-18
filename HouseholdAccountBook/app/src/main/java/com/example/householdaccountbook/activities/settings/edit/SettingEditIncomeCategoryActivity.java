@@ -2,7 +2,7 @@ package com.example.householdaccountbook.activities.settings.edit;
 
 import com.example.householdaccountbook.fragments.edit.IncomeCategoryEditFragment;
 
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
 
 public class SettingEditIncomeCategoryActivity extends SettingEditBaseActivity<IncomeCategory, IncomeCategoryEditFragment> {
 

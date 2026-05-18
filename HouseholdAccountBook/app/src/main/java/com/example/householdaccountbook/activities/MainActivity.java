@@ -2,7 +2,6 @@ package com.example.householdaccountbook.activities;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,13 +11,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.householdaccountbook.db.MyDbManager;
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.fragments.chart.BaseChartFragment;
+import com.example.householdaccountbook.fragments.main.CalendarMotherFragment;
 import com.example.householdaccountbook.fragments.main.ChartMotherFragment;
 import com.example.householdaccountbook.fragments.main.InputMotherFragment;
 import com.example.householdaccountbook.fragments.main.SettingsMenuFragment;
-import com.example.householdaccountbook.fragments.main.TransactionDataListFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -61,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if (item.getItemId() == R.id.navigation_data) {
 //                    replaceFragment(new CalendarFragment());
-                    replaceFragment(new TransactionDataListFragment());
+                    replaceFragment(new CalendarMotherFragment());
                     toolbarIcon.setBackground(item.getIcon());
                     toolbarText.setText(item.getTitle());
                     return true;

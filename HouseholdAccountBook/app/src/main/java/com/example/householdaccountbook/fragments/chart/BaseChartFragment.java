@@ -1,10 +1,10 @@
 package com.example.householdaccountbook.fragments.chart;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -26,13 +26,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.example.householdaccountbook.myclasses.dbentity.BOP;
-import com.example.householdaccountbook.myclasses.dbentity.BopCategory;
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
-import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
-import com.example.householdaccountbook.viewmodel.ChartDataSharedViewModel;
+import com.example.householdaccountbook.module.dbentity.BOP;
+import com.example.householdaccountbook.module.dbentity.BopCategory;
+import com.example.householdaccountbook.module.dbentity.HasCategory;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.module.sharedmodel.ChartDataSharedViewModel;
+import com.example.householdaccountbook.repository.RepositoryManager;
 
-public class BaseChartFragment<T1 extends BOP, T2 extends BopCategory> extends Fragment {
+public class BaseChartFragment<T1 extends BOP & HasCategory, T2 extends BopCategory> extends Fragment {
 
     private final Class<T1> bopClazz;
     private final Class<T2> categoryClazz;
@@ -79,27 +81,25 @@ public class BaseChartFragment<T1 extends BOP, T2 extends BopCategory> extends F
         // カテゴリーIDをキーにした辞書型
         Map<Long, CategoryTotal> categoryMap = new HashMap<>();
         int allPurchaseTotalAmount = 0;
-        for (BOP purchase : loadCurrentMonthPurchaseData(targetDate)) {
+
+        int YY = targetDate.get(Calendar.YEAR);
+        int MM = targetDate.get(Calendar.MONTH);
+        int startDD = targetDate.getActualMinimum(Calendar.DAY_OF_MONTH);
+        int endDD = targetDate.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        for (T1 bop : RepositoryManager.getInstance().getBopDataInRange(this.bopClazz, YY, MM, startDD, YY, MM, endDD)) {
             // キーが存在しない場合
-            if (!categoryMap.containsKey(purchase.getCategoryId())) {
+            if (!categoryMap.containsKey(bop.getCategoryId())) {
                 BopCategory newCategory = null;
-                if (this.categoryClazz == PurchaseCategory.class) {
-                    newCategory = this.app.getPurchaseCategoryRepository().getDataById(purchase.getCategoryId());
-                }
-                else if (this.categoryClazz == IncomeCategory.class) {
-                    newCategory = this.app.getIncomeCategoryRepository().getDataById(purchase.getCategoryId());
-                }
-                else {
-                    throw new IllegalArgumentException("登録されていないクラスです");
-                }
+                newCategory = RepositoryManager.getInstance().getDataById(this.categoryClazz, bop.getCategoryId());
 
                 categoryMap.put(newCategory.getId(), new CategoryTotal(newCategory));
             }
-            CategoryTotal targetCategoryTotal = categoryMap.get(purchase.getCategoryId());
+            CategoryTotal targetCategoryTotal = categoryMap.get(bop.getCategoryId());
             if (targetCategoryTotal != null) {
-                targetCategoryTotal.set(purchase);
+                targetCategoryTotal.set(bop);
             }
-            allPurchaseTotalAmount += Math.abs(purchase.getAmount());
+            allPurchaseTotalAmount += Math.abs(bop.getAmount());
         }
         // 合計金額で降順に並べる
         CategoryTotal[] categoryTotalArray = MyStdlib.mergeSort(
@@ -139,17 +139,6 @@ public class BaseChartFragment<T1 extends BOP, T2 extends BopCategory> extends F
             this.categoryTotalListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
         this.categoryTotalListRecyclerView.setAdapter(new CategoryTotalListAdapter(binderList));
-    }
-
-    private List<BOP> loadCurrentMonthPurchaseData(Calendar date) {
-        List<BOP> monthlyBopList = new ArrayList<>();
-        for (int i = 1; i <= date.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
-            List<T1> dailyData = MyDbManager.getBopDataByDate(this.bopClazz, date.get(Calendar.YEAR), date.get(Calendar.MONTH), i);
-            if (!dailyData.isEmpty()) {
-                monthlyBopList.addAll(dailyData);
-            }
-        }
-        return monthlyBopList;
     }
 
     private static class CategoryTotal {

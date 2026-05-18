@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.dbentity.Wallet;
 
 public class WalletItemView extends ConstraintLayout implements SelectableItem<Wallet> {
     boolean isSelected;

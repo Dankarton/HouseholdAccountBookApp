@@ -93,26 +93,11 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:singleLine="true"
-        android:text="コンビニエンスストア"
+        android:text="コンビニで振り込み"
         android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@id/additional_text_view"
+        app:layout_constraintBottom_toBottomOf="@id/from_wallet_text"
         app:layout_constraintEnd_toStartOf="@id/amount_text_view"
         app:layout_constraintStart_toEndOf="@id/from_wallet_text"
         app:layout_constraintTop_toTopOf="@id/to_wallet_text" />
-    <!--追加情報欄欄-->
-    <TextView
-        android:id="@+id/additional_text_view"
-        android:layout_width="0dp"
-        android:layout_height="16dp"
-        android:layout_marginStart="12dp"
-        android:ellipsize="end"
-        android:gravity="center_vertical"
-        android:singleLine="true"
-        android:text="通常支払い"
-        android:textSize="12sp"
-        app:layout_constraintTop_toBottomOf="@id/memo_text_view"
-        app:layout_constraintEnd_toStartOf="@id/amount_text_view"
-        app:layout_constraintStart_toEndOf="@id/from_wallet_text"
-        app:layout_constraintBottom_toBottomOf="@id/to_wallet_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

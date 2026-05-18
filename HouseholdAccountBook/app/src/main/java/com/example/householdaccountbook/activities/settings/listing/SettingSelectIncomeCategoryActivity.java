@@ -12,13 +12,14 @@ import com.example.householdaccountbook.fragments.listing.BaseListingFragment;
 
 import java.util.ArrayList;
 
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
+import com.example.householdaccountbook.repository.RepositoryManager;
 
 public class SettingSelectIncomeCategoryActivity extends SettingMotherActivity {
     @Override
     protected Fragment init() {
         ArrayList<CategoryItemView<IncomeCategory>> itemViewList = new ArrayList<>();
-        for (IncomeCategory data : MyDbManager.getAllSafely(IncomeCategory.class)) {
+        for (IncomeCategory data : RepositoryManager.getInstance().getAllActive(IncomeCategory.class)) {
             CategoryItemView<IncomeCategory> item = new CategoryItemView<>(this);
             item.setData(data);
             item.setSelectedState(false);

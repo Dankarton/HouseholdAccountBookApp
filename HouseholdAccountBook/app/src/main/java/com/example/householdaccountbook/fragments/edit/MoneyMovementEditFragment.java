@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -17,11 +18,13 @@ import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.customviews.SelectableListCustomView;
 import com.example.householdaccountbook.customviews.item.WalletItemView;
 import com.example.householdaccountbook.db.MyDbManager;
-import com.example.householdaccountbook.myclasses.dbentity.MoneyMovement;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.dbentity.MoneyMovement;
+import com.example.householdaccountbook.module.dbentity.Wallet;
+import com.example.householdaccountbook.repository.RepositoryManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class MoneyMovementEditFragment extends BaseEditFragment<MoneyMovement> {
     TextView dateTextView;
@@ -46,11 +49,12 @@ public class MoneyMovementEditFragment extends BaseEditFragment<MoneyMovement> {
         this.amountEditText = view.findViewById(R.id.amount_edit_text);
         this.fromWalletList = view.findViewById(R.id.from_wallet_list_custom_view);
         this.toWalletList = view.findViewById(R.id.to_wallet_list_custom_view);
-
+        // Viewオブジェクトの設定
         this.fromWalletList.setColumnCount(2);
         this.toWalletList.setColumnCount(2);
 
-        ArrayList<Wallet> walletList = MyDbManager.getAllSafely(Wallet.class);
+        // walletセレクタブルリスト用にリストを用意
+        ArrayList<Wallet> walletList = RepositoryManager.getInstance().getAllActive(Wallet.class);
         ArrayList<WalletItemView> fromWalletItemViews = new ArrayList<>();
         ArrayList<WalletItemView> toWalletItemViews = new ArrayList<>();
         for (Wallet wallet : walletList) {
@@ -148,6 +152,10 @@ public class MoneyMovementEditFragment extends BaseEditFragment<MoneyMovement> {
                 this.memoEditText.getText().toString(),
                 this.fromWalletList.getSelectedItem().getData().getId(),
                 this.toWalletList.getSelectedItem().getData().getId()
+        );
+        Log.d("MoneyMovementEditFragment", "MoneyMovement saved.\nID: " + newMovements.getId() + "Date: "
+                + String.format(Locale.JAPANESE, "%04d%02d%02d", newMovements.getYear(), newMovements.getMonth(), newMovements.getDay()) + ", Amount: " + newMovements.getAmount()
+                + ", memo: " + newMovements.getMemo() + ", from w id: " + newMovements.getFromWalletId() + ", to w id: " + newMovements.getToWalletId()
         );
         if (this.listener != null) this.listener.onSaveButtonClicked(newMovements);
     }

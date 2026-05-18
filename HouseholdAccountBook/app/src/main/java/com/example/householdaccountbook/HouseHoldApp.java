@@ -6,14 +6,16 @@ import android.util.Log;
 
 import com.example.householdaccountbook.db.MyDbContract;
 import com.example.householdaccountbook.db.MyDbManager;
-import com.example.householdaccountbook.myclasses.dbentity.Wallet;
+import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.MoneyMovement;
 import com.example.householdaccountbook.repository.DataAssembler;
-import com.example.householdaccountbook.repository.DatabaseEntityRepository;
 
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
-import com.example.householdaccountbook.myclasses.dbentity.PaymentMethod;
-import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.PaymentMethod;
+import com.example.householdaccountbook.module.dbentity.PurchaseCategory;
 import com.example.householdaccountbook.repository.RepositoryManager;
+
+import java.util.List;
 
 public class HouseHoldApp extends Application {
     @Override
@@ -32,6 +34,21 @@ public class HouseHoldApp extends Application {
             insertPreData();
             preferences.edit().putBoolean("is_first_launch", false).apply();
         }
+
+        // テストブロック
+        {
+            List<Income> il = RepositoryManager.getInstance().getAll(Income.class);
+            List<MoneyMovement> ml = RepositoryManager.getInstance().getAll(MoneyMovement.class);
+            Log.d("App", "Income count: " + il.size());
+            Log.d("App", "MM count: " + ml.size());
+            for (Income data : il) {
+                Log.d("App", "Income [id: " + data.getId() + ", YY: " + data.getYear() + ", MM: " + data.getMonth() + " , DD: " + data.getDay() + ", amount: " + data.getAmount() + ", walletID: " + data.getWalletId() + "]");
+            }
+            for (MoneyMovement data : ml) {
+                Log.d("App", "MoneyMovement [id: " + data.getId() + ", YY: " + data.getYear() + ", MM: " + data.getMonth() + " , DD: " + data.getDay() + ", amount: " + data.getAmount() + ", toWalletID: " + data.getToWalletId() + ", fromWalletID: " + data.getFromWalletId());
+            }
+        }
+
     }
     private void insertPreData() {
         Log.d("HouseHoldApp", "初期データ挿入");

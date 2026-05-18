@@ -15,15 +15,15 @@ import com.example.householdaccountbook.MyStdlib;
 import com.example.householdaccountbook.R;
 import com.example.householdaccountbook.adapter.FragmentPagerAdapter;
 import com.example.householdaccountbook.fragments.chart.BaseChartFragment;
-import com.example.householdaccountbook.viewmodel.ChartDataSharedViewModel;
+import com.example.householdaccountbook.module.sharedmodel.ChartDataSharedViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import com.example.householdaccountbook.myclasses.dbentity.Expenses;
-import com.example.householdaccountbook.myclasses.dbentity.Income;
-import com.example.householdaccountbook.myclasses.dbentity.IncomeCategory;
-import com.example.householdaccountbook.myclasses.dbentity.Purchase;
-import com.example.householdaccountbook.myclasses.dbentity.PurchaseCategory;
+import com.example.householdaccountbook.module.dbentity.Expenses;
+import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.IncomeCategory;
+import com.example.householdaccountbook.module.dbentity.Purchase;
+import com.example.householdaccountbook.module.dbentity.PurchaseCategory;
 
 import java.util.Calendar;
 
