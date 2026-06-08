@@ -1,6 +1,6 @@
 package com.example.householdaccountbook.module.calendarentity;
 
-import com.example.householdaccountbook.customviews.item.GroupableItem;
+import com.example.householdaccountbook.customviews.calendar.GroupableItem;
 
 public abstract class BopBaseUiModel implements CalendarDisplayItem, HasGroupable {
     private final DataType viewType;
@@ -8,12 +8,15 @@ public abstract class BopBaseUiModel implements CalendarDisplayItem, HasGroupabl
     private final int amount;
     private final String memo;
     private GroupableItem.PositionType groupType = GroupableItem.PositionType.SINGLE;
+    private boolean didUpdated;
 
-    public BopBaseUiModel(DataType viewType, long id, int amount, String memo) {
+    public BopBaseUiModel(DataType viewType, long id, int amount, String memo, GroupableItem.PositionType groupType) {
         this.id = id;
         this.viewType = viewType;
         this.amount = amount;
         this.memo = memo;
+        this.groupType = groupType;
+        didUpdated = true;
     }
 
     public long getId() { return this.id; }
@@ -35,9 +38,11 @@ public abstract class BopBaseUiModel implements CalendarDisplayItem, HasGroupabl
 
     @Override
     public GroupableItem.PositionType getPositionType() { return this.groupType; }
+
     @Override
     public void setPositionType(GroupableItem.PositionType type) {
         this.groupType = type;
+        this.didUpdated = true;
     }
 
     public enum DataType {
@@ -55,4 +60,8 @@ public abstract class BopBaseUiModel implements CalendarDisplayItem, HasGroupabl
             return this.code;
         }
     }
+    @Override
+    public boolean didUpdated() { return this.didUpdated; }
+    @Override
+    public void used() { this.didUpdated = false; }
 }

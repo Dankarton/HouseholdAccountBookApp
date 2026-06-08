@@ -1,6 +1,8 @@
 package com.example.householdaccountbook.customviews.calendar;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -12,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.customviews.item.GroupableItem;
 
 import java.util.Locale;
 
@@ -21,6 +22,7 @@ public class DailyUiItem extends ConstraintLayout implements ListableItem, Group
     private TextView amountTextView;
     private ImageView listStateImageView;
     private boolean isListVisible = false;
+    private boolean isListButtonValid = true;
     private PositionType groupPosition = PositionType.SINGLE;
 
     private OnActionListener listener = null;
@@ -53,6 +55,7 @@ public class DailyUiItem extends ConstraintLayout implements ListableItem, Group
                 new OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if(!isListButtonValid) return;
                         if (listener != null) listener.onListableButtonClicked(!isListVisible);
                         changeDropDownVisible(!isListVisible);
                     }
@@ -67,7 +70,7 @@ public class DailyUiItem extends ConstraintLayout implements ListableItem, Group
      * @param amount
      * @param isDropDownVisible
      */
-    public void bind(int date, int amount, PositionType type, boolean isDropDownVisible) {
+    public void bind(int date, Integer amount, PositionType type, boolean isDropDownVisible) {
         setDate(date);
         setAmount(amount);
         Log.d("DailyUiItem", "PosType: " + type.getCode());
@@ -88,17 +91,23 @@ public class DailyUiItem extends ConstraintLayout implements ListableItem, Group
      * 金額変更
      * @param amount
      */
-    private void setAmount(int amount) {
-        this.amountTextView.setText(String.format(Locale.JAPANESE, "￥%,d", amount));
-        if (amount > 0) {
+    private void setAmount(Integer amount) {
+        int amo = 0;
+        if (amount == null) {
+            this.amountTextView.setTextColor(getContext().getColor(R.color.idle_text_color));
+        }
+        else if (amount > 0) {
             this.amountTextView.setTextColor(getContext().getColor(R.color.income_text_color));
+            amo = amount;
         }
         else if (amount < 0) {
             this.amountTextView.setTextColor(getContext().getColor(R.color.expenses_text_color));
+            amo = amount;
         }
         else {
-            this.amountTextView.setTextColor(getContext().getColor(R.color.idle_text_color));
+            this.amountTextView.setTextColor(getContext().getColor(R.color.normal_text_color));
         }
+        this.amountTextView.setText(String.format(Locale.JAPANESE, "￥%,d", amo));
     }
 
     /**
@@ -131,5 +140,22 @@ public class DailyUiItem extends ConstraintLayout implements ListableItem, Group
     @Override
     public PositionType getGroupPosition() {
         return this.groupPosition;
+    }
+    @Override
+    public void setListButtonValid(boolean visible) {
+        this.isListButtonValid = visible;
+        if (this.listStateImageView == null) return;
+
+        // カラー変更
+        Drawable background = this.listStateImageView.getBackground();
+        if (background instanceof GradientDrawable) {
+            GradientDrawable drawable = (GradientDrawable) background.mutate();
+            if (this.isListButtonValid) {
+                drawable.setColor(getResources().getColor(R.color.white));
+            }
+            else {
+                drawable.setColor(getResources().getColor(R.color.idle_item_color));
+            }
+        }
     }
 }

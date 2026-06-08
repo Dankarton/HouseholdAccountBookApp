@@ -1,5 +1,6 @@
 package com.example.householdaccountbook.repository;
 
+import com.example.householdaccountbook.customviews.calendar.GroupableItem;
 import com.example.householdaccountbook.module.calendarentity.BopBaseUiModel;
 import com.example.householdaccountbook.module.calendarentity.CalendarDisplayItem;
 import com.example.householdaccountbook.module.calendarentity.DailyUiModel;
@@ -48,7 +49,7 @@ public class DataAssembler {
             bopUiModelList.add(data);
             totalExpenses += data.getAmount();
         }
-        return new DailyUiModel(year, month, date, totalIncome - totalExpenses, bopUiModelList, false);
+        return new DailyUiModel(year, month, date, totalIncome - totalExpenses, bopUiModelList, GroupableItem.PositionType.SINGLE, false);
     }
     public DailyUiModel assembleDailyUiModel(
             int year, int month, int date,
@@ -73,7 +74,7 @@ public class DataAssembler {
             bopUiModelList.add(data);
             totalExpenses += data.getAmount();
         }
-        return new DailyUiModel(year, month, date, totalIncome - totalExpenses, bopUiModelList, false);
+        return new DailyUiModel(year, month, date, totalIncome - totalExpenses, bopUiModelList, GroupableItem.PositionType.SINGLE, false);
     }
 
     public <T extends BOP & HasCategory> List<TransactionUiModel> assembleTransactionUiModels(List<T> dataList) {
@@ -121,7 +122,8 @@ public class DataAssembler {
                 data.getMemo(),
                 additionalMemo,
                 categoryData.getColorCode(),
-                categoryData.getName()
+                categoryData.getName(),
+                GroupableItem.PositionType.SINGLE
         );
     }
     public MoneyMovementUiModel assemble(MoneyMovement data) {
@@ -133,7 +135,8 @@ public class DataAssembler {
                 data.getAmount(),
                 data.getMemo(),
                 toWallet.getName(),
-                fromWallet.getName()
+                fromWallet.getName(),
+                GroupableItem.PositionType.SINGLE
         );
     }
 }

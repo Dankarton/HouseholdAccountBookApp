@@ -1,14 +1,14 @@
 package com.example.householdaccountbook.module.calendarentity;
 
-import com.example.householdaccountbook.customviews.item.GroupableItem;
+import com.example.householdaccountbook.customviews.calendar.GroupableItem;
 
 public class TransactionUiModel extends BopBaseUiModel {
     private String additionalMemo;
     private int categoryColor;
     private String categoryName;
 
-    public TransactionUiModel(DataType viewType, long id, int amount, String memo, String additionMemo, int categoryColor, String categoryName) {
-        super(viewType, id, amount, memo);
+    public TransactionUiModel(DataType viewType, long id, int amount, String memo, String additionMemo, int categoryColor, String categoryName, GroupableItem.PositionType groupPos) {
+        super(viewType, id, amount, memo, groupPos);
         this.additionalMemo = additionMemo;
         this.categoryColor = categoryColor;
         this.categoryName = categoryName;

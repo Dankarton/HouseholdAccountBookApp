@@ -22,9 +22,15 @@ import com.example.householdaccountbook.activities.settings.edit.SettingEditMone
 import com.example.householdaccountbook.activities.settings.edit.SettingEditPurchaseActivity;
 import com.example.householdaccountbook.adapter.CalendarUiAdapter;
 import com.example.householdaccountbook.customviews.calendar.CalendarCustomView;
+import com.example.householdaccountbook.customviews.calendar.GroupableItem;
 import com.example.householdaccountbook.module.calendarentity.BopBaseUiModel;
 import com.example.householdaccountbook.module.calendarentity.CalendarDisplayItem;
 import com.example.householdaccountbook.module.calendarentity.CalendarUiModel;
+import com.example.householdaccountbook.module.calendarentity.DailyUiModel;
+import com.example.householdaccountbook.module.calendarentity.HasGroupable;
+import com.example.householdaccountbook.module.calendarentity.MoneyMovementUiModel;
+import com.example.householdaccountbook.module.calendarentity.TransactionUiModel;
+import com.example.householdaccountbook.module.calendarentity.WalletUiModel;
 import com.example.householdaccountbook.module.dbentity.Expenses;
 import com.example.householdaccountbook.module.dbentity.Income;
 import com.example.householdaccountbook.module.dbentity.MoneyMovement;
@@ -143,4 +149,14 @@ public abstract class BaseCalendarFragment extends Fragment {
     }
     abstract List<CalendarDisplayItem> getData(Calendar targetDate);
     abstract List<CalendarDisplayItem> flatten(List<CalendarDisplayItem> beforeData);
+
+    protected CalendarDisplayItem copyWithPositionType(CalendarDisplayItem object, GroupableItem.PositionType type) {
+        if (object instanceof HasGroupable obj) {
+            obj.setPositionType(type);
+            return (CalendarDisplayItem) obj;
+        }
+        else {
+            throw new IllegalArgumentException("未対応クラスが挿入されました Class: " + object.getClass());
+        }
+    }
 }

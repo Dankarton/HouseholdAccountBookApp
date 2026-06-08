@@ -1,12 +1,12 @@
 package com.example.householdaccountbook.module.calendarentity;
 
-import com.example.householdaccountbook.customviews.item.GroupableItem;
+import com.example.householdaccountbook.customviews.calendar.GroupableItem;
 
 public class MoneyMovementUiModel extends BopBaseUiModel {
     private String toWalletName;
     private String fromWalletName;
-    public MoneyMovementUiModel(DataType viewType, long id, int amount, String memo, String toWalletName, String fromWalletName) {
-        super(viewType, id, amount, memo);
+    public MoneyMovementUiModel(DataType viewType, long id, int amount, String memo, String toWalletName, String fromWalletName, GroupableItem.PositionType groupPos) {
+        super(viewType, id, amount, memo, groupPos);
         this.toWalletName = toWalletName;
         this.fromWalletName = fromWalletName;
     }

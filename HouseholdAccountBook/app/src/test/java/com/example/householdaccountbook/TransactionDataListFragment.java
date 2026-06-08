@@ -21,7 +21,6 @@ import com.example.householdaccountbook.activities.settings.edit.SettingEditPurc
 import com.example.householdaccountbook.customviews.calendar.CalendarCustomView;
 import com.example.householdaccountbook.customviews.item.MonthlySummaryCustomView;
 import com.example.householdaccountbook.db.MyDbManager;
-import com.example.householdaccountbook.adapter.TransactionDateAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -1,30 +1,35 @@
 package com.example.householdaccountbook.module.calendarentity;
 
-import com.example.householdaccountbook.customviews.item.GroupableItem;
+import com.example.householdaccountbook.customviews.calendar.GroupableItem;
 
 import java.util.List;
 
 public class DailyUiModel implements CalendarDisplayItem, HasListVisible, HasGroupable {
     private final int year, month, date;
-    private final int deltaAmount;
+    private final Integer deltaAmount;
     private GroupableItem.PositionType groupPos = GroupableItem.PositionType.SINGLE;
     private boolean isListVisible;
+    private boolean isListVisibleValid;
+    private boolean didUpdated;
 
     private final List<CalendarDisplayItem> displayItems;
 
-    public DailyUiModel(int year, int month, int date, int deltaAmount, List<CalendarDisplayItem> displayItems, boolean isListVisible) {
+    public DailyUiModel(int year, int month, int date, Integer deltaAmount, List<CalendarDisplayItem> displayItems, GroupableItem.PositionType groupPos, boolean isListVisible) {
         this.year = year;
         this.month = month;
         this.date = date;
         this.deltaAmount = deltaAmount;
         this.displayItems = displayItems;
+        this.groupPos = groupPos;
         this.isListVisible = isListVisible;
+        this.isListVisibleValid = false;
+        this.didUpdated = true;
     }
 
     public int getYear() { return year; }
     public int getMonth() { return this.month; }
     public int getDate() { return this.date; }
-    public int getDeltaAmount() { return this.deltaAmount; }
+    public Integer getDeltaAmount() { return this.deltaAmount; }
     public List<CalendarDisplayItem> getChildItems() { return this.displayItems; }
 
     public boolean isListVisible() { return this.isListVisible; }
@@ -47,6 +52,7 @@ public class DailyUiModel implements CalendarDisplayItem, HasListVisible, HasGro
     @Override
     public void setPositionType(GroupableItem.PositionType type) {
         this.groupPos = type;
+        this.didUpdated = true;
     }
 
     @Override
@@ -60,4 +66,12 @@ public class DailyUiModel implements CalendarDisplayItem, HasListVisible, HasGro
                 this.isListVisible() == obj.isListVisible() &&
                 this.getPositionType() == obj.getPositionType();
     }
+    @Override
+    public boolean didUpdated() { return this.didUpdated; }
+    @Override
+    public void used() { this.didUpdated = false; }
+    @Override
+    public boolean isListVisibleValid() { return this.isListVisibleValid; }
+    @Override
+    public void setListVisibleValid(boolean valid) { this.isListVisibleValid = valid; }
 }

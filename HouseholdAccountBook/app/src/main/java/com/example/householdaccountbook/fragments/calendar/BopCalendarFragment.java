@@ -2,12 +2,15 @@ package com.example.householdaccountbook.fragments.calendar;
 
 import android.util.Log;
 
-import com.example.householdaccountbook.customviews.item.GroupableItem;
+import com.example.householdaccountbook.customviews.calendar.GroupableItem;
 import com.example.householdaccountbook.module.calendarentity.CalendarDisplayItem;
 import com.example.householdaccountbook.module.calendarentity.CalendarUiModel;
 import com.example.householdaccountbook.module.calendarentity.DailyUiModel;
 import com.example.householdaccountbook.module.calendarentity.HasGroupable;
+import com.example.householdaccountbook.module.calendarentity.MoneyMovementUiModel;
+import com.example.householdaccountbook.module.calendarentity.TransactionUiModel;
 import com.example.householdaccountbook.module.dbentity.Income;
+import com.example.householdaccountbook.module.dbentity.MoneyMovement;
 import com.example.householdaccountbook.module.dbentity.Purchase;
 import com.example.householdaccountbook.repository.DataAssembler;
 import com.example.householdaccountbook.repository.RepositoryManager;
@@ -60,14 +63,13 @@ public class BopCalendarFragment extends BaseCalendarFragment {
             List<Purchase> daysPurchaseList = purchaseHashMap.getOrDefault(i, new ArrayList<>());
 
             if (daysIncomeList.size() <= 0 && daysPurchaseList.size() <= 0) continue;
-
-            dailyUiList.add(
-                    DataAssembler.getInstance().assembleDailyUiModel(
-                            YY, MM, i,
-                            daysIncomeList,
-                            daysPurchaseList
-                    )
+            DailyUiModel dailyUiModel = DataAssembler.getInstance().assembleDailyUiModel(
+                    YY, MM, i,
+                    daysIncomeList,
+                    daysPurchaseList
             );
+            dailyUiModel.setListVisibleValid(true);
+            dailyUiList.add(dailyUiModel);
         }
         return dailyUiList;
     }
@@ -83,26 +85,25 @@ public class BopCalendarFragment extends BaseCalendarFragment {
                 afterList.add(data);
             }
             else if (data instanceof DailyUiModel) {
-                afterList.add(data);
                 List<CalendarDisplayItem> childItems = ((DailyUiModel) data).getChildItems();
                 if (((DailyUiModel) data).isListVisible() && !childItems.isEmpty()) {
-                    ((DailyUiModel) data).setPositionType(GroupableItem.PositionType.TOP);
-                    Log.d("BopCalendarFragment.flatten()", "ListVisible: " + ((DailyUiModel) data).isListVisible() + ", " + ((DailyUiModel) data).getChildItems().size());
+                    ((DailyUiModel) data).setListVisibleValid(true);
+                    afterList.add(copyWithPositionType(data, GroupableItem.PositionType.TOP));
                     for (int j = 0; j < childItems.size(); j++) {
                         CalendarDisplayItem child = childItems.get(j);
                         if (child instanceof HasGroupable) {
                             if (j < childItems.size() - 1) {
-                                ((HasGroupable) child).setPositionType(GroupableItem.PositionType.MIDDLE);
+                                afterList.add(copyWithPositionType(child, GroupableItem.PositionType.MIDDLE));
                             }
                             else {
-                                ((HasGroupable) child).setPositionType(GroupableItem.PositionType.BOTTOM);
+                                afterList.add(copyWithPositionType(child, GroupableItem.PositionType.BOTTOM));
                             }
-                            afterList.add(child);
                         }
                     }
                 }
                 else {
-                    ((DailyUiModel) data).setPositionType(GroupableItem.PositionType.SINGLE);
+                    ((DailyUiModel) data).setListVisibleValid(!childItems.isEmpty());
+                    afterList.add(copyWithPositionType(data, GroupableItem.PositionType.SINGLE));
                 }
             }
         }

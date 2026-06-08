@@ -12,8 +12,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.householdaccountbook.stash.DailyRecordAdapter;
-
 import java.util.Locale;
 
 public class DailyRecordCustomView extends ConstraintLayout {

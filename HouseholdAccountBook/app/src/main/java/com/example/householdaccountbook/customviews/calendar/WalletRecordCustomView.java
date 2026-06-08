@@ -1,6 +1,9 @@
 package com.example.householdaccountbook.customviews.calendar;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.customviews.item.GroupableItem;
 
 import java.util.Locale;
 
@@ -20,6 +22,8 @@ public class WalletRecordCustomView extends ConstraintLayout implements Listable
     private TextView bopAmountTextView;
     private TextView totalAmountTextView;
     private ImageView listStateView;
+    private boolean isListVisible;
+    private boolean isListButtonValid = true;
 
     private PositionType groupPosition = PositionType.SINGLE;
 
@@ -50,12 +54,15 @@ public class WalletRecordCustomView extends ConstraintLayout implements Listable
                 new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        boolean isVisible = listStateView.getVisibility() != View.VISIBLE;
-                        changeDropDownVisible(isVisible);
-                        if (listener != null) listener.onListableButtonClicked(isVisible);
+                        if (!isListButtonValid) return;
+                        if (listener != null) listener.onListableButtonClicked(!isListVisible);
+                        changeDropDownVisible(!isListVisible);
+
+
                     }
                 }
         );
+        changeDropDownVisible(false);
     }
 
     public void bind(String walletName, int bopAmount, int totalAmount, PositionType type, boolean isListVisible) {
@@ -87,6 +94,8 @@ public class WalletRecordCustomView extends ConstraintLayout implements Listable
         else {
             this.listStateView.setImageResource(R.drawable.keyboard_arrow_down_24px);
         }
+        this.isListVisible = visible;
+
     }
     public void setListener(OnActionListener listener) {
         this.listener = listener;
@@ -100,5 +109,22 @@ public class WalletRecordCustomView extends ConstraintLayout implements Listable
     @Override
     public PositionType getGroupPosition() {
         return this.groupPosition;
+    }
+    @Override
+    public void setListButtonValid(boolean visible) {
+        this.isListButtonValid = visible;
+        if (this.listStateView == null) return;
+
+        // カラー変更
+        Drawable background = this.listStateView.getBackground();
+        if (background instanceof GradientDrawable) {
+            GradientDrawable drawable = (GradientDrawable) background.mutate();
+            if (this.isListButtonValid) {
+                drawable.setColor(getResources().getColor(R.color.white));
+            }
+            else {
+                drawable.setColor(getResources().getColor(R.color.idle_item_color));
+            }
+        }
     }
 }

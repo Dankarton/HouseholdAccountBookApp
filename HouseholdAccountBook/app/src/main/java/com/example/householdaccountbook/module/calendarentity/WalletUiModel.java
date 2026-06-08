@@ -1,6 +1,6 @@
 package com.example.householdaccountbook.module.calendarentity;
 
-import com.example.householdaccountbook.customviews.item.GroupableItem;
+import com.example.householdaccountbook.customviews.calendar.GroupableItem;
 
 import java.util.List;
 
@@ -10,17 +10,22 @@ public class WalletUiModel implements CalendarDisplayItem, HasListVisible, HasGr
     private final int deltaAmount;
     private final int currentAmount;
     private final List<CalendarDisplayItem> displayItems;
-    private GroupableItem.PositionType groupPos = GroupableItem.PositionType.SINGLE;
+    private GroupableItem.PositionType groupPos;
     private boolean isListVisible;
+    private boolean isListVisibleValid;
+    private boolean didUpdated;
 
 
-    public WalletUiModel(long id, String walletName, int deltaAmount, int currentAmount, List<CalendarDisplayItem> displayItems, boolean isListVisible) {
+    public WalletUiModel(long id, String walletName, int deltaAmount, int currentAmount, List<CalendarDisplayItem> displayItems, GroupableItem.PositionType groupPos, boolean isListVisible) {
         this.id = id;
         this.walletName = walletName;
         this.deltaAmount = deltaAmount;
         this.currentAmount = currentAmount;
         this.displayItems = displayItems;
+        this.groupPos = groupPos;
         this.isListVisible = isListVisible;
+        this.isListVisibleValid = false;
+        this.didUpdated = true;
     }
     public long getId() { return this.id; }
     public String getWalletName() { return this.walletName; }
@@ -48,6 +53,7 @@ public class WalletUiModel implements CalendarDisplayItem, HasListVisible, HasGr
     @Override
     public void setPositionType(GroupableItem.PositionType type) {
         this.groupPos = type;
+        this.didUpdated = true;
     }
 
     @Override
@@ -61,4 +67,12 @@ public class WalletUiModel implements CalendarDisplayItem, HasListVisible, HasGr
                 this.isListVisible() == obj.isListVisible() &&
                 this.getPositionType() == obj.getPositionType();
     }
+    @Override
+    public boolean didUpdated() { return this.didUpdated; }
+    @Override
+    public void used() { this.didUpdated = false; }
+    @Override
+    public boolean isListVisibleValid() { return this.isListVisibleValid; }
+    @Override
+    public void setListVisibleValid(boolean valid) { this.isListVisibleValid = valid; }
 }

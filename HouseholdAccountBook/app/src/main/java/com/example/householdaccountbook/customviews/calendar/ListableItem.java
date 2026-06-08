@@ -4,5 +4,6 @@ public interface ListableItem {
     public interface OnActionListener {
         public void onListableButtonClicked(boolean visible);
     }
+    public void setListButtonValid(boolean valid);
     public void setListener(OnActionListener listener);
 }

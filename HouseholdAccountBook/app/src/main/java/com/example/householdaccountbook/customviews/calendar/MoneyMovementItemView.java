@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.householdaccountbook.R;
-import com.example.householdaccountbook.customviews.item.GroupableItem;
 
 import java.util.Locale;
 
@@ -40,8 +39,8 @@ public class MoneyMovementItemView extends BopItemView implements GroupableItem 
     private void init(Context context) {
         View layout = ConstraintLayout.inflate(context, R.layout.custom_view_money_movement_item, this);
         this.colorDot = layout.findViewById(R.id.category_color_dot);
-        this.toWalletText = layout.findViewById(R.id.to_wallet_text);
-        this.fromWalletText = layout.findViewById(R.id.from_wallet_text);
+        this.toWalletText = layout.findViewById(R.id.from_wallet_text);
+        this.fromWalletText = layout.findViewById(R.id.to_wallet_text);
         this.memoText = layout.findViewById(R.id.memo_text_view);
         this.amountText = layout.findViewById(R.id.amount_text_view);
         layout.findViewById(R.id.more_action_button).setOnClickListener(

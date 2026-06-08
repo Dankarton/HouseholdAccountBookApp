@@ -8,11 +8,13 @@ public class CalendarUiModel implements CalendarDisplayItem {
     private Calendar targetDate;
     private HashMap<Integer, Integer> dateData;
     private int maxAmount;
+    private boolean didUpdated;
 
     public CalendarUiModel(Calendar targetDate, HashMap<Integer, Integer> dateData, int maxAmount) {
         this.targetDate = targetDate;
         this.dateData = dateData;
         this.maxAmount = maxAmount;
+        didUpdated = true;
     }
 
     public Calendar getTargetDate() {
@@ -44,4 +46,8 @@ public class CalendarUiModel implements CalendarDisplayItem {
         return this.targetDate.get(Calendar.YEAR) == obj.targetDate.get(Calendar.YEAR) &&
                 this.targetDate.get(Calendar.MONTH) == obj.targetDate.get(Calendar.MONTH);
     }
+    @Override
+    public boolean didUpdated() { return this.didUpdated; }
+    @Override
+    public void used() { this.didUpdated = false; }
 }

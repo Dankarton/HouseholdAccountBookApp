@@ -11,8 +11,7 @@
     <View
         android:id="@+id/item_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/mother_item_background_color">
+        android:layout_height="match_parent">
     </View>
     <View
         android:id="@+id/category_color_dot"
@@ -21,8 +20,8 @@
         android:background="@drawable/circle_dot"
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toStartOf="@+id/item_background"
-        app:layout_constraintTop_toTopOf="@+id/to_wallet_text"
-        app:layout_constraintBottom_toBottomOf="@+id/to_wallet_text"
+        app:layout_constraintTop_toTopOf="@+id/from_wallet_text"
+        app:layout_constraintBottom_toBottomOf="@+id/from_wallet_text"
         />
     <View
         android:id="@+id/arrow"
@@ -30,13 +29,13 @@
         android:layout_height="16dp"
         android:layout_marginStart="4dp"
         android:background="@drawable/keyboard_double_arrow_right_24px"
-        app:layout_constraintStart_toEndOf="@id/to_wallet_text"
-        app:layout_constraintTop_toTopOf="@id/to_wallet_text"
-        app:layout_constraintBottom_toBottomOf="@id/to_wallet_text"
+        app:layout_constraintStart_toEndOf="@id/from_wallet_text"
+        app:layout_constraintTop_toTopOf="@id/from_wallet_text"
+        app:layout_constraintBottom_toBottomOf="@id/from_wallet_text"
         />
     <!--カテゴリ欄-->
     <TextView
-        android:id="@+id/to_wallet_text"
+        android:id="@+id/from_wallet_text"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:text="不明"
@@ -47,7 +46,7 @@
         app:layout_constraintStart_toEndOf="@+id/category_color_dot"
         app:layout_constraintTop_toTopOf="@id/item_background" />
     <TextView
-        android:id="@+id/from_wallet_text"
+        android:id="@+id/to_wallet_text"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:text="不明"
@@ -65,9 +64,9 @@
         android:background="@null"
         android:scaleType="fitCenter"
         android:layout_marginRight="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/to_wallet_text"
+        app:layout_constraintBottom_toBottomOf="@+id/from_wallet_text"
         app:layout_constraintEnd_toEndOf="@+id/item_background"
-        app:layout_constraintTop_toTopOf="@+id/to_wallet_text"
+        app:layout_constraintTop_toTopOf="@+id/from_wallet_text"
         app:srcCompat="@drawable/more_vert_24px" />
 
     <!--金額欄-->
@@ -80,9 +79,9 @@
         android:textColor="@color/expenses_text_color"
         android:text="\-4,000,000"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/to_wallet_text"
+        app:layout_constraintBottom_toBottomOf="@+id/from_wallet_text"
         app:layout_constraintEnd_toStartOf="@+id/more_action_button"
-        app:layout_constraintTop_toTopOf="@+id/to_wallet_text" />
+        app:layout_constraintTop_toTopOf="@+id/from_wallet_text" />
 
     <!--メモ欄-->
     <TextView
@@ -95,9 +94,9 @@
         android:singleLine="true"
         android:text="コンビニで振り込み"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/from_wallet_text"
+        app:layout_constraintBottom_toBottomOf="@id/to_wallet_text"
         app:layout_constraintEnd_toStartOf="@id/amount_text_view"
-        app:layout_constraintStart_toEndOf="@id/from_wallet_text"
-        app:layout_constraintTop_toTopOf="@id/to_wallet_text" />
+        app:layout_constraintStart_toEndOf="@id/to_wallet_text"
+        app:layout_constraintTop_toTopOf="@id/from_wallet_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

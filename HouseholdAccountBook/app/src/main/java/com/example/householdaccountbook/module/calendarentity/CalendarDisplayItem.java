@@ -39,4 +39,7 @@ public interface CalendarDisplayItem {
     public String getUniqueKey();
 
     public boolean equalData(Object obj);
+
+    public boolean didUpdated();
+    public void used();
 }

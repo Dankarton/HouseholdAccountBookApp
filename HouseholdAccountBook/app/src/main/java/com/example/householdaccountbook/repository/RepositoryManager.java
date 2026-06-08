@@ -51,7 +51,7 @@ public class RepositoryManager {
      * @param <T> DatabaseEntityを実装したクラス
      */
     public <T extends DatabaseEntity> ArrayList<T> getAllActive(Class<T> clazz) {
-        return this.db.getAllSafely(clazz);
+        return this.db.getAllActive(clazz);
     }
 
     /**
@@ -209,7 +209,7 @@ public class RepositoryManager {
             if (beforeDateData.isEmpty()) {
                 // 対象年月よりも前にデータが無いときは，対象年月をrootとする．
                 Wallet wallet = getDataById(Wallet.class, walletId);
-                this.db.setDataSafely(new MonthlyBalanceDelta(null, walletId, targetYearMonthKey, wallet.getInitAmount() + amount));
+                this.db.setDataSafely(new MonthlyBalanceDelta(null, walletId, targetYearMonthKey, amount));
             } else {
                 // 前の月の月からamount分変更することで対象年月の残高差分になる
                 int deltaAmount = beforeDateData.get(0).getDeltaAmount() + amount;

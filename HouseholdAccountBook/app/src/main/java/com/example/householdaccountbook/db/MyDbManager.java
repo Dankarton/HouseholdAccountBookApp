@@ -14,15 +14,11 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import com.example.householdaccountbook.module.dbentity.BOP;
-import com.example.householdaccountbook.module.DailyBop;
-import com.example.householdaccountbook.module.dbentity.Expenses;
 import com.example.householdaccountbook.module.dbentity.MonthlyBalanceDelta;
 import com.example.householdaccountbook.module.dbentity.PurchaseCategory;
-import com.example.householdaccountbook.module.dbentity.Income;
 import com.example.householdaccountbook.module.dbentity.IncomeCategory;
 import com.example.householdaccountbook.module.dbentity.PaymentMethod;
 import com.example.householdaccountbook.module.dbentity.DatabaseEntity;
-import com.example.householdaccountbook.module.dbentity.Purchase;
 
 public class MyDbManager {
     // フィールド
@@ -479,7 +475,6 @@ public class MyDbManager {
      * @return 残高差分
      */
     public MonthlyBalanceDelta getLatestMonthlyDeltaUpTo(long walletId, Calendar date) {
-        // TODO ウォレット追加で残高がウォレットごとに存在することになったので、それに合わせて改良。(引数にウォレットIDがいるんじゃないかな)
         ArrayList<MonthlyBalanceDelta> dataList = getData(
                 MonthlyBalanceDelta.class,
                 MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_WALLET_ID + " = ? AND " + MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " <= ?",
@@ -496,17 +491,6 @@ public class MyDbManager {
         }
     }
 
-    public DailyBop getDailyData(int year, int month, int day) {
-        ArrayList<Purchase> purchaseList = getBopDataByDate(Purchase.class, year, month, day);
-        ArrayList<Expenses> expensesList = getBopDataByDate(Expenses.class, year, month, day);
-        ArrayList<Income> incomeList = getBopDataByDate(Income.class, year, month, day);
-        // 収入も支出もない場合
-        if ((purchaseList.isEmpty() && expensesList.isEmpty()) && incomeList.isEmpty()) {
-            return null;
-        }
-        return new DailyBop(year, month, day, incomeList, purchaseList, expensesList);
-    }
-
     /**
      * アプリのデータ構造を考慮して全てのデータを取得する
      *
@@ -514,7 +498,7 @@ public class MyDbManager {
      * @param <T>   DatabaseEntityを実装したクラス
      * @return リスト
      */
-    public <T extends DatabaseEntity> ArrayList<T> getAllSafely(Class<T> clazz) {
+    public <T extends DatabaseEntity> ArrayList<T> getAllActive(Class<T> clazz) {
         if (clazz == PurchaseCategory.class || clazz == IncomeCategory.class) {
             // 論理削除されてないデータだけを取得
             String selection = MyDbContract.BaseCategoryEntry.COLUMN_IS_DELETED + " = ?";
@@ -588,65 +572,6 @@ public class MyDbManager {
         cursor.close();
         return result;
     }
-
-    /**
-     * 残高差分データを更新する関数
-     *
-     * @param date   収支の変更があった日付
-     * @param amount 変更分の金額
-     */
-    public void updateMonthlyBalanceDelta(Calendar date, long walletId, int amount) {
-        int targetYearMonthKey = MonthlyBalanceDelta.makeYearMonthKey(date);
-        // 対象年月のデータを取得
-        String targetSelection = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " = ?";
-        ArrayList<MonthlyBalanceDelta> targetDateData = getData(
-                MonthlyBalanceDelta.class,
-                targetSelection,
-                new String[]{String.valueOf(targetYearMonthKey)},
-                null, null, null, null
-        );
-        if (targetDateData.isEmpty()) {
-            // 対象年月にデータが無いときは新規作成．
-            //
-            // 前の月の残高差分のデータを基に対象年月の残高差分を算出
-            //
-            // 対象年月よりも前の年月で最も近いデータを一つだけ取得
-            String beforeMonthSelection = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " < ?";
-            String orderBy = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " DESC";
-            ArrayList<MonthlyBalanceDelta> beforeDateData = getData(
-                    MonthlyBalanceDelta.class,
-                    beforeMonthSelection,
-                    new String[]{String.valueOf(targetYearMonthKey)},
-                    null, null, orderBy, "1"
-            );
-            if (beforeDateData.isEmpty()) {
-                // 対象年月よりも前にデータが無いときは，対象年月をrootとする．
-                setData(new MonthlyBalanceDelta(null, walletId, targetYearMonthKey, amount));
-            } else {
-                // 前の月の月からamount分変更することで対象年月の残高差分になる
-                int deltaAmount = beforeDateData.get(0).getDeltaAmount() + amount;
-                setData(new MonthlyBalanceDelta(null, walletId, targetYearMonthKey, deltaAmount));
-            }
-        } else {
-            // 対象年月に残高差分のデータがすでにあった場合は，amount分金額を増減させる．
-            MonthlyBalanceDelta buf = targetDateData.get(0);
-            buf.setDeltaAmount(buf.getDeltaAmount() + amount);
-            upsertDatabase(buf);
-        }
-        // 残高差分の金額が変わると後の月も影響を受けるので，対象年月よりも後の年月を全て取得
-        String afterSelection = MyDbContract.MonthlyBalanceDeltaEntry.COLUMN_YEAR_MONTH_KEY + " > ?";
-        ArrayList<MonthlyBalanceDelta> afterDateData = getData(
-                MonthlyBalanceDelta.class,
-                afterSelection,
-                new String[]{String.valueOf(targetYearMonthKey)},
-                null, null, null, null
-        );
-        for (MonthlyBalanceDelta data : afterDateData) {
-            data.setDeltaAmount(data.getDeltaAmount() + amount);
-            upsertDatabase(data);
-        }
-    }
-
     /**
      * 日付を昇順に並べるためのWhere句を作るための関数
      *

@@ -2,7 +2,7 @@ package com.example.householdaccountbook.fragments.calendar;
 
 import android.util.Log;
 
-import com.example.householdaccountbook.customviews.item.GroupableItem;
+import com.example.householdaccountbook.customviews.calendar.GroupableItem;
 import com.example.householdaccountbook.module.calendarentity.BopBaseUiModel;
 import com.example.householdaccountbook.module.calendarentity.CalendarDisplayItem;
 import com.example.householdaccountbook.module.calendarentity.CalendarUiModel;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class WalletCalendarFragment extends BaseCalendarFragment {
 
@@ -58,8 +57,8 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
             Wallet wallet = wallets.get(i);
             List<Income> incomeList = RepositoryManager.getInstance().getIncomeDataByWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
             List<Expenses> expensesList = RepositoryManager.getInstance().getExpensesDataByWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
-            List<MoneyMovement> comeInMmList = RepositoryManager.getInstance().getMoneyMovementDataByFromWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
-            List<MoneyMovement> goOutMmList = RepositoryManager.getInstance().getMoneyMovementDataByToWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
+            List<MoneyMovement> comeInMmList = RepositoryManager.getInstance().getMoneyMovementDataByToWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
+            List<MoneyMovement> goOutMmList = RepositoryManager.getInstance().getMoneyMovementDataByFromWalletId(wallet.getId(), YY, MM, startDD, YY, MM, endDD);
 
 //            Log.d("WalletCalendarFragment", String.format(Locale.JAPANESE, "%4d%2d%2d~%4d%2d%2d", YY, MM, startDD, YY, MM, endDD) +
 //                    "Wallet[id: " + wallet.getId() + ", name: " + wallet.getName() + "] " +
@@ -75,10 +74,10 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
 
             MonthlyBalanceDelta mbd = RepositoryManager.getInstance().getLatestMonthlyBalanceDelta(wallet.getId(), targetDate);
             if (mbd != null) {
-                walletCurrentAmountArray[i] = mbd.getDeltaAmount();
+                walletCurrentAmountArray[i] = mbd.getDeltaAmount() + wallet.getInitAmount();
             }
             else {
-                walletCurrentAmountArray[i] = 0;
+                walletCurrentAmountArray[i] = wallet.getInitAmount();
             }
 
             for (Income income : incomeList) {
@@ -93,7 +92,8 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
                                 income.getMemo(),
                                 "",
                                 category.getColorCode(),
-                                category.getName()
+                                category.getName(),
+                                GroupableItem.PositionType.SINGLE
                         )
                 );
                 int deltaAmount = dailyDeltaAmountHashMap.getOrDefault(income.getDay(), 0) + income.getAmount();
@@ -115,7 +115,8 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
                                 expenses.getMemo(),
                                 paymentMethod.getName(),
                                 category.getColorCode(),
-                                category.getName()
+                                category.getName(),
+                                GroupableItem.PositionType.SINGLE
                         )
                 );
                 int deltaAmount = dailyDeltaAmountHashMap.getOrDefault(expenses.getDay(), 0) - Math.abs(expenses.getAmount());
@@ -138,10 +139,12 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
                                 moveAmount,
                                 fromMM.getMemo(),
                                 toWallet.getName(),
-                                fromWallet.getName()
+                                fromWallet.getName(),
+                                GroupableItem.PositionType.SINGLE
                         )
                 );
-                // 振替は全資産の合計値は変わらないのでdailyDeltaAmountArrayの値更新はしない。
+                // 振替は全資産の合計値は変わらないので0で更新。
+                dailyDeltaAmountHashMap.put(fromMM.getDay(), 0);
             }
 
             for (MoneyMovement toMM : goOutMmList) {
@@ -157,10 +160,12 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
                                 moveAmount,
                                 toMM.getMemo(),
                                 toWallet.getName(),
-                                fromWallet.getName()
+                                fromWallet.getName(),
+                                GroupableItem.PositionType.SINGLE
                         )
                 );
-                // 振替は全資産の合計値は変わらないのでdailyDeltaAmountArrayの値更新はしない。
+                // 振替は全資産の合計値は変わらないので0をput。
+                dailyDeltaAmountHashMap.put(toMM.getDay(), 0);
             }
         }
         ArrayList<CalendarDisplayItem> dailyUiModels = new ArrayList<>();
@@ -172,24 +177,28 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
             for (int j = 0; j < wallets.size(); j++) {
                 if (needlessWallets[j]) continue;
                 Wallet wallet = wallets.get(j);
-                walletUiModels.add(new WalletUiModel(
-                    wallet.getId(),
+                walletCurrentAmountArray[j] += walletDeltaAmountArray[j][i];
+                WalletUiModel walletUiModel = new WalletUiModel(
+                        wallet.getId(),
                         wallet.getName(),
                         walletDeltaAmountArray[j][i],
                         walletCurrentAmountArray[j],
                         dailyObjArray[j][i],
+                        GroupableItem.PositionType.SINGLE,
                         false
-                ));
-                walletCurrentAmountArray[j] += walletDeltaAmountArray[j][i];
+                );
+                walletUiModel.setListVisibleValid(!dailyObjArray[j][i].isEmpty());
+                walletUiModels.add(walletUiModel);
             }
-            dailyUiModels.add(
-                    new DailyUiModel(
-                            YY, MM, i + 1,
-                            dailyDeltaAmountHashMap.getOrDefault(i + 1, 0),
-                            walletUiModels,
-                            false
-                    )
+            DailyUiModel dailyUiModel = new DailyUiModel(
+                    YY, MM, i + 1,
+                    dailyDeltaAmountHashMap.getOrDefault(i + 1, null),
+                    walletUiModels,
+                    GroupableItem.PositionType.SINGLE,
+                    false
             );
+            dailyUiModel.setListVisibleValid(!dailyUiModel.getChildItems().isEmpty());
+            dailyUiModels.add(dailyUiModel);
         }
 
         return dailyUiModels;
@@ -202,14 +211,16 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
             if (data instanceof CalendarUiModel) {
                 afterList.add(data);
             }
-            else if (data instanceof DailyUiModel) {
-                afterList.add(data);
-                if (((DailyUiModel) data).isListVisible()) {
-                    ((DailyUiModel) data).setPositionType(GroupableItem.PositionType.TOP);
-                    afterList.addAll(flattenChildItems(((DailyUiModel) data).getChildItems()));
+            else if (data instanceof DailyUiModel dailyData) {
+                if (dailyData.isListVisible() && !dailyData.getChildItems().isEmpty()) {
+                    Log.d("WalletCalendarFragment", "DailyUiModel position top");
+                    dailyData.setListVisibleValid(true);
+                    afterList.add(copyWithPositionType(dailyData, GroupableItem.PositionType.TOP));
+                    afterList.addAll(flattenChildItems(dailyData.getChildItems()));
                 }
                 else {
-                    ((DailyUiModel) data).setPositionType(GroupableItem.PositionType.SINGLE);
+                    dailyData.setListVisibleValid(!dailyData.getChildItems().isEmpty());
+                    afterList.add(copyWithPositionType(dailyData, GroupableItem.PositionType.SINGLE));
                 }
             }
         }
@@ -220,29 +231,30 @@ public class WalletCalendarFragment extends BaseCalendarFragment {
         List<CalendarDisplayItem> result = new ArrayList<>();
         for (int i = 0; i < childItems.size(); i++) {
             CalendarDisplayItem child = childItems.get(i);
-            if (child instanceof WalletUiModel) {
-                result.add(child);
-                if (((WalletUiModel) child).isListVisible()) {
-                    List<CalendarDisplayItem> childChildItems = new ArrayList<>();
+            if (child instanceof WalletUiModel walletData) {
+                if (walletData.isListVisible() && !walletData.getChildItems().isEmpty()) {
+                    walletData.setListVisibleValid(true);
+                    result.add(copyWithPositionType(walletData, GroupableItem.PositionType.MIDDLE));
+                    List<CalendarDisplayItem> childChildItems = walletData.getChildItems();
                     for (int j = 0; j < childChildItems.size(); j++) {
                         CalendarDisplayItem childChild = childChildItems.get(j);
-                        if (childChild instanceof GroupableItem) {
+                        if (childChild instanceof HasGroupable) {
                             if (i < childItems.size() - 1) {
-                                ((GroupableItem) childChild).setGroupPosition(GroupableItem.PositionType.MIDDLE);
+                                result.add(copyWithPositionType(childChild, GroupableItem.PositionType.MIDDLE));
                             }
                             else {
-                                ((GroupableItem) childChild).setGroupPosition(GroupableItem.PositionType.BOTTOM);
+                                result.add(copyWithPositionType(childChild, GroupableItem.PositionType.BOTTOM));
                             }
-                            result.add(childChild);
                         }
                     }
                 }
                 else {
+                    walletData.setListVisibleValid(!walletData.getChildItems().isEmpty());
                     if (i < childItems.size() - 1) {
-                        ((WalletUiModel) child).setPositionType(GroupableItem.PositionType.MIDDLE);
+                        result.add(copyWithPositionType(walletData, GroupableItem.PositionType.MIDDLE));
                     }
                     else {
-                        ((WalletUiModel) child).setPositionType(GroupableItem.PositionType.BOTTOM);
+                        result.add(copyWithPositionType(walletData, GroupableItem.PositionType.BOTTOM));
                     }
                 }
             }
